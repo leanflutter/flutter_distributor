@@ -1,0 +1,14 @@
+name: app_package_maker_zip
+publish_to: "none"
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  archive: ^3.1.5
+
+dev_dependencies:
+
+dependency_overrides:
+  app_package_maker:
+    path: ../app_package_maker
