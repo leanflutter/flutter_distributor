@@ -8,7 +8,7 @@ abstract class AppPackageMaker {
   Future<String> make(
     AppInfo appInfo,
     String targetPlatform, {
-    required Directory inputDir,
-    required Directory outputDir,
+    required Directory appDirectory,
+    required Directory outputDirectory,
   });
 }
