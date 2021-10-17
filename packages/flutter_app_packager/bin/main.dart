@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 import 'package:app_package_maker_deb/app_package_maker_deb.dart';
+import 'package:app_package_maker_dmg/app_package_maker_dmg.dart';
 import 'package:app_package_maker_zip/app_package_maker_zip.dart';
 import 'package:args/args.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
@@ -19,6 +20,17 @@ AppInfo _getAppInfo() {
     buildNumber: pubspecVersion.split('+').last,
     version: pubspecVersion.split('+').first,
   );
+}
+
+List<String> _getTargets(String targetPlatform) {
+  switch (targetPlatform) {
+    case 'linux':
+      return [kTargetDeb, kTargetZip];
+    case 'macos':
+      return [kTargetDmg, kTargetZip];
+    default:
+      throw UnsupportedError('Unsupported target platform: $targetPlatform.');
+  }
 }
 
 Future<void> main(List<String> args) async {
@@ -45,6 +57,7 @@ Future<void> main(List<String> args) async {
   final FlutterAppPackager appPackager = FlutterAppPackager(
     makers: [
       AppPackageMakerDeb(),
+      AppPackageMakerDmg(),
       AppPackageMakerZip(),
     ],
   );
@@ -52,6 +65,6 @@ Future<void> main(List<String> args) async {
   await appPackager.pack(PackagingOptions(
     appInfo: _getAppInfo(),
     targetPlatform: targetPlatform,
-    targets: [kTargetDeb, kTargetZip],
+    targets: _getTargets(targetPlatform),
   ));
 }

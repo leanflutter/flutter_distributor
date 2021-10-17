@@ -18,6 +18,10 @@ Package your [Flutter](https://flutter.dev) app into OS-specific bundles (.app, 
   - [Quick Start](#quick-start)
     - [Installation](#installation)
       - [⚠️ Linux requirements](#️-linux-requirements)
+      - [⚠️ macOS requirements](#️-macos-requirements)
+    - [Pack](#pack)
+      - [Linux](#linux)
+      - [macOS](#macos)
   - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -38,6 +42,34 @@ Run the following command
 
 ```
 sudo apt-get install p7zip-full
+```
+
+
+#### ⚠️ macOS requirements
+
+- `7z`, `appdmg`
+
+Run the following command
+
+```
+brew install p7zip
+npm install -g appdmg
+```
+
+### Pack
+
+#### Linux
+
+```
+flutter build linux
+flutter_app_packager --platform=linux
+```
+
+#### macOS
+
+```
+flutter build macos
+flutter_app_packager --platform=macos
 ```
 
 ## License

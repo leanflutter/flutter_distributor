@@ -15,6 +15,13 @@ packages:
       relative: true
     source: path
     version: "0.0.0"
+  app_package_maker_dmg:
+    dependency: "direct overridden"
+    description:
+      path: "../app_package_maker_dmg"
+      relative: true
+    source: path
+    version: "0.0.0"
   app_package_maker_zip:
     dependency: "direct overridden"
     description:
