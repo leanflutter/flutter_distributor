@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app_package_maker/app_package_maker.dart';
 import 'package:app_package_maker_deb/app_package_maker_deb.dart';
 import 'package:app_package_maker_dmg/app_package_maker_dmg.dart';
+import 'package:app_package_maker_exe/app_package_maker_exe.dart';
 import 'package:app_package_maker_zip/app_package_maker_zip.dart';
 import 'package:args/args.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
@@ -28,6 +29,8 @@ List<String> _getTargets(String targetPlatform) {
       return [kTargetDeb, kTargetZip];
     case 'macos':
       return [kTargetDmg, kTargetZip];
+    case 'windows':
+      return [kTargetExe, kTargetZip];
     default:
       throw UnsupportedError('Unsupported target platform: $targetPlatform.');
   }
@@ -58,6 +61,7 @@ Future<void> main(List<String> args) async {
     makers: [
       AppPackageMakerDeb(),
       AppPackageMakerDmg(),
+      AppPackageMakerExe(),
       AppPackageMakerZip(),
     ],
   );

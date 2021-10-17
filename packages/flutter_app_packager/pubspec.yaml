@@ -17,6 +17,8 @@ dependency_overrides:
     path: ../app_package_maker_deb
   app_package_maker_dmg:
     path: ../app_package_maker_dmg
+  app_package_maker_exe:
+    path: ../app_package_maker_exe
   app_package_maker_zip:
     path: ../app_package_maker_zip
 
