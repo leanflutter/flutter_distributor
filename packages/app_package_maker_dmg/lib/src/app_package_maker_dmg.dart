@@ -41,6 +41,7 @@ class AppPackageMakerDmg extends AppPackageMaker {
       '${packagingDirectory.path}/appdmg.json',
       appPackageInfo.packagedFile.path,
     ]);
+    packagingDirectory.deleteSync(recursive: true);
     return appPackageInfo.packagedFile.path;
   }
 }
