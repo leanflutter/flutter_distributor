@@ -55,7 +55,7 @@ class FlutterAppPackager {
         appDirectory: appDirectory,
         outputDirectory: outputDirectory,
       );
-      print('Packed: $pkgPath');
+      print('Packaged: $pkgPath');
     }
     appDirectory.deleteSync(recursive: true);
   }

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:app_package_maker/src/app_info.dart';
 
-const kDefaultPackedFilePattern = '{name}-{version}+{buildNumber}-{platform}';
+const kDefaultPackagedFilePattern = '{name}-{version}+{buildNumber}-{platform}';
 
 class AppPackageInfo {
   final AppInfo appInfo;
@@ -36,7 +36,7 @@ class AppPackageInfo {
     required this.targetPlatform,
     // required this.targetArch,
     required this.packagedFileExt,
-    this.packagedFilePattern = kDefaultPackedFilePattern,
+    this.packagedFilePattern = kDefaultPackagedFilePattern,
     this.packagedFileIsInstaller = false,
   });
 }

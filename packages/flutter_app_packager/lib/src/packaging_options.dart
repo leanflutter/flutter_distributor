@@ -16,7 +16,7 @@ class PackagingOptions {
   PackagingOptions({
     required this.appInfo,
     required this.targetPlatform,
-    this.packagedFilePattern = kDefaultPackedFilePattern,
+    this.packagedFilePattern = kDefaultPackagedFilePattern,
     required this.targets,
   });
 }
