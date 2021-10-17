@@ -12,25 +12,30 @@ class AppPackageMakerZip extends AppPackageMaker {
   Future<String> make(
     AppInfo appInfo,
     String targetPlatform, {
-    required Directory inputDir,
-    required Directory outputDir,
+    required Directory appDirectory,
+    required Directory outputDirectory,
   }) async {
     AppPackageInfo appPackageInfo = AppPackageInfo(
       appInfo: appInfo,
       targetPlatform: targetPlatform,
-      format: 'zip',
+      appDirectory: appDirectory,
+      outputDirectory: outputDirectory,
+      packedFileExt: 'zip',
     );
 
-    String outputFilepath = '${outputDir.path}/${appPackageInfo.filename}';
     if (targetPlatform == 'linux') {
-      Process.runSync('7z', ['a', outputFilepath, '${inputDir.path}/*']);
+      Process.runSync('7z', [
+        'a',
+        appPackageInfo.packedFile.path,
+        './${appDirectory.path}/*',
+      ]);
     } else {
       final zipFileEncoder = ZipFileEncoder();
       zipFileEncoder.zipDirectory(
-        inputDir,
-        filename: outputFilepath,
+        appDirectory,
+        filename: appPackageInfo.packedFile.path,
       );
     }
-    return outputFilepath;
+    return appPackageInfo.packedFile.path;
   }
 }
