@@ -12,17 +12,15 @@ class FlutterAppPackager {
   });
 
   Directory _getBuildOutputDirectory(
-    Directory workDirectory,
     String targetPlatform,
   ) {
-    String dir = workDirectory.path;
     switch (targetPlatform) {
       case 'linux':
-        return Directory('${dir}/build/linux/x64/release/bundle');
+        return Directory('build/linux/x64/release/bundle');
       case 'macos':
-        return Directory('${dir}/build/macos/Build/Products/Release');
+        return Directory('build/macos/Build/Products/Release');
       case 'windows':
-        return Directory('${dir}/build/windows/runner/Release');
+        return Directory('build/windows/runner/Release');
       default:
         throw UnsupportedError('Unsupported target platform: $targetPlatform.');
     }
@@ -30,31 +28,35 @@ class FlutterAppPackager {
 
   Future<void> pack(PackagingOptions options) async {
     Directory buildOutputDirectory = _getBuildOutputDirectory(
-      options.workDirectory,
       options.targetPlatform,
     );
 
-    Directory inputDir = options.binaryArchiveDir;
-    if (inputDir.existsSync()) inputDir.deleteSync(recursive: true);
-    inputDir.createSync(recursive: true);
+    Directory outputDirectory = options.outputDirectory;
+    Directory appDirectory = options.appDirectory;
+    if (outputDirectory.existsSync())
+      outputDirectory.deleteSync(recursive: true);
+    outputDirectory.createSync(recursive: true);
+    if (appDirectory.existsSync()) appDirectory.deleteSync(recursive: true);
+    appDirectory.createSync(recursive: true);
 
     await Process.run('cp', [
       '-fr',
       '${buildOutputDirectory.path}/.',
-      inputDir.path,
+      appDirectory.path,
     ]);
 
     for (String target in options.targets) {
       AppPackageMaker appPackageMaker = makers.firstWhere(
         (e) => e.target == target,
       );
-      await appPackageMaker.make(
+      String pkgPath = await appPackageMaker.make(
         options.appInfo,
         options.targetPlatform,
-        inputDir: inputDir,
-        outputDir: options.outputDirectory,
+        appDirectory: appDirectory,
+        outputDirectory: outputDirectory,
       );
+      print('Packed: $pkgPath');
     }
-    inputDir.deleteSync(recursive: true);
+    appDirectory.deleteSync(recursive: true);
   }
 }

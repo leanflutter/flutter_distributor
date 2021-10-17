@@ -7,10 +7,8 @@ import 'package:args/args.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
 import 'package:yaml/yaml.dart';
 
-final Directory workDir = Directory.current;
-
 AppInfo _getAppInfo() {
-  final yamlString = File('${workDir.path}/pubspec.yaml').readAsStringSync();
+  final yamlString = File('pubspec.yaml').readAsStringSync();
   final yamlDoc = loadYaml(yamlString);
 
   String pubspecName = yamlDoc['name'];
@@ -52,7 +50,6 @@ Future<void> main(List<String> args) async {
   );
 
   await appPackager.pack(PackagingOptions(
-    workDirectory: workDir,
     appInfo: _getAppInfo(),
     targetPlatform: targetPlatform,
     targets: [kTargetDeb, kTargetZip],

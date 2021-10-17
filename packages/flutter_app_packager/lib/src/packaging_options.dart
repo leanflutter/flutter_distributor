@@ -3,23 +3,20 @@ import 'dart:io';
 import 'package:app_package_maker/app_package_maker.dart';
 
 class PackagingOptions {
-  final Directory workDirectory;
   final AppInfo appInfo;
   final String targetPlatform;
+  final String packedFilePattern;
   final List<String> targets;
 
-  Directory get binaryArchiveDir => Directory(
-        '${workDirectory.path}/dist/${appInfo.name}',
-      );
-
-  Directory get outputDirectory => Directory(
-        '${workDirectory.path}/dist',
-      );
+  Directory get appDirectory =>
+      Directory('${outputDirectory.path}/${appInfo.name}');
+  Directory get outputDirectory =>
+      Directory('dist/v${appInfo.version}+${appInfo.buildNumber}');
 
   PackagingOptions({
-    required this.workDirectory,
     required this.appInfo,
     required this.targetPlatform,
+    this.packedFilePattern = kDefaultPackedFilePattern,
     required this.targets,
   });
 }
