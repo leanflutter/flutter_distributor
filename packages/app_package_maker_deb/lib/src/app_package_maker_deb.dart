@@ -19,30 +19,30 @@ class AppPackageMakerDeb extends AppPackageMaker {
       targetPlatform: targetPlatform,
       appDirectory: appDirectory,
       outputDirectory: outputDirectory,
-      packedFileExt: 'deb',
+      packagedFileExt: 'deb',
     );
 
-    Directory packingDirectory = appPackageInfo.packingDirectory;
-    if (packingDirectory.existsSync())
-      packingDirectory.deleteSync(recursive: true);
-    packingDirectory.createSync(recursive: true);
+    Directory packagingDirectory = appPackageInfo.packagingDirectory;
+    if (packagingDirectory.existsSync())
+      packagingDirectory.deleteSync(recursive: true);
+    packagingDirectory.createSync(recursive: true);
 
     Process.runSync('cp', [
       '-fr',
       'linux/packaging/deb/.',
-      '${packingDirectory.path}',
+      '${packagingDirectory.path}',
     ]);
     Process.runSync('cp', [
       '-fr',
       '${appDirectory.path}/.',
-      '${packingDirectory.path}/usr/bin',
+      '${packagingDirectory.path}/usr/bin',
     ]);
     Process.runSync('dpkg-deb', [
       '--build',
       '--root-owner-group',
-      '${packingDirectory.path}',
+      '${packagingDirectory.path}',
     ]);
-    packingDirectory.deleteSync(recursive: true);
-    return appPackageInfo.packedFile.path;
+    packagingDirectory.deleteSync(recursive: true);
+    return appPackageInfo.packagedFile.path;
   }
 }

@@ -10,11 +10,11 @@ class AppPackageInfo {
   // final String targetArch;
   final Directory appDirectory;
   final Directory outputDirectory;
-  final String packedFileExt;
-  final String packedFilePattern;
+  final String packagedFileExt;
+  final String packagedFilePattern;
 
-  File get packedFile {
-    String filename = '$packedFilePattern.$packedFileExt'
+  File get packagedFile {
+    String filename = '$packagedFilePattern.$packagedFileExt'
         .replaceAll('{name}', appInfo.name)
         .replaceAll('{platform}', targetPlatform)
         .replaceAll('{version}', appInfo.version)
@@ -22,8 +22,8 @@ class AppPackageInfo {
     return File('${outputDirectory.path}/$filename');
   }
 
-  Directory get packingDirectory {
-    return Directory('${packedFile.path.replaceAll('.$packedFileExt', '')}');
+  Directory get packagingDirectory {
+    return Directory('${packagedFile.path.replaceAll('.$packagedFileExt', '')}');
   }
 
   AppPackageInfo({
@@ -32,7 +32,7 @@ class AppPackageInfo {
     required this.appInfo,
     required this.targetPlatform,
     // required this.targetArch,
-    required this.packedFileExt,
-    this.packedFilePattern = kDefaultPackedFilePattern,
+    required this.packagedFileExt,
+    this.packagedFilePattern = kDefaultPackedFilePattern,
   });
 }

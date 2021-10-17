@@ -5,7 +5,7 @@ import 'package:app_package_maker/app_package_maker.dart';
 class PackagingOptions {
   final AppInfo appInfo;
   final String targetPlatform;
-  final String packedFilePattern;
+  final String packagedFilePattern;
   final List<String> targets;
 
   Directory get appDirectory =>
@@ -16,7 +16,7 @@ class PackagingOptions {
   PackagingOptions({
     required this.appInfo,
     required this.targetPlatform,
-    this.packedFilePattern = kDefaultPackedFilePattern,
+    this.packagedFilePattern = kDefaultPackedFilePattern,
     required this.targets,
   });
 }

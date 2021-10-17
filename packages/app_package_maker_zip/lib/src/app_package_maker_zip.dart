@@ -20,22 +20,23 @@ class AppPackageMakerZip extends AppPackageMaker {
       targetPlatform: targetPlatform,
       appDirectory: appDirectory,
       outputDirectory: outputDirectory,
-      packedFileExt: 'zip',
+      packagedFileExt: 'zip',
     );
 
-    if (targetPlatform == 'linux') {
-      Process.runSync('7z', [
-        'a',
-        appPackageInfo.packedFile.path,
-        './${appDirectory.path}/*',
-      ]);
-    } else {
+    if (targetPlatform == 'windows') {
       final zipFileEncoder = ZipFileEncoder();
       zipFileEncoder.zipDirectory(
         appDirectory,
-        filename: appPackageInfo.packedFile.path,
+        filename: appPackageInfo.packagedFile.path,
       );
+    } else {
+      String filter = targetPlatform == 'macos' ? '*.app' : '*';
+      Process.runSync('7z', [
+        'a',
+        appPackageInfo.packagedFile.path,
+        './${appDirectory.path}/$filter',
+      ]);
     }
-    return appPackageInfo.packedFile.path;
+    return appPackageInfo.packagedFile.path;
   }
 }
