@@ -12,18 +12,21 @@ class AppPackageInfo {
   final Directory outputDirectory;
   final String packagedFileExt;
   final String packagedFilePattern;
+  final bool packagedFileIsInstaller;
 
   File get packagedFile {
-    String filename = '$packagedFilePattern.$packagedFileExt'
-        .replaceAll('{name}', appInfo.name)
-        .replaceAll('{platform}', targetPlatform)
-        .replaceAll('{version}', appInfo.version)
-        .replaceAll('{buildNumber}', appInfo.buildNumber);
+    String filename =
+        '$packagedFilePattern${packagedFileIsInstaller ? '-setup' : ''}.$packagedFileExt'
+            .replaceAll('{name}', appInfo.name)
+            .replaceAll('{platform}', targetPlatform)
+            .replaceAll('{version}', appInfo.version)
+            .replaceAll('{buildNumber}', appInfo.buildNumber);
     return File('${outputDirectory.path}/$filename');
   }
 
   Directory get packagingDirectory {
-    return Directory('${packagedFile.path.replaceAll('.$packagedFileExt', '')}');
+    return Directory(
+        '${packagedFile.path.replaceAll('.$packagedFileExt', '')}');
   }
 
   AppPackageInfo({
@@ -34,5 +37,6 @@ class AppPackageInfo {
     // required this.targetArch,
     required this.packagedFileExt,
     this.packagedFilePattern = kDefaultPackedFilePattern,
+    this.packagedFileIsInstaller = false,
   });
 }
