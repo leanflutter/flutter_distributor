@@ -15,10 +15,14 @@ class FlutterAppPackager {
     String targetPlatform,
   ) {
     switch (targetPlatform) {
+      case 'android':
+        return Directory('build/app/outputs/apk/release');
       case 'linux':
         return Directory('build/linux/x64/release/bundle');
       case 'macos':
         return Directory('build/macos/Build/Products/Release');
+      case 'web':
+        return Directory('build/web');
       case 'windows':
         return Directory('build/windows/runner/Release');
       default:

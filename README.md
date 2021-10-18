@@ -10,6 +10,7 @@ These are the available makers in this repository.
 
 | Package                                                    | Description |
 | ---------------------------------------------------------- | ----------- |
+| [app_package_maker_apk](./packages/app_package_maker_apk/) | -           |
 | [app_package_maker_deb](./packages/app_package_maker_deb/) | -           |
 | [app_package_maker_dmg](./packages/app_package_maker_dmg/) | -           |
 | [app_package_maker_exe](./packages/app_package_maker_exe/) | -           |

@@ -8,6 +8,13 @@ packages:
       relative: true
     source: path
     version: "0.0.0"
+  app_package_maker_apk:
+    dependency: "direct overridden"
+    description:
+      path: "../app_package_maker_apk"
+      relative: true
+    source: path
+    version: "0.0.0"
   app_package_maker_deb:
     dependency: "direct overridden"
     description:

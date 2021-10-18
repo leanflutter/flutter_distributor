@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
+import 'package:app_package_maker_apk/app_package_maker_apk.dart';
 import 'package:app_package_maker_deb/app_package_maker_deb.dart';
 import 'package:app_package_maker_dmg/app_package_maker_dmg.dart';
 import 'package:app_package_maker_exe/app_package_maker_exe.dart';
@@ -25,10 +26,14 @@ AppInfo _getAppInfo() {
 
 List<String> _getTargets(String targetPlatform) {
   switch (targetPlatform) {
+    case 'android':
+      return [kTargetApk];
     case 'linux':
       return [kTargetDeb, kTargetZip];
     case 'macos':
       return [kTargetDmg, kTargetZip];
+    case 'web':
+      return [kTargetZip];
     case 'windows':
       return [kTargetExe, kTargetZip];
     default:
@@ -59,6 +64,7 @@ Future<void> main(List<String> args) async {
 
   final FlutterAppPackager appPackager = FlutterAppPackager(
     makers: [
+      AppPackageMakerApk(),
       AppPackageMakerDeb(),
       AppPackageMakerDmg(),
       AppPackageMakerExe(),

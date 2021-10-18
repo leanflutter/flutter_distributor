@@ -8,11 +8,11 @@ dependencies:
   args: ^2.2.0
   yaml: ^3.1.0
 
-dev_dependencies:
-
 dependency_overrides:
   app_package_maker:
     path: ../app_package_maker
+  app_package_maker_apk:
+    path: ../app_package_maker_apk
   app_package_maker_deb:
     path: ../app_package_maker_deb
   app_package_maker_dmg:
