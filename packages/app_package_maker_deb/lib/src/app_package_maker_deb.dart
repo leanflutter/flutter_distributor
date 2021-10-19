@@ -35,7 +35,7 @@ class AppPackageMakerDeb extends AppPackageMaker {
     Process.runSync('cp', [
       '-fr',
       '${appDirectory.path}/.',
-      '${packagingDirectory.path}/usr/bin',
+      '${packagingDirectory.path}/usr/lib/${appInfo.name}/',
     ]);
     Process.runSync('dpkg-deb', [
       '--build',
