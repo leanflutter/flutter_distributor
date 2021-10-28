@@ -1,1 +1,39 @@
 # app_package_maker
+
+[![pub version][pub-image]][pub-url]
+
+[pub-image]: https://img.shields.io/pub/v/app_package_maker.svg
+[pub-url]: https://pub.dev/packages/app_package_maker
+
+## Quick Start
+
+### Installation
+
+```yaml
+dependencies:
+  app_package_maker: ^0.0.1
+```
+
+## Usage
+
+```dart
+import 'dart:io';
+
+import 'package:app_package_maker/app_package_maker.dart';
+
+const String kTargetZip = 'zip';
+
+class AppPackageMakerZip extends AppPackageMaker {
+  String get target => kTargetZip;
+
+  @override
+  Future<String> make(
+    AppInfo appInfo,
+    String targetPlatform, {
+    required Directory appDirectory,
+    required Directory outputDirectory,
+  }) async {
+    // ...
+  }
+}
+```
