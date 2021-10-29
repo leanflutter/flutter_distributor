@@ -2,11 +2,11 @@
 # See https://dart.dev/tools/pub/glossary#lockfile
 packages:
   app_package_maker:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
-      path: "../app_package_maker"
-      relative: true
-    source: path
-    version: "0.0.0"
+      name: app_package_maker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
 sdks:
   dart: ">=2.12.0 <3.0.0"
