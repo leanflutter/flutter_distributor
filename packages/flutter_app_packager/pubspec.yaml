@@ -1,26 +1,34 @@
 name: flutter_app_packager
-publish_to: "none"
+description: Package your Flutter app into OS-specific bundles (.dmg, .exe, etc.) via Dart or the command line.
+version: 0.0.1
+homepage: https://github.com/leanflutter/app_package_maker
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
+  app_package_maker: ^0.0.1
+  app_package_maker_apk: ^0.0.1
+  app_package_maker_deb: ^0.0.1
+  app_package_maker_dmg: ^0.0.1
+  app_package_maker_exe: ^0.0.1
+  app_package_maker_zip: ^0.0.1
   args: ^2.2.0
   yaml: ^3.1.0
 
-dependency_overrides:
-  app_package_maker:
-    path: ../app_package_maker
-  app_package_maker_apk:
-    path: ../app_package_maker_apk
-  app_package_maker_deb:
-    path: ../app_package_maker_deb
-  app_package_maker_dmg:
-    path: ../app_package_maker_dmg
-  app_package_maker_exe:
-    path: ../app_package_maker_exe
-  app_package_maker_zip:
-    path: ../app_package_maker_zip
+# dependency_overrides:
+#   app_package_maker:
+#     path: ../app_package_maker
+#   app_package_maker_apk:
+#     path: ../app_package_maker_apk
+#   app_package_maker_deb:
+#     path: ../app_package_maker_deb
+#   app_package_maker_dmg:
+#     path: ../app_package_maker_dmg
+#   app_package_maker_exe:
+#     path: ../app_package_maker_exe
+#   app_package_maker_zip:
+#     path: ../app_package_maker_zip
 
 executables:
   flutter_app_packager: main

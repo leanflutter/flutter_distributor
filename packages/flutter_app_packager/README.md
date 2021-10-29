@@ -5,7 +5,7 @@
 [pub-image]: https://img.shields.io/pub/v/flutter_app_packager.svg
 [pub-url]: https://pub.dev/packages/flutter_app_packager -->
 
-Package your [Flutter](https://flutter.dev) app into OS-specific bundles (.app, .exe, etc.) via Dart or the command line.
+Package your [Flutter](https://flutter.dev) app into OS-specific bundles (.dmg, .exe, etc.) via Dart or the command line.
 
 [![Discord](https://img.shields.io/badge/discord-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/vba8W9SF)
 
