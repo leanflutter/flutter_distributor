@@ -44,7 +44,7 @@ class FlutterAppPackager {
     appDirectory.createSync(recursive: true);
 
     await Process.run('cp', [
-      '-fr',
+      '-RH',
       '${buildOutputDirectory.path}/.',
       appDirectory.path,
     ]);

@@ -28,12 +28,12 @@ class AppPackageMakerDmg extends AppPackageMaker {
     packagingDirectory.createSync(recursive: true);
 
     Process.runSync('cp', [
-      '-fr',
+      '-RH',
       'macos/packaging/dmg/.',
       '${packagingDirectory.path}',
     ]);
     Process.runSync('cp', [
-      '-fr',
+      '-RH',
       '${appDirectory.path}/${appPackageInfo.appInfo.name}.app',
       '${packagingDirectory.path}',
     ]);
