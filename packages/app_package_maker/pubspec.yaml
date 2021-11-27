@@ -1,7 +1,7 @@
 name: app_package_maker
 description: App package maker
 version: 0.0.1
-homepage: https://github.com/leanflutter/app_package_maker
+homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

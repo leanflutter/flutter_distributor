@@ -2,27 +2,25 @@ import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 
-const String kTargetDmg = 'dmg';
-
 class AppPackageMakerDmg extends AppPackageMaker {
-  String get target => kTargetDmg;
+  String get name => 'dmg';
+  String get packageFormat => 'dmg';
+
+  bool get isSupportedOnCurrentPlatform => Platform.isMacOS;
 
   @override
-  Future<String> make(
-    AppInfo appInfo,
-    String targetPlatform, {
+  Future<MakeResult> make({
     required Directory appDirectory,
-    required Directory outputDirectory,
+    required String targetPlatform,
+    required MakeConfig makeConfig,
   }) async {
-    AppPackageInfo appPackageInfo = AppPackageInfo(
-      appInfo: appInfo,
+    MakeResult makeResult = MakeResult(
+      makeConfig: makeConfig,
       targetPlatform: targetPlatform,
-      appDirectory: appDirectory,
-      outputDirectory: outputDirectory,
-      packagedFileExt: 'dmg',
+      packageFormat: packageFormat,
     );
 
-    Directory packagingDirectory = appPackageInfo.packagingDirectory;
+    Directory packagingDirectory = makeResult.packagingDirectory;
     if (packagingDirectory.existsSync())
       packagingDirectory.deleteSync(recursive: true);
     packagingDirectory.createSync(recursive: true);
@@ -32,16 +30,24 @@ class AppPackageMakerDmg extends AppPackageMaker {
       'macos/packaging/dmg/.',
       '${packagingDirectory.path}',
     ]);
+
+    File appFile = appDirectory
+        .listSync()
+        .where((e) => e.path.endsWith('.app'))
+        .map((e) => File(e.path))
+        .first;
+
     Process.runSync('cp', [
       '-RH',
-      '${appDirectory.path}/${appPackageInfo.appInfo.name}.app',
-      '${packagingDirectory.path}',
+      appFile.path,
+      '${packagingDirectory.path}/',
     ]);
     Process.runSync('appdmg', [
       '${packagingDirectory.path}/appdmg.json',
-      appPackageInfo.packagedFile.path,
+      makeResult.outputPackageFile.path,
     ]);
     packagingDirectory.deleteSync(recursive: true);
-    return appPackageInfo.packagedFile.path;
+
+    return makeResult;
   }
 }

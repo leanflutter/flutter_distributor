@@ -1,3 +1,3 @@
-export 'src/app_info.dart';
-export 'src/app_package_info.dart';
+library app_package_maker;
+
 export 'src/app_package_maker.dart';

@@ -2,32 +2,34 @@ import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 
-const String kTargetApk = 'apk';
-
 class AppPackageMakerApk extends AppPackageMaker {
-  String get target => kTargetApk;
+  String get name => 'apk';
+  String get packageFormat => 'apk';
 
   @override
-  Future<String> make(
-    AppInfo appInfo,
-    String targetPlatform, {
+  Future<MakeResult> make({
     required Directory appDirectory,
-    required Directory outputDirectory,
+    required String targetPlatform,
+    required MakeConfig makeConfig,
   }) async {
-    AppPackageInfo appPackageInfo = AppPackageInfo(
-      appInfo: appInfo,
+    MakeResult makeResult = MakeResult(
+      makeConfig: makeConfig,
       targetPlatform: targetPlatform,
-      appDirectory: appDirectory,
-      outputDirectory: outputDirectory,
-      packagedFileExt: 'apk',
+      packageFormat: packageFormat,
     );
+
+    File apkFile = appDirectory
+        .listSync()
+        .where((e) => e.path.endsWith(packageFormat))
+        .map((e) => File(e.path))
+        .first;
 
     Process.runSync('cp', [
       '-fr',
-      '${appDirectory.path}/app-release.apk',
-      appPackageInfo.packagedFile.path,
+      apkFile.path,
+      makeResult.outputPackageFile.path,
     ]);
 
-    return appPackageInfo.packagedFile.path;
+    return makeResult;
   }
 }

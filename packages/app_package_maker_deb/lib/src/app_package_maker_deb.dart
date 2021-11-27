@@ -2,27 +2,25 @@ import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 
-const String kTargetDeb = 'deb';
-
 class AppPackageMakerDeb extends AppPackageMaker {
-  String get target => kTargetDeb;
+  String get name => 'deb';
+  String get packageFormat => 'deb';
+
+  bool get isSupportedOnCurrentPlatform => Platform.isLinux;
 
   @override
-  Future<String> make(
-    AppInfo appInfo,
-    String targetPlatform, {
+  Future<MakeResult> make({
     required Directory appDirectory,
-    required Directory outputDirectory,
+    required String targetPlatform,
+    required MakeConfig makeConfig,
   }) async {
-    AppPackageInfo appPackageInfo = AppPackageInfo(
-      appInfo: appInfo,
+    MakeResult makeResult = MakeResult(
+      makeConfig: makeConfig,
       targetPlatform: targetPlatform,
-      appDirectory: appDirectory,
-      outputDirectory: outputDirectory,
-      packagedFileExt: 'deb',
+      packageFormat: packageFormat,
     );
 
-    Directory packagingDirectory = appPackageInfo.packagingDirectory;
+    Directory packagingDirectory = makeResult.packagingDirectory;
     if (packagingDirectory.existsSync())
       packagingDirectory.deleteSync(recursive: true);
     packagingDirectory.createSync(recursive: true);
@@ -35,7 +33,7 @@ class AppPackageMakerDeb extends AppPackageMaker {
     Process.runSync('cp', [
       '-fr',
       '${appDirectory.path}/.',
-      '${packagingDirectory.path}/usr/lib/${appInfo.name}/',
+      '${packagingDirectory.path}/usr/lib/${makeConfig.appName}/',
     ]);
     Process.runSync('dpkg-deb', [
       '--build',
@@ -43,6 +41,6 @@ class AppPackageMakerDeb extends AppPackageMaker {
       '${packagingDirectory.path}',
     ]);
     packagingDirectory.deleteSync(recursive: true);
-    return appPackageInfo.packagedFile.path;
+    return makeResult;
   }
 }

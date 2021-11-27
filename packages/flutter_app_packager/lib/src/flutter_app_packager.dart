@@ -1,66 +1,45 @@
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
-
-import 'packaging_options.dart';
+import 'package:app_package_maker_aab/app_package_maker_aab.dart';
+import 'package:app_package_maker_apk/app_package_maker_apk.dart';
+import 'package:app_package_maker_deb/app_package_maker_deb.dart';
+import 'package:app_package_maker_dmg/app_package_maker_dmg.dart';
+import 'package:app_package_maker_exe/app_package_maker_exe.dart';
+import 'package:app_package_maker_zip/app_package_maker_zip.dart';
 
 class FlutterAppPackager {
-  final List<AppPackageMaker> makers;
+  final List<AppPackageMaker> _makers = [
+    AppPackageMakerAab(),
+    AppPackageMakerApk(),
+    AppPackageMakerDeb(),
+    AppPackageMakerDmg(),
+    AppPackageMakerExe(),
+    AppPackageMakerZip(),
+  ];
 
-  FlutterAppPackager({
-    required this.makers,
-  });
-
-  Directory _getBuildOutputDirectory(
-    String targetPlatform,
-  ) {
-    switch (targetPlatform) {
-      case 'android':
-        return Directory('build/app/outputs/apk/release');
-      case 'linux':
-        return Directory('build/linux/x64/release/bundle');
-      case 'macos':
-        return Directory('build/macos/Build/Products/Release');
-      case 'web':
-        return Directory('build/web');
-      case 'windows':
-        return Directory('build/windows/runner/Release');
-      default:
-        throw UnsupportedError('Unsupported target platform: $targetPlatform.');
-    }
-  }
-
-  Future<void> pack(PackagingOptions options) async {
-    Directory buildOutputDirectory = _getBuildOutputDirectory(
-      options.targetPlatform,
+  Future<MakeResult> package({
+    required String appName,
+    required String appVersion,
+    required Directory appDirectory,
+    required String targetPlatform,
+    required String target,
+    required Directory outputDirectory,
+  }) async {
+    AppPackageMaker maker = _makers.firstWhere(
+      (e) => e.name == target,
     );
-
-    Directory outputDirectory = options.outputDirectory;
-    Directory appDirectory = options.appDirectory;
-    if (outputDirectory.existsSync())
-      outputDirectory.deleteSync(recursive: true);
-    outputDirectory.createSync(recursive: true);
-    if (appDirectory.existsSync()) appDirectory.deleteSync(recursive: true);
-    appDirectory.createSync(recursive: true);
-
-    await Process.run('cp', [
-      '-RH',
-      '${buildOutputDirectory.path}/.',
-      appDirectory.path,
-    ]);
-
-    for (String target in options.targets) {
-      AppPackageMaker appPackageMaker = makers.firstWhere(
-        (e) => e.target == target,
-      );
-      String pkgPath = await appPackageMaker.make(
-        options.appInfo,
-        options.targetPlatform,
-        appDirectory: appDirectory,
-        outputDirectory: outputDirectory,
-      );
-      print('Packaged: $pkgPath');
-    }
-    appDirectory.deleteSync(recursive: true);
+    MakeConfig makeConfig = MakeConfig(
+      appName: appName,
+      appBuildNumber: int.parse(appVersion.split('+').last),
+      appVersion: appVersion.split('+').first,
+      outputDirectory: outputDirectory,
+    );
+    MakeResult makeResult = await maker.make(
+      appDirectory: appDirectory,
+      targetPlatform: targetPlatform,
+      makeConfig: makeConfig,
+    );
+    return makeResult;
   }
 }

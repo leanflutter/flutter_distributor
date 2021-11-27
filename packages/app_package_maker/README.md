@@ -21,10 +21,8 @@ import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 
-const String kTargetZip = 'zip';
-
 class AppPackageMakerZip extends AppPackageMaker {
-  String get target => kTargetZip;
+  String get name => 'zip';
 
   @override
   Future<String> make(

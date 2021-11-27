@@ -3,40 +3,36 @@ import 'dart:io';
 import 'package:app_package_maker/app_package_maker.dart';
 import 'package:archive/archive_io.dart';
 
-const String kTargetZip = 'zip';
-
 class AppPackageMakerZip extends AppPackageMaker {
-  String get target => kTargetZip;
+  String get name => 'zip';
+  String get packageFormat => 'zip';
 
   @override
-  Future<String> make(
-    AppInfo appInfo,
-    String targetPlatform, {
+  Future<MakeResult> make({
     required Directory appDirectory,
-    required Directory outputDirectory,
+    required String targetPlatform,
+    required MakeConfig makeConfig,
   }) async {
-    AppPackageInfo appPackageInfo = AppPackageInfo(
-      appInfo: appInfo,
+    MakeResult makeResult = MakeResult(
+      makeConfig: makeConfig,
       targetPlatform: targetPlatform,
-      appDirectory: appDirectory,
-      outputDirectory: outputDirectory,
-      packagedFileExt: 'zip',
+      packageFormat: packageFormat,
     );
 
     if (targetPlatform == 'windows') {
       final zipFileEncoder = ZipFileEncoder();
       zipFileEncoder.zipDirectory(
         appDirectory,
-        filename: appPackageInfo.packagedFile.path,
+        filename: makeResult.outputPackageFile.path,
       );
     } else {
       String filter = targetPlatform == 'macos' ? '*.app' : '*';
       Process.runSync('7z', [
         'a',
-        appPackageInfo.packagedFile.path,
+        makeResult.outputPackageFile.path,
         './${appDirectory.path}/$filter',
       ]);
     }
-    return appPackageInfo.packagedFile.path;
+    return makeResult;
   }
 }

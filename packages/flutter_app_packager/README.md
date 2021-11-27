@@ -7,7 +7,7 @@
 
 Package your [Flutter](https://flutter.dev) app into OS-specific bundles (.dmg, .exe, etc.) via Dart or the command line.
 
-[![Discord](https://img.shields.io/badge/discord-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/vba8W9SF)
+[![Discord](https://img.shields.io/badge/discord-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/zPa6EZ2jqb)
 
 ---
 
