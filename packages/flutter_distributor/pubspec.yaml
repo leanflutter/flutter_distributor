@@ -28,8 +28,6 @@ dependency_overrides:
     path: ../app_package_maker_exe
   app_package_maker_zip:
     path: ../app_package_maker_zip
-  app_package_publisher:
-    path: ../app_package_publisher
   flutter_app_builder:
     path: ../flutter_app_builder
   flutter_app_packager:

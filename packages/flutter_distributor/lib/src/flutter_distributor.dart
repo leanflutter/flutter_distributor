@@ -22,20 +22,27 @@ class FlutterDistributor {
       outputDirectory.createSync(recursive: true);
     }
 
+    bool isBuildOnlyOnce = targetPlatform != 'android';
+    BuildResult? buildResult;
+
     for (var target in targets) {
-      BuildResult buildResult = await _builder.build(
-        platform: targetPlatform,
-        target: target,
-      );
-      MakeResult makeResult = await _packager.package(
-        appName: appName,
-        appVersion: appVersion,
-        appDirectory: buildResult.outputDirectory,
-        targetPlatform: targetPlatform,
-        target: target,
-        outputDirectory: outputDirectory,
-      );
-      print('Packaged: ${makeResult.outputPackageFile}');
+      if (!isBuildOnlyOnce || (isBuildOnlyOnce && buildResult == null)) {
+        buildResult = await _builder.build(
+          platform: targetPlatform,
+          target: target,
+        );
+      }
+      if (buildResult != null) {
+        MakeResult makeResult = await _packager.package(
+          appName: appName,
+          appVersion: appVersion,
+          appDirectory: buildResult.outputDirectory,
+          targetPlatform: targetPlatform,
+          target: target,
+          outputDirectory: outputDirectory,
+        );
+        print('Packaged: ${makeResult.outputPackageFile}');
+      }
     }
 
     return Future.value();

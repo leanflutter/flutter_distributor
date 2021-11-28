@@ -6,7 +6,7 @@ import 'package:yaml/yaml.dart';
 
 Future<void> _release(ArgResults options) async {
   final String platform = options['platform'];
-  // final List<String> targets = '${options['targets']}'.split(',');
+  final List<String> targets = '${options['targets']}'.split(',');
 
   final yamlString = File('pubspec.yaml').readAsStringSync();
   final yamlDoc = loadYaml(yamlString);
@@ -19,7 +19,7 @@ Future<void> _release(ArgResults options) async {
     appName: pubspecName,
     appVersion: pubspecVersion,
     targetPlatform: platform,
-    targets: ['dmg', 'zip'],
+    targets: targets,
   );
 }
 
@@ -33,6 +33,10 @@ Future<void> main(List<String> args) async {
   parser.addOption(
     'platform',
     valueHelp: 'name',
+  );
+  parser.addOption(
+    'targets',
+    valueHelp: '',
   );
 
   final options = parser.parse(args);
