@@ -18,6 +18,7 @@ class AppPackageMakerExe extends AppPackageMaker {
     required MakeConfig makeConfig,
   }) async {
     MakeResult makeResult = MakeResult(
+      isInstaller: true,
       makeConfig: makeConfig,
       targetPlatform: targetPlatform,
       packageFormat: packageFormat,
