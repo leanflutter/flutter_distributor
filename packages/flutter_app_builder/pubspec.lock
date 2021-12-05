@@ -4,10 +4,10 @@ packages:
   app_package_maker:
     dependency: "direct main"
     description:
-      path: "../app_package_maker"
-      relative: true
-    source: path
-    version: "0.0.1"
+      name: app_package_maker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   charcode:
     dependency: transitive
     description:
