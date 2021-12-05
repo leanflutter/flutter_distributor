@@ -3,12 +3,10 @@ import 'dart:io';
 import 'package:app_package_maker/app_package_maker.dart';
 import 'package:flutter_app_builder/flutter_app_builder.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
-// import 'package:flutter_app_publisher/flutter_app_publisher.dart';
 
 class FlutterDistributor {
   final FlutterAppBuilder _builder = FlutterAppBuilder();
   final FlutterAppPackager _packager = FlutterAppPackager();
-  // final FlutterAppPublisher _publisher = FlutterAppPublisher();
 
   Future<void> release({
     required String appName,
@@ -25,7 +23,7 @@ class FlutterDistributor {
     bool isBuildOnlyOnce = targetPlatform != 'android';
     BuildResult? buildResult;
 
-    for (var target in targets) {
+    for (String target in targets) {
       if (!isBuildOnlyOnce || (isBuildOnlyOnce && buildResult == null)) {
         buildResult = await _builder.build(
           platform: targetPlatform,

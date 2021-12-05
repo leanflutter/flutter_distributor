@@ -19,9 +19,11 @@ Package your [Flutter](https://flutter.dev) app into OS-specific bundles (.dmg, 
     - [Installation](#installation)
       - [⚠️ Linux requirements](#️-linux-requirements)
       - [⚠️ macOS requirements](#️-macos-requirements)
+      - [⚠️ Windows requirements](#️-windows-requirements)
     - [Pack](#pack)
       - [Linux](#linux)
       - [macOS](#macos)
+      - [Windows](#windows)
   - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -56,20 +58,31 @@ brew install p7zip
 npm install -g appdmg
 ```
 
+#### ⚠️ Windows requirements
+
+- [Inno Setup](https://jrsoftware.org/isinfo.php)
+
 ### Pack
 
 #### Linux
 
 ```
 flutter build linux
-flutter_distributor --platform=linux
+flutter_distributor --platform=linux --targets=deb,zip
 ```
 
 #### macOS
 
 ```
 flutter build macos
-flutter_distributor --platform=macos
+flutter_distributor --platform=macos --targets=dmg,zip
+```
+
+#### Windows
+
+```
+flutter build windows
+flutter_distributor --platform=windows --targets=exe,zip
 ```
 
 ## License

@@ -41,7 +41,7 @@ Future<void> main(List<String> args) async {
 
   final options = parser.parse(args);
   if (options['help'] == true) {
-    print('Usage: flutter_distributor release --platform=linux\n');
+    print('Usage: flutter_distributor --platform=linux\n');
     print(parser.usage);
     return;
   }
