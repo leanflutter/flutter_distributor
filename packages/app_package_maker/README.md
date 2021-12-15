@@ -11,7 +11,7 @@
 
 ```yaml
 dependencies:
-  app_package_maker: ^0.0.2
+  app_package_maker: ^0.0.3
 ```
 
 ## Usage
@@ -25,13 +25,16 @@ class AppPackageMakerZip extends AppPackageMaker {
   String get name => 'zip';
 
   @override
-  Future<String> make(
-    AppInfo appInfo,
-    String targetPlatform, {
-    required Directory appDirectory,
+  Future<MakeResult> make(
+    Directory appDirectory, {
     required Directory outputDirectory,
+    String? platform,
   }) async {
     // ...
   }
 }
 ```
+
+## License
+
+[MIT](./LICENSE)

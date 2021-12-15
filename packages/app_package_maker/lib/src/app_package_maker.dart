@@ -1,6 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 
-const kDefaultPackageNaming = '{name}-{version}+{buildNumber}-{platform}';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:yaml/yaml.dart';
+
+const kDefaultArtifactName = '{name}-{version}-{platform}.{ext}';
+
+Map<String, dynamic> loadMakeConfigYaml(String path) {
+  final yamlDoc = loadYaml(File(path).readAsStringSync());
+  return json.decode(json.encode(yamlDoc));
+}
 
 abstract class AppPackageMaker {
   String get name => throw UnimplementedError();
@@ -8,57 +18,99 @@ abstract class AppPackageMaker {
 
   bool get isSupportedOnCurrentPlatform => true;
 
-  Future<MakeResult> make({
-    required Directory appDirectory,
-    required String targetPlatform,
-    required MakeConfig makeConfig,
+  Future<MakeConfig> loadMakeConfig() {
+    throw UnimplementedError();
+  }
+
+  Future<MakeResult> make(
+    Directory appDirectory, {
+    required Directory outputDirectory,
+    String? platform,
   });
+
+  Future<void> exec(
+    String executable,
+    List<String> arguments, {
+    bool runInShell = false,
+  }) async {
+    Process process = await Process.start(
+      executable,
+      arguments,
+      runInShell: runInShell,
+    );
+    process.stdout.listen((event) {
+      String log = utf8.decoder.convert(event).trim();
+      print(log);
+    });
+    process.stderr.listen((event) {
+      String log = utf8.decoder.convert(event).trim();
+      print(log);
+    });
+
+    int exitCode = await process.exitCode;
+    print('exitCode: $exitCode');
+  }
 }
 
 class MakeConfig {
-  final String appName;
-  final String appVersion;
-  final int appBuildNumber;
-  final Directory outputDirectory;
+  late String artifactName = kDefaultArtifactName;
+  late bool isInstaller = false;
+  late String platform;
+  late String packageFormat;
+  late Directory outputDirectory;
 
-  MakeConfig({
-    required this.appName,
-    required this.appVersion,
-    required this.appBuildNumber,
-    required this.outputDirectory,
-  });
+  String get appName => pubspec.name;
+  Version get appVersion => pubspec.version!;
+
+  Pubspec? _pubspec;
+  Directory? _packagingDirectory;
+
+  File get outputFile {
+    Map<String, dynamic> variables = {
+      'name': appName,
+      'version': appVersion.toString(),
+      'platform': platform,
+      'ext': packageFormat,
+    };
+    String filename = artifactName;
+    for (String key in variables.keys) {
+      filename = filename.replaceAll('{$key}', variables[key]);
+    }
+
+    if (isInstaller) {
+      filename = filename.replaceAll(
+        '.$packageFormat',
+        '-setup.$packageFormat}',
+      );
+    }
+
+    return File('${outputDirectory.path}${appVersion}/$filename');
+  }
+
+  Directory get packagingDirectory {
+    if (_packagingDirectory == null) {
+      _packagingDirectory = Directory(
+          '${outputFile.path.replaceAll('.$packageFormat', '_$packageFormat')}');
+      if (_packagingDirectory!.existsSync())
+        _packagingDirectory!.deleteSync(recursive: true);
+      _packagingDirectory!.createSync(recursive: true);
+    }
+    return _packagingDirectory!;
+  }
+
+  Pubspec get pubspec {
+    if (_pubspec == null) {
+      final yamlString = File('pubspec.yaml').readAsStringSync();
+      _pubspec = Pubspec.parse(yamlString);
+    }
+    return _pubspec!;
+  }
 }
 
 class MakeResult {
   final MakeConfig makeConfig;
-  final bool isInstaller;
-  final String targetArch;
-  final String targetPlatform;
-  final String packageFormat;
-  final String packageNaming;
 
-  File get outputPackageFile {
-    String filename =
-        '$packageNaming${isInstaller ? '-setup' : ''}.$packageFormat'
-            .replaceAll('{name}', makeConfig.appName)
-            .replaceAll('{platform}', targetPlatform)
-            .replaceAll('{version}', makeConfig.appVersion)
-            .replaceAll('{buildNumber}', '${makeConfig.appBuildNumber}');
-    return File('${makeConfig.outputDirectory.path}/$filename');
-  }
+  File get outputFile => makeConfig.outputFile;
 
-  Directory get packagingDirectory {
-    return Directory(
-      '${outputPackageFile.path.replaceAll('.$packageFormat', '')}',
-    );
-  }
-
-  MakeResult({
-    this.isInstaller = false,
-    required this.makeConfig,
-    this.targetArch = '',
-    required this.targetPlatform,
-    required this.packageFormat,
-    this.packageNaming = kDefaultPackageNaming,
-  });
+  MakeResult(this.makeConfig);
 }
