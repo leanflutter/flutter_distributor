@@ -1,0 +1,24 @@
+name: parse_app_package
+description: Parse app package
+version: 0.0.3
+homepage: https://github.com/leanflutter/flutter_distributor
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  args: ^2.2.0
+  app_package_parser: ^0.0.3
+  app_package_parser_apk: ^0.0.3
+  app_package_parser_ipa: ^0.0.3
+
+# dependency_overrides:
+#   app_package_parser:
+#     path: ../app_package_parser
+#   app_package_parser_apk:
+#     path: ../app_package_parser_apk
+#   app_package_parser_ipa:
+#     path: ../app_package_parser_ipa
+
+executables:
+  parse_app_package: main
