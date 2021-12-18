@@ -4,26 +4,20 @@ import 'package:app_package_maker/app_package_maker.dart';
 
 class AppPackageMakerDeb extends AppPackageMaker {
   String get name => 'deb';
+  String get platform => 'linux';
   String get packageFormat => 'deb';
 
   bool get isSupportedOnCurrentPlatform => Platform.isLinux;
 
   @override
-  Future<MakeResult> make({
-    required Directory appDirectory,
-    required String targetPlatform,
-    required MakeConfig makeConfig,
+  Future<MakeResult> make(
+    Directory appDirectory, {
+    required Directory outputDirectory,
+    String? flavor,
   }) async {
-    MakeResult makeResult = MakeResult(
-      makeConfig: makeConfig,
-      targetPlatform: targetPlatform,
-      packageFormat: packageFormat,
-    );
-
-    Directory packagingDirectory = makeResult.packagingDirectory;
-    if (packagingDirectory.existsSync())
-      packagingDirectory.deleteSync(recursive: true);
-    packagingDirectory.createSync(recursive: true);
+    MakeConfig makeConfig = await loadMakeConfig()
+      ..outputDirectory = outputDirectory;
+    Directory packagingDirectory = makeConfig.packagingDirectory;
 
     Process.runSync('cp', [
       '-fr',
@@ -41,6 +35,6 @@ class AppPackageMakerDeb extends AppPackageMaker {
       '${packagingDirectory.path}',
     ]);
     packagingDirectory.deleteSync(recursive: true);
-    return makeResult;
+    return MakeResult(makeConfig);
   }
 }
