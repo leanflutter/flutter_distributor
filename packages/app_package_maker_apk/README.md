@@ -13,7 +13,7 @@ Create a apk package for your app.
 
 ```yaml
 dependencies:
-  app_package_maker_apk: ^0.0.2
+  app_package_maker_apk: ^0.0.6
 ```
 
 ## Usage
