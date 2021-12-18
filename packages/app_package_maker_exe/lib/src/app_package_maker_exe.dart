@@ -7,27 +7,26 @@ import 'windows_installer_inno_setup.dart';
 
 class AppPackageMakerExe extends AppPackageMaker {
   String get name => 'exe';
+  String get platform => 'windows';
   String get packageFormat => 'exe';
 
   bool get isSupportedOnCurrentPlatform => Platform.isWindows;
 
   @override
-  Future<MakeResult> make({
-    required Directory appDirectory,
-    required String targetPlatform,
-    required MakeConfig makeConfig,
-  }) async {
-    MakeResult makeResult = MakeResult(
-      isInstaller: true,
-      makeConfig: makeConfig,
-      targetPlatform: targetPlatform,
-      packageFormat: packageFormat,
-    );
+  Future<MakeConfig> loadMakeConfig() async {
+    return await super.loadMakeConfig()
+      ..isInstaller = true;
+  }
 
-    Directory packagingDirectory = makeResult.packagingDirectory;
-    if (packagingDirectory.existsSync())
-      packagingDirectory.deleteSync(recursive: true);
-    packagingDirectory.createSync(recursive: true);
+  @override
+  Future<MakeResult> make(
+    Directory appDirectory, {
+    required Directory outputDirectory,
+    String? flavor,
+  }) async {
+    MakeConfig makeConfig = await loadMakeConfig()
+      ..outputDirectory = outputDirectory;
+    Directory packagingDirectory = makeConfig.packagingDirectory;
 
     Process.runSync('cp', [
       '-fr',
@@ -40,6 +39,7 @@ class AppPackageMakerExe extends AppPackageMaker {
     await windowsInstaller.compile(packagingDirectory: packagingDirectory);
 
     packagingDirectory.deleteSync(recursive: true);
-    return makeResult;
+
+    return MakeResult(makeConfig);
   }
 }
