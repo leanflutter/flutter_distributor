@@ -13,7 +13,7 @@ Create a aab package for your app.
 
 ```yaml
 dependencies:
-  app_package_maker_aab: ^0.0.2
+  app_package_maker_aab: ^0.0.6
 ```
 
 ## Usage
