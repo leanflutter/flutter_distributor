@@ -1,35 +1,34 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 
+import 'make_dmg_config.dart';
+
 class AppPackageMakerDmg extends AppPackageMaker {
   String get name => 'dmg';
+  String get platform => 'macos';
   String get packageFormat => 'dmg';
 
   bool get isSupportedOnCurrentPlatform => Platform.isMacOS;
 
   @override
-  Future<MakeResult> make({
-    required Directory appDirectory,
-    required String targetPlatform,
-    required MakeConfig makeConfig,
+  Future<MakeConfig> loadMakeConfig() async {
+    final map = loadMakeConfigYaml('macos/packaging/dmg/make_config.yaml');
+    return MakeDmgConfig.fromJson(map)
+      ..platform = 'macos'
+      ..packageFormat = packageFormat;
+  }
+
+  @override
+  Future<MakeResult> make(
+    Directory appDirectory, {
+    required Directory outputDirectory,
+    String? flavor,
   }) async {
-    MakeResult makeResult = MakeResult(
-      makeConfig: makeConfig,
-      targetPlatform: targetPlatform,
-      packageFormat: packageFormat,
-    );
-
-    Directory packagingDirectory = makeResult.packagingDirectory;
-    if (packagingDirectory.existsSync())
-      packagingDirectory.deleteSync(recursive: true);
-    packagingDirectory.createSync(recursive: true);
-
-    Process.runSync('cp', [
-      '-RH',
-      'macos/packaging/dmg/.',
-      '${packagingDirectory.path}',
-    ]);
+    MakeDmgConfig makeConfig = (await loadMakeConfig() as MakeDmgConfig)
+      ..outputDirectory = outputDirectory;
+    Directory packagingDirectory = makeConfig.packagingDirectory;
 
     File appFile = appDirectory
         .listSync()
@@ -37,17 +36,20 @@ class AppPackageMakerDmg extends AppPackageMaker {
         .map((e) => File(e.path))
         .first;
 
-    Process.runSync('cp', [
-      '-RH',
-      appFile.path,
-      '${packagingDirectory.path}/',
+    await exec('cp', ['-RH', appFile.path, packagingDirectory.path]);
+    await exec('cp', ['-RH', 'macos/packaging/dmg/.', packagingDirectory.path]);
+
+    File makeDmgConfigJsonFile =
+        File('${packagingDirectory.path}/make_config.json');
+    makeDmgConfigJsonFile.writeAsStringSync(json.encode(makeConfig.toJson()));
+
+    await exec('appdmg', [
+      makeDmgConfigJsonFile.path,
+      makeConfig.outputFile.path,
     ]);
-    Process.runSync('appdmg', [
-      '${packagingDirectory.path}/appdmg.json',
-      makeResult.outputPackageFile.path,
-    ]);
+
     packagingDirectory.deleteSync(recursive: true);
 
-    return makeResult;
+    return MakeResult(makeConfig);
   }
 }
