@@ -11,7 +11,7 @@
 
 ```yaml
 dependencies:
-  app_package_maker: ^0.0.5
+  app_package_maker: ^0.0.6
 ```
 
 ## Usage

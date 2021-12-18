@@ -5,7 +5,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
-const _kArtifactName = '{name}-{version}-{flavor}-{platform}.{ext}';
+const _kArtifactName = '{name}-{flavor}-{version}-{platform}.{ext}';
 const _kArtifactNameNoFlavor = '{name}-{version}-{platform}.{ext}';
 
 Map<String, dynamic> loadMakeConfigYaml(String path) {
@@ -77,11 +77,14 @@ class MakeConfig {
       'platform': platform,
       'flavor': flavor,
       'ext': packageFormat,
-    };
+    }..removeWhere((key, value) => value == null);
+
     String filename = flavor != null ? _kArtifactName : _kArtifactNameNoFlavor;
     if (artifactName != null) filename = artifactName!;
+
     for (String key in variables.keys) {
-      filename = filename.replaceAll('{$key}', variables[key]);
+      dynamic value = variables[key];
+      filename = filename.replaceAll('{$key}', value);
     }
 
     if (isInstaller) {
