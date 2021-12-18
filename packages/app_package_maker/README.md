@@ -11,7 +11,7 @@
 
 ```yaml
 dependencies:
-  app_package_maker: ^0.0.3
+  app_package_maker: ^0.0.4
 ```
 
 ## Usage
@@ -28,8 +28,8 @@ class AppPackageMakerZip extends AppPackageMaker {
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    String? platform,
-  }) async {
+    String? flavor,
+  }) {
     // ...
   }
 }

@@ -14,6 +14,7 @@ Map<String, dynamic> loadMakeConfigYaml(String path) {
 
 abstract class AppPackageMaker {
   String get name => throw UnimplementedError();
+  String get platform => throw UnimplementedError();
   String get packageFormat => throw UnimplementedError();
 
   bool get isSupportedOnCurrentPlatform => true;
@@ -25,7 +26,7 @@ abstract class AppPackageMaker {
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    String? platform,
+    String? flavor,
   });
 
   Future<void> exec(
@@ -84,7 +85,14 @@ class MakeConfig {
       );
     }
 
-    return File('${outputDirectory.path}${appVersion}/$filename');
+    Directory versionOutputDirectory =
+        Directory('${outputDirectory.path}${appVersion}');
+
+    if (!versionOutputDirectory.existsSync()) {
+      versionOutputDirectory.createSync(recursive: true);
+    }
+
+    return File('${versionOutputDirectory.path}/$filename');
   }
 
   Directory get packagingDirectory {
