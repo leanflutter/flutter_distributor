@@ -5,7 +5,8 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
-const kDefaultArtifactName = '{name}-{version}-{platform}.{ext}';
+const _kArtifactName = '{name}-{version}-{flavor}-{platform}.{ext}';
+const _kArtifactNameNoFlavor = '{name}-{version}-{platform}.{ext}';
 
 Map<String, dynamic> loadMakeConfigYaml(String path) {
   final yamlDoc = loadYaml(File(path).readAsStringSync());
@@ -19,8 +20,10 @@ abstract class AppPackageMaker {
 
   bool get isSupportedOnCurrentPlatform => true;
 
-  Future<MakeConfig> loadMakeConfig() {
-    throw UnimplementedError();
+  Future<MakeConfig> loadMakeConfig() async {
+    return MakeConfig()
+      ..platform = platform
+      ..packageFormat = packageFormat;
   }
 
   Future<MakeResult> make(
@@ -54,9 +57,10 @@ abstract class AppPackageMaker {
 }
 
 class MakeConfig {
-  late String artifactName = kDefaultArtifactName;
+  String? artifactName;
   late bool isInstaller = false;
   late String platform;
+  String? flavor;
   late String packageFormat;
   late Directory outputDirectory;
 
@@ -71,9 +75,11 @@ class MakeConfig {
       'name': appName,
       'version': appVersion.toString(),
       'platform': platform,
+      'flavor': flavor,
       'ext': packageFormat,
     };
-    String filename = artifactName;
+    String filename = flavor != null ? _kArtifactName : _kArtifactNameNoFlavor;
+    if (artifactName != null) filename = artifactName!;
     for (String key in variables.keys) {
       filename = filename.replaceAll('{$key}', variables[key]);
     }
