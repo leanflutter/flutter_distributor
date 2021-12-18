@@ -7,10 +7,10 @@ class AppBuilderLinux extends AppBuilder {
   String get platform => 'linux';
 
   @override
-  Directory getOutputDirectory({
-    String? flavor,
-    String? target,
-  }) {
+  bool get isSupportedOnCurrentPlatform => Platform.isLinux;
+
+  @override
+  Directory get outputDirectory {
     return Directory('build/linux/x64/release/bundle');
   }
 }

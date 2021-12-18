@@ -7,9 +7,13 @@ class AppBuilderIos extends AppBuilder {
   String get platform => 'ios';
 
   @override
-  Directory getOutputDirectory({
-    String? flavor,
-    String? target,
-  }) =>
-      throw UnimplementedError();
+  String get buildSubcommand => 'ipa';
+
+  @override
+  bool get isSupportedOnCurrentPlatform => Platform.isMacOS;
+
+  @override
+  Directory get outputDirectory {
+    return Directory('build/ios/ipa');
+  }
 }

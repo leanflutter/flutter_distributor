@@ -7,10 +7,10 @@ class AppBuilderMacOs extends AppBuilder {
   String get platform => 'macos';
 
   @override
-  Directory getOutputDirectory({
-    String? flavor,
-    String? target,
-  }) {
+  bool get isSupportedOnCurrentPlatform => Platform.isMacOS;
+
+  @override
+  Directory get outputDirectory {
     return Directory('build/macos/Build/Products/Release');
   }
 }

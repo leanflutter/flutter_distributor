@@ -7,10 +7,10 @@ class AppBuilderWindows extends AppBuilder {
   String get platform => 'windows';
 
   @override
-  Directory getOutputDirectory({
-    String? flavor,
-    String? target,
-  }) {
+  bool get isSupportedOnCurrentPlatform => Platform.isWindows;
+
+  @override
+  Directory get outputDirectory {
     return Directory('build/windows/runner/Release');
   }
 }

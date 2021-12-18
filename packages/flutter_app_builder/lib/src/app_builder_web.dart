@@ -7,10 +7,10 @@ class AppBuilderWeb extends AppBuilder {
   String get platform => 'web';
 
   @override
-  Directory getOutputDirectory({
-    String? flavor,
-    String? target,
-  }) {
+  bool get isSupportedOnCurrentPlatform => true;
+
+  @override
+  Directory get outputDirectory {
     return Directory('build/web');
   }
 }

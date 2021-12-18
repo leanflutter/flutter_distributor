@@ -8,7 +8,8 @@ import 'app_builder.dart';
 
 class FlutterAppBuilder {
   final List<AppBuilder> _builders = [
-    AppBuilderAndroid(),
+    AppBuilderAndroid.aab(),
+    AppBuilderAndroid.apk(),
     AppBuilderIos(),
     AppBuilderLinux(),
     AppBuilderMacOs(),
@@ -16,19 +17,28 @@ class FlutterAppBuilder {
     AppBuilderWindows(),
   ];
 
-  Future<BuildResult> build({
-    required String platform,
-    String? entryPoint,
-    String? flavor,
-    String? target,
-    bool verbose = false,
-  }) async {
-    AppBuilder builder = _builders.firstWhere((e) => e.platform == platform);
+  Future<BuildResult> build(
+    String platform,
+    String target,
+    Map<String, dynamic> buildArguments,
+  ) async {
+    AppBuilder builder = _builders.firstWhere(
+      (e) {
+        if (e.platform == platform && e is AppBuilderAndroid) {
+          return e.target == target;
+        }
+        return e.platform == platform;
+      },
+    );
+
+    if (!builder.isSupportedOnCurrentPlatform) {
+      throw UnsupportedError(
+          '${builder.runtimeType} is not supported on the current platform');
+    }
+
     return await builder.build(
-      entryPoint: entryPoint,
-      flavor: flavor,
       target: target,
-      verbose: verbose,
+      buildArguments: buildArguments,
     );
   }
 }

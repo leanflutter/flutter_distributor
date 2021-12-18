@@ -1,38 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 
-class BuildResult {
-  final Directory outputDirectory;
-
-  BuildResult({
-    required this.outputDirectory,
-  });
-}
-
 class AppBuilder {
   String get platform => throw UnimplementedError();
 
-  Directory getOutputDirectory({
-    String? flavor,
-    String? target,
-  }) =>
-      throw UnimplementedError();
+  bool get isSupportedOnCurrentPlatform => throw UnimplementedError();
+
+  String get buildSubcommand => platform;
+
+  Directory get outputDirectory => throw UnimplementedError();
 
   Future<BuildResult> build({
-    String? entryPoint,
-    String? flavor,
     String? target,
-    bool verbose = false,
+    Map<String, dynamic> buildArguments = const {},
   }) async {
-    String buildSubcommand = platform;
-    if (platform == 'android') {
-      buildSubcommand = target == 'aab' ? 'appbundle' : 'apk';
-    } else if (platform == 'ios') {
-      buildSubcommand = 'ipa';
-    }
     List<String> arguments = [];
-    if (verbose) {
-      arguments.add('--verbose');
+    for (String key in buildArguments.keys) {
+      arguments.addAll(['--$key', buildArguments[key]]);
     }
 
     Process process = await Process.start(
@@ -40,7 +24,6 @@ class AppBuilder {
       ['build', buildSubcommand]..addAll(arguments),
       runInShell: true,
     );
-
     process.stdout.listen((event) {
       String log = utf8.decoder.convert(event).trim();
       print(log);
@@ -54,10 +37,15 @@ class AppBuilder {
     print('exitCode: $exitCode');
 
     return BuildResult(
-      outputDirectory: this.getOutputDirectory(
-        flavor: flavor,
-        target: target,
-      ),
+      outputDirectory: outputDirectory,
     );
   }
+}
+
+class BuildResult {
+  final Directory outputDirectory;
+
+  BuildResult({
+    required this.outputDirectory,
+  });
 }
