@@ -9,12 +9,10 @@ class FlutterDistributor {
   final FlutterAppPackager _packager = FlutterAppPackager();
 
   Future<void> release({
-    required String appName,
-    required String appVersion,
     required String targetPlatform,
     required List<String> targets,
   }) async {
-    Directory outputDirectory = Directory('dist/v${appVersion}');
+    Directory outputDirectory = Directory('dist/');
 
     if (!outputDirectory.existsSync()) {
       outputDirectory.createSync(recursive: true);
@@ -25,21 +23,16 @@ class FlutterDistributor {
 
     for (String target in targets) {
       if (!isBuildOnlyOnce || (isBuildOnlyOnce && buildResult == null)) {
-        buildResult = await _builder.build(
-          platform: targetPlatform,
-          target: target,
-        );
+        buildResult = await _builder.build(targetPlatform, target, {});
       }
       if (buildResult != null) {
         MakeResult makeResult = await _packager.package(
-          appName: appName,
-          appVersion: appVersion,
-          appDirectory: buildResult.outputDirectory,
-          targetPlatform: targetPlatform,
+          buildResult.outputDirectory,
+          platform: targetPlatform,
           target: target,
           outputDirectory: outputDirectory,
         );
-        print('Packaged: ${makeResult.outputPackageFile}');
+        print('Packaged: ${makeResult.outputFile}');
       }
     }
 
