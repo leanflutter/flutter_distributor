@@ -24,6 +24,10 @@ class AppPackageMakerDeb extends AppPackageMaker {
       'linux/packaging/deb/.',
       '${packagingDirectory.path}',
     ]);
+    Process.runSync('mkdir', [
+      '-p',
+      '${packagingDirectory.path}/usr/lib/${makeConfig.appName}/',
+    ]);
     Process.runSync('cp', [
       '-fr',
       '${appDirectory.path}/.',
