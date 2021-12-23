@@ -20,10 +20,9 @@ Package your [Flutter](https://flutter.dev) app into OS-specific bundles (.dmg, 
       - [⚠️ Linux requirements](#️-linux-requirements)
       - [⚠️ macOS requirements](#️-macos-requirements)
       - [⚠️ Windows requirements](#️-windows-requirements)
-    - [Pack](#pack)
-      - [Linux](#linux)
-      - [macOS](#macos)
-      - [Windows](#windows)
+    - [CLI](#cli)
+      - [Package](#package)
+      - [Publish](#publish)
   - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -62,47 +61,36 @@ npm install -g appdmg
 
 - [Inno Setup](https://jrsoftware.org/isinfo.php)
 
-### Pack
+### CLI
 
-#### Linux
+#### Package
 
+Will package your application into a platform specific format and put the result in a folder.
+
+| Flag         | Value                               | Required | Description |
+| ------------ | ----------------------------------- | -------- | ----------- |
+| `--platform` | Platform, e.g. `android`            | Yes      |             |
+| `--targets`  | Comma separated list of maker names | Yes      |             |
+
+Example:
+
+```bash
+flutter_distributor package --platform=android --targets=aab,apk
 ```
-flutter build linux
-flutter_distributor --platform=linux --targets=deb,zip
-```
 
-#### macOS
+#### Publish
 
-```
-flutter build macos
-flutter_distributor --platform=macos --targets=dmg,zip
-```
+| Flag        | Value                                                     | Required | Description |
+| ----------- | --------------------------------------------------------- | -------- | ----------- |
+| `--path`    | path, e.g. `dist/1.0.0+1/hello_world-1.0.0+1-android.apk` | Yes      |             |
+| `--targets` | Comma separated list of publisher names                   | Yes      |             |
 
-#### Windows
+Example:
 
-```
-flutter build windows
-flutter_distributor --platform=windows --targets=exe,zip
+```bash
+flutter_distributor publish --path dist/1.0.0+1/hello_world-1.0.0+1-android.apk --targets fir,pgyers
 ```
 
 ## License
 
-```text
-MIT License
-Copyright (c) 2021 LiJianying <lijy91@foxmail.com>
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+[MIT](./LICENSE)

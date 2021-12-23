@@ -7,49 +7,98 @@ packages:
       name: app_package_maker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.6"
   app_package_maker_aab:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: app_package_maker_aab
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.6"
   app_package_maker_apk:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: app_package_maker_apk
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.6"
   app_package_maker_deb:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: app_package_maker_deb
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.6"
   app_package_maker_dmg:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: app_package_maker_dmg
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.6"
   app_package_maker_exe:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: app_package_maker_exe
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.6"
+  app_package_maker_ipa:
+    dependency: transitive
+    description:
+      name: app_package_maker_ipa
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.6"
   app_package_maker_zip:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: app_package_maker_zip
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.6"
+  app_package_parser:
+    dependency: transitive
+    description:
+      name: app_package_parser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
+  app_package_parser_apk:
+    dependency: transitive
+    description:
+      name: app_package_parser_apk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
+  app_package_parser_ipa:
+    dependency: transitive
+    description:
+      name: app_package_parser_ipa
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
+  app_package_publisher:
+    dependency: "direct main"
+    description:
+      name: app_package_publisher
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.6"
+  app_package_publisher_fir:
+    dependency: transitive
+    description:
+      name: app_package_publisher_fir
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.6"
+  app_package_publisher_pgyer:
+    dependency: transitive
+    description:
+      name: app_package_publisher_pgyer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.6"
   archive:
     dependency: transitive
     description:
@@ -71,6 +120,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.1"
+  checked_yaml:
+    dependency: transitive
+    description:
+      name: checked_yaml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   collection:
     dependency: transitive
     description:
@@ -78,6 +134,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
+  colorize:
+    dependency: "direct main"
+    description:
+      name: colorize
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   crypto:
     dependency: transitive
     description:
@@ -85,27 +148,97 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.4"
   flutter_app_builder:
     dependency: "direct main"
     description:
       name: flutter_app_builder
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.6"
   flutter_app_packager:
     dependency: "direct main"
     description:
       name: flutter_app_packager
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.6"
+  flutter_app_publisher:
+    dependency: "direct main"
+    description:
+      name: flutter_app_publisher
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.6"
+  http_parser:
+    dependency: transitive
+    description:
+      name: http_parser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
+  json_annotation:
+    dependency: transitive
+    description:
+      name: json_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.4.0"
+  logging:
+    dependency: "direct main"
+    description:
+      name: logging
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
+  meta:
+    dependency: transitive
+    description:
+      name: meta
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.7.0"
+  parse_app_package:
+    dependency: transitive
+    description:
+      name: parse_app_package
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   path:
     dependency: transitive
     description:
       name: path
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.0"
+    version: "1.8.1"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.4.0"
+  pub_semver:
+    dependency: "direct main"
+    description:
+      name: pub_semver
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
+  pubspec_parse:
+    dependency: "direct main"
+    description:
+      name: pubspec_parse
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   source_span:
     dependency: transitive
     description:
@@ -134,5 +267,19 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.3.1"
+  yaml:
+    dependency: "direct main"
+    description:
+      name: yaml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
 sdks:
-  dart: ">=2.12.0 <3.0.0"
+  dart: ">=2.14.0 <3.0.0"
