@@ -21,3 +21,14 @@ class PublishResult {
     this.url,
   });
 }
+
+class PublishError extends Error {
+  final String? message;
+
+  PublishError([this.message]);
+
+  String toString() {
+    var message = this.message;
+    return (message != null) ? "PublishError: $message" : "PublishError";
+  }
+}
