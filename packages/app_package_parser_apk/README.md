@@ -13,7 +13,7 @@ Parse apk package.
 
 ```yaml
 dependencies:
-  app_package_parser_apk: ^0.0.3
+  app_package_parser_apk: ^0.0.7
 ```
 
 ## Usage

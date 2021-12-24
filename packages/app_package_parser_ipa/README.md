@@ -13,7 +13,7 @@ Parse ipa package.
 
 ```yaml
 dependencies:
-  app_package_parser_ipa: ^0.0.3
+  app_package_parser_ipa: ^0.0.7
 ```
 
 ## Usage
