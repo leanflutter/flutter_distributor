@@ -53,9 +53,15 @@ class AppPackagePublisherFir extends AppPackagePublisher {
     File file, {
     ProgressUpdateCallback? onProgressUpdate,
   }) async {
-    String apiToken = Platform.environment['FIR_API_TOKEN']!;
+    String? apiToken = Platform.environment['FIR_API_TOKEN'];
+
+    if (apiToken?.isEmpty ?? true) {
+      throw PublishError('Please set `FIR_API_TOKEN` to your environment, e.g. '
+          'export FIR_API_TOKEN="xxx"');
+    }
+
     PublishFirConfig publishConfig = PublishFirConfig(
-      apiToken: apiToken,
+      apiToken: apiToken!,
     );
 
     try {
