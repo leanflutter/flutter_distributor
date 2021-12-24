@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 
 import 'publish_pgyer_config.dart';
 
+/// pgyer doc [https://www.pgyer.com/doc/view/api#uploadApp]
 class AppPackagePublisherPgyer extends AppPackagePublisher {
   String get name => 'pgyer';
 
@@ -38,13 +39,14 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
     );
 
     int? code = response.data['code'];
-    if (code != null) {
+    if (code != 0) {
       String message = response.data['message'];
       throw PublishError('$code - $message');
     }
 
+    String buildKey = response.data!['data']['buildKey'];
     return PublishResult(
-      url: response.data!['buildShortcutUrl'],
+      url: 'http://www.pgyer.com/$buildKey',
     );
   }
 }
