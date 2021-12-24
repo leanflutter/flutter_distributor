@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:app_package_publisher/app_package_publisher.dart';
 import 'package:dio/dio.dart';
-import 'package:dio/src/dio_error.dart';
 import 'package:parse_app_package/parse_app_package.dart';
 
 import 'publish_fir_config.dart';
