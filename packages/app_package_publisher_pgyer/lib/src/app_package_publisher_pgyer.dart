@@ -18,9 +18,16 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
     File file, {
     ProgressUpdateCallback? onProgressUpdate,
   }) async {
-    String apiToken = Platform.environment['PGYER_API_TOKEN']!;
+    String? apiToken = Platform.environment['PGYER_API_TOKEN'];
+
+    if (apiToken?.isEmpty ?? true) {
+      throw PublishError(
+          'Please set `PGYER_API_TOKEN` to your environment, e.g. '
+          'export PGYER_API_TOKEN="xxx"');
+    }
+
     PublishPgyerConfig publishConfig = PublishPgyerConfig(
-      apiToken: apiToken,
+      apiToken: apiToken!,
     );
 
     FormData formData = FormData.fromMap({
