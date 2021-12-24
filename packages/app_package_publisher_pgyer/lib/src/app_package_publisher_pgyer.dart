@@ -5,6 +5,8 @@ import 'package:dio/dio.dart';
 
 import 'publish_pgyer_config.dart';
 
+const kEnvPgyerApiToken = 'PGYER_API_TOKEN';
+
 /// pgyer doc [https://www.pgyer.com/doc/view/api#uploadApp]
 class AppPackagePublisherPgyer extends AppPackagePublisher {
   String get name => 'pgyer';
@@ -18,12 +20,9 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
     File file, {
     ProgressUpdateCallback? onProgressUpdate,
   }) async {
-    String? apiToken = Platform.environment['PGYER_API_TOKEN'];
-
-    if (apiToken?.isEmpty ?? true) {
-      throw PublishError(
-          'Please set `PGYER_API_TOKEN` to your environment, e.g. '
-          'export PGYER_API_TOKEN="xxx"');
+    String? apiToken = Platform.environment[kEnvPgyerApiToken];
+    if ((apiToken ?? '').isEmpty) {
+      throw PublishError('Missing `$kEnvPgyerApiToken` environment variable.');
     }
 
     PublishPgyerConfig publishConfig = PublishPgyerConfig(
