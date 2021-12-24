@@ -9,6 +9,8 @@ class CommandPackage extends Command {
     argParser.addOption('build-flavor', valueHelp: '');
     argParser.addOption('build-target-platform', valueHelp: '');
     argParser.addOption('build-export-options-plist', valueHelp: '');
+    argParser.addOption('build-dart-define',
+        valueHelp: 'foo=bar', help: 'Corresponds to --dart-define');
   }
 
   @override
