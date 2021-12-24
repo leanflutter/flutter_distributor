@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_package_publisher/app_package_publisher.dart';
@@ -7,6 +6,8 @@ import 'package:dio/src/dio_error.dart';
 import 'package:parse_app_package/parse_app_package.dart';
 
 import 'publish_fir_config.dart';
+
+const kEnvFirApiToken = 'FIR_API_TOKEN';
 
 class AppPackagePublisherFir extends AppPackagePublisher {
   @override
@@ -19,7 +20,7 @@ class AppPackagePublisherFir extends AppPackagePublisher {
     BaseOptions(baseUrl: 'http://api.bq04.com'),
   );
 
-  Future<void> _uploadAppBinary(
+  Future<String> _uploadAppBinary(
     File file,
     AppPackage appPackage, {
     required String key,
@@ -45,7 +46,7 @@ class AppPackagePublisherFir extends AppPackagePublisher {
         }
       },
     );
-    print(json.encode(response.data));
+    return response.data['release_id'];
   }
 
   @override
@@ -53,11 +54,9 @@ class AppPackagePublisherFir extends AppPackagePublisher {
     File file, {
     ProgressUpdateCallback? onProgressUpdate,
   }) async {
-    String? apiToken = Platform.environment['FIR_API_TOKEN'];
-
-    if (apiToken?.isEmpty ?? true) {
-      throw PublishError('Please set `FIR_API_TOKEN` to your environment, e.g. '
-          'export FIR_API_TOKEN="xxx"');
+    String? apiToken = Platform.environment[kEnvFirApiToken];
+    if ((apiToken ?? '').isEmpty) {
+      throw PublishError('Missing `$kEnvFirApiToken` environment variable.');
     }
 
     PublishFirConfig publishConfig = PublishFirConfig(
@@ -79,7 +78,7 @@ class AppPackagePublisherFir extends AppPackagePublisher {
       Map<String, dynamic> data = response.data;
       Map<String, dynamic> cert = data['cert'];
 
-      await _uploadAppBinary(
+      String releaseId = await _uploadAppBinary(
         file,
         appPackage,
         key: cert['binary']['key'],
@@ -92,6 +91,7 @@ class AppPackagePublisherFir extends AppPackagePublisher {
         scheme: data['download_domain_https_ready'] ? 'https' : 'http',
         host: data['download_domain'],
         path: '/${data['short']}',
+        queryParameters: {'release_id': releaseId},
       );
 
       return PublishResult(
