@@ -13,6 +13,7 @@ class FlutterAppPublisher {
   Future<PublishResult> publish(
     File file, {
     required String target,
+    Map<String, String>? environment,
     PublishProgressCallback? onPublishProgress,
   }) async {
     AppPackagePublisher publisher = _publishers.firstWhere(

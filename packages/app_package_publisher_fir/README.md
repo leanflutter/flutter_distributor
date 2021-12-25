@@ -7,17 +7,6 @@ Publish your app to fir.
 [pub-image]: https://img.shields.io/pub/v/app_package_publisher_fir.svg
 [pub-url]: https://pub.dev/packages/app_package_publisher_fir
 
-## Quick Start
+---
 
-### Installation
-
-```yaml
-dependencies:
-  app_package_publisher_fir: ^0.0.7
-```
-
-## Usage
-
-```dart
-import 'package:app_package_publisher_fir/app_package_publisher_fir.dart';
-```
+Part of [flutter_distributor](https://github.com/leanflutter/flutter_distributor), See also https://distributor.leanflutter.org

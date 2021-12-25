@@ -5,26 +5,6 @@
 [pub-image]: https://img.shields.io/pub/v/app_package_publisher.svg
 [pub-url]: https://pub.dev/packages/app_package_publisher
 
-## Quick Start
+---
 
-### Installation
-
-```yaml
-dependencies:
-  app_package_publisher: ^0.0.7
-```
-
-## Usage
-
-```dart
-import 'dart:io';
-
-import 'package:app_package_publisher/app_package_publisher.dart';
-
-class AppPackagePublisherAppCenter extends AppPackagePublisher {
-  @override
-  Future<PublishResult> publish(File file) async {
-    // ...
-  }
-}
-```
+Part of [flutter_distributor](https://github.com/leanflutter/flutter_distributor), See also https://distributor.leanflutter.org

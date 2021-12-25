@@ -18,9 +18,10 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
   @override
   Future<PublishResult> publish(
     File file, {
+    Map<String, String>? environment,
     PublishProgressCallback? onPublishProgress,
   }) async {
-    String? apiToken = Platform.environment[kEnvPgyerApiToken];
+    String? apiToken = (environment ?? Platform.environment)[kEnvPgyerApiToken];
     if ((apiToken ?? '').isEmpty) {
       throw PublishError('Missing `$kEnvPgyerApiToken` environment variable.');
     }

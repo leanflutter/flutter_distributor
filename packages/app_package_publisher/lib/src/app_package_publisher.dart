@@ -8,6 +8,7 @@ abstract class AppPackagePublisher {
 
   Future<PublishResult> publish(
     File file, {
+    Map<String, String>? environment,
     PublishProgressCallback? onPublishProgress,
   });
 }
