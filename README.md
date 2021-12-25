@@ -1,8 +1,12 @@
 # flutter_distributor
 
-Package your [Flutter](https://flutter.dev) app into OS-specific bundles (.dmg, .exe, etc.) via Dart or the command line.
+**Flutter Distributor** is a complete tool for packaging and publishing your [Flutter](https://flutter.dev) applications.
 
 > The `flutter_distributor` source code and documantation can be found in the [packages/flutter_distributor](./packages/flutter_distributor) directory.
+
+## Documentation
+
+See the full documentation on [distributor.leanflutter.org](https://distributor.leanflutter.org).
 
 ## Makers
 
@@ -22,7 +26,7 @@ These are the available makers in this repository.
 
 These are the available publishers in this repository.
 
-| Publisher                                                                      | Pub                                                                                                                               |
-| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| [app_package_publisher_fir](./packages/app_package_publisher_fir/)             | [![](https://img.shields.io/pub/v/app_package_publisher_fir.svg)](https://pub.dev/packages/app_package_publisher_fir)             |
-| [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/)         | [![](https://img.shields.io/pub/v/app_package_publisher_pgyer.svg)](https://pub.dev/packages/app_package_publisher_pgyer)         |
+| Publisher                                                              | Pub                                                                                                                       |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| [app_package_publisher_fir](./packages/app_package_publisher_fir/)     | [![](https://img.shields.io/pub/v/app_package_publisher_fir.svg)](https://pub.dev/packages/app_package_publisher_fir)     |
+| [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/) | [![](https://img.shields.io/pub/v/app_package_publisher_pgyer.svg)](https://pub.dev/packages/app_package_publisher_pgyer) |
