@@ -13,14 +13,14 @@ class FlutterAppPublisher {
   Future<PublishResult> publish(
     File file, {
     required String target,
-    ProgressUpdateCallback? onProgressUpdate,
+    PublishProgressCallback? onPublishProgress,
   }) async {
     AppPackagePublisher publisher = _publishers.firstWhere(
       (e) => e.name == target,
     );
     return await publisher.publish(
       file,
-      onProgressUpdate: onProgressUpdate,
+      onPublishProgress: onPublishProgress,
     );
   }
 }

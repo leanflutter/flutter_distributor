@@ -11,7 +11,7 @@
 
 ```yaml
 dependencies:
-  app_package_publisher: ^0.0.6
+  app_package_publisher: ^0.0.7
 ```
 
 ## Usage

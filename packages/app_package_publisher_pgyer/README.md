@@ -13,7 +13,7 @@ Publish your app to pgyer.
 
 ```yaml
 dependencies:
-  app_package_publisher_pgyer: ^0.0.6
+  app_package_publisher_pgyer: ^0.0.7
 ```
 
 ## Usage

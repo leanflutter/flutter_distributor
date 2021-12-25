@@ -1,6 +1,6 @@
 import 'dart:io';
 
-typedef ProgressUpdateCallback = void Function(double progress);
+typedef PublishProgressCallback = void Function(int sent, int total);
 
 abstract class AppPackagePublisher {
   String get name => throw UnimplementedError();
@@ -8,7 +8,7 @@ abstract class AppPackagePublisher {
 
   Future<PublishResult> publish(
     File file, {
-    ProgressUpdateCallback? onProgressUpdate,
+    PublishProgressCallback? onPublishProgress,
   });
 }
 

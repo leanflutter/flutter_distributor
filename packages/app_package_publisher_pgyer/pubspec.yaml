@@ -1,15 +1,15 @@
 name: app_package_publisher_pgyer
 description: Publish your app to pgyer.
-version: 0.0.6
+version: 0.0.7
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  app_package_publisher: ^0.0.6
+  app_package_publisher: ^0.0.7
   dio: ^4.0.4
-  parse_app_package: ^0.0.3
+  parse_app_package: ^0.0.7
 
 # dependency_overrides:
 #   app_package_publisher:

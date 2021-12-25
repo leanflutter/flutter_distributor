@@ -25,7 +25,7 @@ class AppPackagePublisherFir extends AppPackagePublisher {
     required String key,
     required String token,
     required String uploadUrl,
-    ProgressUpdateCallback? onProgressUpdate,
+    PublishProgressCallback? onPublishProgress,
   }) async {
     FormData formData = FormData.fromMap({
       'key': key,
@@ -40,8 +40,8 @@ class AppPackagePublisherFir extends AppPackagePublisher {
       uploadUrl,
       data: formData,
       onSendProgress: (int sent, int total) {
-        if (onProgressUpdate != null) {
-          onProgressUpdate(sent / total);
+        if (onPublishProgress != null) {
+          onPublishProgress(sent, total);
         }
       },
     );
@@ -51,7 +51,7 @@ class AppPackagePublisherFir extends AppPackagePublisher {
   @override
   Future<PublishResult> publish(
     File file, {
-    ProgressUpdateCallback? onProgressUpdate,
+    PublishProgressCallback? onPublishProgress,
   }) async {
     String? apiToken = Platform.environment[kEnvFirApiToken];
     if ((apiToken ?? '').isEmpty) {
@@ -83,7 +83,7 @@ class AppPackagePublisherFir extends AppPackagePublisher {
         key: cert['binary']['key'],
         token: cert['binary']['token'],
         uploadUrl: cert['binary']['upload_url'],
-        onProgressUpdate: onProgressUpdate,
+        onPublishProgress: onPublishProgress,
       );
 
       Uri downloadUri = Uri(

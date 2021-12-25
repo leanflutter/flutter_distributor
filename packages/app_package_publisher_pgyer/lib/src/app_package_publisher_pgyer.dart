@@ -18,7 +18,7 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
   @override
   Future<PublishResult> publish(
     File file, {
-    ProgressUpdateCallback? onProgressUpdate,
+    PublishProgressCallback? onPublishProgress,
   }) async {
     String? apiToken = Platform.environment[kEnvPgyerApiToken];
     if ((apiToken ?? '').isEmpty) {
@@ -38,8 +38,8 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
       '/apiv2/app/upload',
       data: formData,
       onSendProgress: (int sent, int total) {
-        if (onProgressUpdate != null) {
-          onProgressUpdate(sent / total);
+        if (onPublishProgress != null) {
+          onPublishProgress(sent, total);
         }
       },
     );

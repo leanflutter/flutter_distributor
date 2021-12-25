@@ -13,7 +13,7 @@ Publish your app to fir.
 
 ```yaml
 dependencies:
-  app_package_publisher_fir: ^0.0.6
+  app_package_publisher_fir: ^0.0.7
 ```
 
 ## Usage
