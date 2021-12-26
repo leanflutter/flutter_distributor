@@ -2,8 +2,10 @@ import 'package:args/command_runner.dart';
 import 'package:flutter_distributor/flutter_distributor.dart';
 
 class CommandRelease extends Command {
-  CommandRelease() {
-    argParser.addOption('type', valueHelp: '');
+  final FlutterDistributor distributor;
+
+  CommandRelease(this.distributor) {
+    argParser.addOption('name', valueHelp: '');
   }
 
   @override
@@ -14,9 +16,8 @@ class CommandRelease extends Command {
 
   @override
   Future run() async {
-    String type = argResults?['type'];
+    String name = argResults?['name'];
 
-    FlutterDistributor distributor = FlutterDistributor();
-    await distributor.release(type);
+    await distributor.release(name);
   }
 }

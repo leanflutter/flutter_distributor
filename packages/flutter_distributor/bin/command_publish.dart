@@ -4,7 +4,9 @@ import 'package:args/command_runner.dart';
 import 'package:flutter_distributor/flutter_distributor.dart';
 
 class CommandPublish extends Command {
-  CommandPublish() {
+  final FlutterDistributor distributor;
+
+  CommandPublish(this.distributor) {
     argParser.addOption('path', valueHelp: '');
     argParser.addOption('targets', valueHelp: '');
   }
@@ -20,7 +22,6 @@ class CommandPublish extends Command {
     String path = argResults?['path'];
     List<String> targets = '${argResults?['targets']}'.split(',');
 
-    FlutterDistributor distributor = FlutterDistributor();
     await distributor.publish(File(path), targets);
   }
 }

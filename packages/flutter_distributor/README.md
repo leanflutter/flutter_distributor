@@ -5,7 +5,7 @@
 [pub-image]: https://img.shields.io/pub/v/flutter_distributor.svg
 [pub-url]: https://pub.dev/packages/flutter_distributor -->
 
-Package your [Flutter](https://flutter.dev) app into OS-specific bundles (.dmg, .exe, etc.) via Dart or the command line.
+A complete tool for packaging and publishing your [Flutter](https://flutter.dev) applications.
 
 [![Discord](https://img.shields.io/badge/discord-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/zPa6EZ2jqb)
 
@@ -23,6 +23,7 @@ Package your [Flutter](https://flutter.dev) app into OS-specific bundles (.dmg, 
     - [CLI](#cli)
       - [Package](#package)
       - [Publish](#publish)
+      - [Release](#release)
   - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -80,15 +81,29 @@ flutter_distributor package --platform=android --targets=aab,apk
 
 #### Publish
 
-| Flag        | Value                                                     | Required | Description |
-| ----------- | --------------------------------------------------------- | -------- | ----------- |
-| `--path`    | path, e.g. `dist/1.0.0+1/hello_world-1.0.0+1-android.apk` | Yes      |             |
-| `--targets` | Comma separated list of publisher names                   | Yes      |             |
+| Flag        | Value                                        | Required | Description |
+| ----------- | -------------------------------------------- | -------- | ----------- |
+| `--path`    | Path, e.g. `hello_world-1.0.0+1-android.apk` | Yes      |             |
+| `--targets` | Comma separated list of publisher names      | Yes      |             |
 
 Example:
 
 ```bash
-flutter_distributor publish --path dist/1.0.0+1/hello_world-1.0.0+1-android.apk --targets fir,pgyer
+flutter_distributor publish --path hello_world-1.0.0+1-android.apk --targets fir,pgyer
+```
+
+#### Release
+
+Will according to the configuration file (distribute_options.yaml), package your application into a specific format and publish it to the distribution platform.
+
+| Flag     | Value            | Required | Description |
+| -------- | ---------------- | -------- | ----------- |
+| `--name` | Name, e.g. `dev` | Yes      |             |
+
+Example:
+
+```bash
+flutter_distributor release --name dev
 ```
 
 ## License

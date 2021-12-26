@@ -1,53 +1,30 @@
 import 'dart:io';
 
-class DistributeRelease {
-  final String name;
-  final String type;
-  final String platform;
-  final String target;
-
-  DistributeRelease({
-    required this.name,
-    required this.type,
-    required this.platform,
-    required this.target,
-  });
-
-  factory DistributeRelease.fromJson(Map<String, dynamic> json) {
-    return DistributeRelease(
-      name: json['name'],
-      type: json['type'],
-      platform: json['platform'],
-      target: json['target'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'type': type,
-      'target': target,
-    }..removeWhere((key, value) => value == null);
-  }
-}
+import 'release.dart';
 
 class DistributeOptions {
+  final Map<String, String>? env;
   final String output;
-  final List<DistributeRelease> releases;
+  final List<Release> releases;
 
   Directory get outputDirectory => Directory(output);
 
   DistributeOptions({
+    this.env,
     required this.output,
     required this.releases,
   });
 
   factory DistributeOptions.fromJson(Map<String, dynamic> json) {
-    List<DistributeRelease> releases = (json['releases'] as List)
-        .map((item) => DistributeRelease.fromJson(item))
+    Map<String, String> env = {};
+    if (json.containsKey('env')) {
+      env = Map<String, String>.from(json['env']);
+    }
+    List<Release> releases = (json['releases'] as List)
+        .map((item) => Release.fromJson(item))
         .toList();
-
     return DistributeOptions(
+      env: env,
       output: json['output'],
       releases: releases,
     );
@@ -55,6 +32,7 @@ class DistributeOptions {
 
   Map<String, dynamic> toJson() {
     return {
+      'env': env,
       'output': output,
       'releases': releases.map((e) => e.toJson()).toList(),
     }..removeWhere((key, value) => value == null);

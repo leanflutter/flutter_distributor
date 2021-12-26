@@ -2,15 +2,16 @@ import 'package:args/command_runner.dart';
 import 'package:flutter_distributor/flutter_distributor.dart';
 
 class CommandPackage extends Command {
-  CommandPackage() {
+  final FlutterDistributor distributor;
+
+  CommandPackage(this.distributor) {
     argParser.addOption('platform', valueHelp: '');
     argParser.addOption('targets', valueHelp: '');
-    argParser.addOption('build-target', valueHelp: '');
+    argParser.addOption('build-target', valueHelp: 'path');
     argParser.addOption('build-flavor', valueHelp: '');
     argParser.addOption('build-target-platform', valueHelp: '');
     argParser.addOption('build-export-options-plist', valueHelp: '');
-    argParser.addOption('build-dart-define',
-        valueHelp: 'foo=bar', help: 'Corresponds to --dart-define');
+    argParser.addOption('build-dart-define', valueHelp: 'foo=bar');
   }
 
   @override
@@ -35,7 +36,6 @@ class CommandPackage extends Command {
       }
     }
 
-    FlutterDistributor distributor = FlutterDistributor();
     await distributor.package(
       platform,
       targets,
