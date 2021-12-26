@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 
 import 'publish_pgyer_config.dart';
 
-const kEnvPgyerApiToken = 'PGYER_API_TOKEN';
+const kEnvPgyerApiKey = 'PGYER_API_KEY';
 
 /// pgyer doc [https://www.pgyer.com/doc/view/api#uploadApp]
 class AppPackagePublisherPgyer extends AppPackagePublisher {
@@ -21,17 +21,17 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
     Map<String, String>? environment,
     PublishProgressCallback? onPublishProgress,
   }) async {
-    String? apiToken = (environment ?? Platform.environment)[kEnvPgyerApiToken];
-    if ((apiToken ?? '').isEmpty) {
-      throw PublishError('Missing `$kEnvPgyerApiToken` environment variable.');
+    String? apiKey = (environment ?? Platform.environment)[kEnvPgyerApiKey];
+    if ((apiKey ?? '').isEmpty) {
+      throw PublishError('Missing `$kEnvPgyerApiKey` environment variable.');
     }
 
     PublishPgyerConfig publishConfig = PublishPgyerConfig(
-      apiToken: apiToken!,
+      apiKey: apiKey!,
     );
 
     FormData formData = FormData.fromMap({
-      '_api_key': publishConfig.apiToken,
+      '_api_key': publishConfig.apiKey,
       'file': await MultipartFile.fromFile(file.path),
     });
 

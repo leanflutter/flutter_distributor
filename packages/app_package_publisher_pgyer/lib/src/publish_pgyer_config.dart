@@ -1,9 +1,9 @@
 import 'package:app_package_publisher/app_package_publisher.dart';
 
 class PublishPgyerConfig extends PublishConfig {
-  final String apiToken;
+  final String apiKey;
 
   PublishPgyerConfig({
-    required this.apiToken,
+    required this.apiKey,
   });
 }

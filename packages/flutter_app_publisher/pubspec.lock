@@ -28,21 +28,21 @@ packages:
       name: app_package_publisher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.7"
+    version: "0.0.9"
   app_package_publisher_fir:
     dependency: "direct main"
     description:
       name: app_package_publisher_fir
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.7"
+    version: "0.0.9"
   app_package_publisher_pgyer:
     dependency: "direct main"
     description:
       name: app_package_publisher_pgyer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.7"
+    version: "0.0.9"
   archive:
     dependency: transitive
     description:

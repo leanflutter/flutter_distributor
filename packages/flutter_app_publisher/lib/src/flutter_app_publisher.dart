@@ -21,6 +21,7 @@ class FlutterAppPublisher {
     );
     return await publisher.publish(
       file,
+      environment: environment,
       onPublishProgress: onPublishProgress,
     );
   }
