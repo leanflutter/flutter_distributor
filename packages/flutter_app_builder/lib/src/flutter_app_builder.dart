@@ -20,8 +20,10 @@ class FlutterAppBuilder {
   Future<BuildResult> build(
     String platform,
     String target,
-    Map<String, dynamic> buildArguments,
-  ) async {
+    Map<String, dynamic> buildArguments, {
+    ProcessStdOutCallback? onBuildProcessStdOut,
+    ProcessStdErrCallback? onBuildProcessStdErr,
+  }) async {
     AppBuilder builder = _builders.firstWhere(
       (e) {
         if (e.platform == platform && e is AppBuilderAndroid) {
@@ -39,6 +41,8 @@ class FlutterAppBuilder {
     return await builder.build(
       target: target,
       buildArguments: buildArguments,
+      onBuildProcessStdOut: onBuildProcessStdOut,
+      onBuildProcessStdErr: onBuildProcessStdErr,
     );
   }
 }
