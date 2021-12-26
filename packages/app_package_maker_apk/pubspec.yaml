@@ -1,13 +1,13 @@
 name: app_package_maker_apk
 description: Create a apk package for your app.
-version: 0.0.6
+version: 0.0.9
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  app_package_maker: ^0.0.6
+  app_package_maker: ^0.0.9
 
 # dependency_overrides:
 #   app_package_maker:

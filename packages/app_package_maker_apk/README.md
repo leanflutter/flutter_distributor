@@ -7,17 +7,6 @@ Create a apk package for your app.
 [pub-image]: https://img.shields.io/pub/v/app_package_maker_apk.svg
 [pub-url]: https://pub.dev/packages/app_package_maker_apk
 
-## Quick Start
+---
 
-### Installation
-
-```yaml
-dependencies:
-  app_package_maker_apk: ^0.0.6
-```
-
-## Usage
-
-```dart
-import 'package:app_package_maker_apk/app_package_maker_apk.dart';
-```
+Part of [flutter_distributor](https://github.com/leanflutter/flutter_distributor), See also https://distributor.leanflutter.org

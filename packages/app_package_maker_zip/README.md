@@ -7,17 +7,6 @@ Create a zip package for your app.
 [pub-image]: https://img.shields.io/pub/v/app_package_maker_zip.svg
 [pub-url]: https://pub.dev/packages/app_package_maker_zip
 
-## Quick Start
+---
 
-### Installation
-
-```yaml
-dependencies:
-  app_package_maker_zip: ^0.0.6
-```
-
-## Usage
-
-```dart
-import 'package:app_package_maker_zip/app_package_maker_zip.dart';
-```
+Part of [flutter_distributor](https://github.com/leanflutter/flutter_distributor), See also https://distributor.leanflutter.org

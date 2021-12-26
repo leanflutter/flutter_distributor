@@ -7,7 +7,7 @@ packages:
       name: app_package_maker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.6"
+    version: "0.0.9"
   charcode:
     dependency: transitive
     description:
