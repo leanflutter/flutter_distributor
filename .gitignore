@@ -1,0 +1,5 @@
+.dart_tool/
+
+# IntelliJ related
+*.iml
+.idea/

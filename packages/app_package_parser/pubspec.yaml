@@ -1,6 +1,6 @@
 name: app_package_parser
 description: App package parser
-version: 0.0.7
+version: 0.1.0
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:

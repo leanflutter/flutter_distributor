@@ -1,0 +1,4 @@
+name: flutter_distributor
+
+packages:
+  - packages/**

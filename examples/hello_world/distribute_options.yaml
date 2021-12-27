@@ -17,4 +17,5 @@ releases:
           target: ipa
           build_args:
             target: lib/main.dart
+            export-options-plist: ios/ExportOptions.plist
         publish_to: pgyer

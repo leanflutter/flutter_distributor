@@ -4,59 +4,59 @@ packages:
   app_package_maker:
     dependency: "direct main"
     description:
-      name: app_package_maker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_maker"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_maker_aab:
     dependency: "direct main"
     description:
-      name: app_package_maker_aab
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_maker_aab"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_maker_apk:
     dependency: "direct main"
     description:
-      name: app_package_maker_apk
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_maker_apk"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_maker_deb:
     dependency: "direct main"
     description:
-      name: app_package_maker_deb
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_maker_deb"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_maker_dmg:
     dependency: "direct main"
     description:
-      name: app_package_maker_dmg
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_maker_dmg"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_maker_exe:
     dependency: "direct main"
     description:
-      name: app_package_maker_exe
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_maker_exe"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_maker_ipa:
     dependency: "direct main"
     description:
-      name: app_package_maker_ipa
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_maker_ipa"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_maker_zip:
     dependency: "direct main"
     description:
-      name: app_package_maker_zip
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_maker_zip"
+      relative: true
+    source: path
+    version: "0.1.0"
   archive:
     dependency: transitive
     description:

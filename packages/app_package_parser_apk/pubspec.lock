@@ -4,9 +4,9 @@ packages:
   app_package_parser:
     dependency: "direct main"
     description:
-      name: app_package_parser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.7"
+      path: "../app_package_parser"
+      relative: true
+    source: path
+    version: "0.1.0"
 sdks:
   dart: ">=2.12.0 <3.0.0"

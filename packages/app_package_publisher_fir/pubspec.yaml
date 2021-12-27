@@ -1,15 +1,15 @@
 name: app_package_publisher_fir
 description: Publish your app to fir.
-version: 0.0.9
+version: 0.1.0
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  app_package_publisher: ^0.0.9
+  app_package_publisher: ^0.1.0
   dio: ^4.0.4
-  parse_app_package: ^0.0.7
+  parse_app_package: ^0.1.0
 
 # dependency_overrides:
 #   app_package_publisher:

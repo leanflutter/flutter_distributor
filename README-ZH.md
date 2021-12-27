@@ -1,6 +1,6 @@
 # flutter_distributor
 
-[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url]
+[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] [![melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos)
 
 [pub-image]: https://img.shields.io/pub/v/flutter_distributor.svg
 [pub-url]: https://pub.dev/packages/flutter_distributor

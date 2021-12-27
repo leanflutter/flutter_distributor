@@ -4,24 +4,24 @@ packages:
   app_package_parser:
     dependency: "direct main"
     description:
-      name: app_package_parser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.7"
+      path: "../app_package_parser"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_parser_apk:
     dependency: "direct main"
     description:
-      name: app_package_parser_apk
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.7"
+      path: "../app_package_parser_apk"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_parser_ipa:
     dependency: "direct main"
     description:
-      name: app_package_parser_ipa
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.7"
+      path: "../app_package_parser_ipa"
+      relative: true
+    source: path
+    version: "0.1.0"
   archive:
     dependency: transitive
     description:

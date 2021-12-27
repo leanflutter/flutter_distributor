@@ -2,47 +2,47 @@
 # See https://dart.dev/tools/pub/glossary#lockfile
 packages:
   app_package_parser:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_parser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.7"
+      path: "../app_package_parser"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_parser_apk:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_parser_apk
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.7"
+      path: "../app_package_parser_apk"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_parser_ipa:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_parser_ipa
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.7"
+      path: "../app_package_parser_ipa"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_publisher:
     dependency: "direct main"
     description:
-      name: app_package_publisher
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_publisher"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_publisher_fir:
     dependency: "direct main"
     description:
-      name: app_package_publisher_fir
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_publisher_fir"
+      relative: true
+    source: path
+    version: "0.1.0"
   app_package_publisher_pgyer:
     dependency: "direct main"
     description:
-      name: app_package_publisher_pgyer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
+      path: "../app_package_publisher_pgyer"
+      relative: true
+    source: path
+    version: "0.1.0"
   archive:
     dependency: transitive
     description:
@@ -100,12 +100,12 @@ packages:
     source: hosted
     version: "1.7.0"
   parse_app_package:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: parse_app_package
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.7"
+      path: "../parse_app_package"
+      relative: true
+    source: path
+    version: "0.1.0"
   path:
     dependency: transitive
     description:

@@ -1,13 +1,13 @@
 name: app_package_parser_apk
 description: Parse apk package.
-version: 0.0.7
+version: 0.1.0
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  app_package_parser: ^0.0.7
+  app_package_parser: ^0.1.0
 
 # dependency_overrides:
 #   app_package_parser:
