@@ -1,32 +1,88 @@
 # flutter_distributor
 
-**Flutter Distributor** is a complete tool for packaging and publishing your [Flutter](https://flutter.dev) applications.
+[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url]
 
-> The `flutter_distributor` source code and documantation can be found in the [packages/flutter_distributor](./packages/flutter_distributor) directory.
+[pub-image]: https://img.shields.io/pub/v/flutter_distributor.svg
+[pub-url]: https://pub.dev/packages/flutter_distributor
+
+[discord-image]: https://img.shields.io/discord/884679008049037342.svg
+[discord-url]: https://discord.gg/zPa6EZ2jqb
+
+A complete tool for packaging and publishing your [Flutter](https://flutter.dev) apps.
+
+---
+
+English | [简体中文](./README-ZH.md)
+
+---
 
 ## Documentation
 
-See the full documentation on [distributor.leanflutter.org](https://distributor.leanflutter.org).
+The full documentation can be found on [distributor.leanflutter.org](https://distributor.leanflutter.org/).
 
-## Makers
+## Features
 
-These are the available makers in this repository.
+These are the available packages in this repository.
 
-| Macker                                                     | Pub                                                                                                           |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| [app_package_maker_apk](./packages/app_package_maker_apk/) | [![](https://img.shields.io/pub/v/app_package_maker_apk.svg)](https://pub.dev/packages/app_package_maker_apk) |
-| [app_package_maker_aab](./packages/app_package_maker_aab/) | [![](https://img.shields.io/pub/v/app_package_maker_aab.svg)](https://pub.dev/packages/app_package_maker_aab) |
-| [app_package_maker_deb](./packages/app_package_maker_deb/) | [![](https://img.shields.io/pub/v/app_package_maker_deb.svg)](https://pub.dev/packages/app_package_maker_deb) |
-| [app_package_maker_dmg](./packages/app_package_maker_dmg/) | [![](https://img.shields.io/pub/v/app_package_maker_dmg.svg)](https://pub.dev/packages/app_package_maker_dmg) |
-| [app_package_maker_exe](./packages/app_package_maker_exe/) | [![](https://img.shields.io/pub/v/app_package_maker_exe.svg)](https://pub.dev/packages/app_package_maker_exe) |
-| [app_package_maker_ipa](./packages/app_package_maker_ipa/) | [![](https://img.shields.io/pub/v/app_package_maker_ipa.svg)](https://pub.dev/packages/app_package_maker_ipa) |
-| [app_package_maker_zip](./packages/app_package_maker_zip/) | [![](https://img.shields.io/pub/v/app_package_maker_zip.svg)](https://pub.dev/packages/app_package_maker_zip) |
+- [app_package_maker_apk](./packages/app_package_maker_apk/) - Create a `apk` package for your app.
+- [app_package_maker_aab](./packages/app_package_maker_aab/) - Create a `aab` package for your app.
+- [app_package_maker_deb](./packages/app_package_maker_deb/) - Create a `deb` package for your app.
+- [app_package_maker_dmg](./packages/app_package_maker_dmg/) - Create a `dmg` package for your app.
+- [app_package_maker_exe](./packages/app_package_maker_exe/) - Create a `exe` package for your app.
+- [app_package_maker_ipa](./packages/app_package_maker_ipa/) - Create a `ipa` package for your app.
+- [app_package_maker_zip](./packages/app_package_maker_zip/) - Create a `zip` package for your app.
+- [app_package_publisher_fir](./packages/app_package_publisher_fir/) - Publish your app to `fir`.
+- [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/) - Publish your app to `pgyer`.
 
-## Publishers
+## Getting Started
 
-These are the available publishers in this repository.
+### Installation
 
-| Publisher                                                              | Pub                                                                                                                       |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| [app_package_publisher_fir](./packages/app_package_publisher_fir/)     | [![](https://img.shields.io/pub/v/app_package_publisher_fir.svg)](https://pub.dev/packages/app_package_publisher_fir)     |
-| [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/) | [![](https://img.shields.io/pub/v/app_package_publisher_pgyer.svg)](https://pub.dev/packages/app_package_publisher_pgyer) |
+```
+dart pub global activate flutter_distributor
+```
+
+### Usage
+
+Add `distribute_options.yaml` to your project root directory.
+
+```yaml
+env:
+  PGYER_API_KEY: 'your api key'
+output: dist/
+releases:
+  - name: dev
+    jobs:
+      # Build and publish your apk pkg to pgyer
+      - name: release-dev-android
+        package:
+          platform: android
+          target: apk
+          build_args:
+            target: lib/main.dart
+            flavor: dev
+            target-platform: android-arm,android-arm64
+        publish_to: pgyer
+      # Build and publish your ipa pkg to pgyer
+      - name: release-dev-ios
+        package:
+          platform: ios
+          target: ipa
+          build_args:
+            target: lib/main.dart
+            flavor: dev
+            export-options-plist: ios/dev_ExportOptions.plist
+        publish_to: pgyer
+```
+
+> The `build_args` are the args supported by the `flutter build` command, please modify it according to your project.
+
+#### Release Your App
+
+```
+flutter_distributor release --name dev
+```
+
+## License
+
+[MIT](./LICENSE)
