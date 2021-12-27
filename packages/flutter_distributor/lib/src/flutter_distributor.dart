@@ -231,24 +231,32 @@ class FlutterDistributor {
       outputDirectory.createSync(recursive: true);
     }
 
-    Release release = distributeOptions.releases.firstWhere(
-      (e) => e.name == name,
-      orElse: () => distributeOptions.releases.first,
-    );
+    List<Release> releases = [];
 
-    for (ReleaseJob job in release.jobs) {
-      List<MakeResult> makeResultList = await package(
-        job.package.platform,
-        [job.package.target],
-        job.package.buildArgs ?? {},
-      );
+    if (name.isNotEmpty) {
+      releases =
+          distributeOptions.releases.where((e) => e.name == name).toList();
+    }
 
-      if (job.publishTo != null) {
-        MakeResult makeResult = makeResultList.first;
-        await publish(
-          makeResult.outputFile,
-          [job.publishTo!],
+    if (releases.isEmpty) {
+      throw Exception('Missing/incomplete `distribute_options.yaml` file.');
+    }
+
+    for (Release release in releases) {
+      for (ReleaseJob job in release.jobs) {
+        List<MakeResult> makeResultList = await package(
+          job.package.platform,
+          [job.package.target],
+          job.package.buildArgs ?? {},
         );
+
+        if (job.publishTo != null) {
+          MakeResult makeResult = makeResultList.first;
+          await publish(
+            makeResult.outputFile,
+            [job.publishTo!],
+          );
+        }
       }
     }
     return Future.value();

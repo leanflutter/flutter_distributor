@@ -20,7 +20,7 @@ class DistributeOptions {
     if (json.containsKey('env')) {
       env = Map<String, String>.from(json['env']);
     }
-    List<Release> releases = (json['releases'] as List)
+    List<Release> releases = ((json['releases'] ?? []) as List)
         .map((item) => Release.fromJson(item))
         .toList();
     return DistributeOptions(

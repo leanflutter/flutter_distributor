@@ -16,7 +16,7 @@ class CommandRelease extends Command {
 
   @override
   Future run() async {
-    String name = argResults?['name'];
+    String name = argResults!['name'] ?? '';
 
     await distributor.release(name);
   }
