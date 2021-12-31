@@ -83,6 +83,11 @@ releases:
 flutter_distributor release --name dev
 ```
 
+## 谁在用使用它？
+
+- [比译](https://biyidev.com/) - 一个便捷的翻译和词典应用。
+- [钱迹](https://qianjiapp.com/) - 一款纯粹记账的应用。
+
 ## 许可证
 
 [MIT](./LICENSE)

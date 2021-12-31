@@ -83,6 +83,11 @@ releases:
 flutter_distributor release --name dev
 ```
 
+## Who's using it?
+
+- [Biyi](https://biyidev.com/) - A convenient translation and dictionary app.
+- [Qianji](https://qianjiapp.com/) - A purely bookkeeping app.
+- 
 ## License
 
 [MIT](./LICENSE)
