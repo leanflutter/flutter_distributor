@@ -1,6 +1,6 @@
 name: flutter_distributor
-description: Package your Flutter app into OS-specific bundles (.dmg, .exe, etc.) via Dart or the command line.
-version: 0.1.1
+description: A complete tool for packaging and publishing your Flutter apps.
+version: 0.1.2
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
@@ -12,7 +12,7 @@ dependencies:
   args: ^2.2.0
   colorize: ^3.0.0
   dio: ^4.0.4
-  flutter_app_builder: ^0.1.0
+  flutter_app_builder: ^0.1.2
   flutter_app_packager: ^0.1.0
   flutter_app_publisher: ^0.1.0
   logging: ^1.0.2
