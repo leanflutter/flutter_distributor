@@ -141,13 +141,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
-  console_bars:
-    dependency: "direct main"
-    description:
-      name: console_bars
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.3"
   crypto:
     dependency: transitive
     description:
@@ -168,7 +161,7 @@ packages:
       path: "../flutter_app_builder"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.2"
   flutter_app_packager:
     dependency: "direct main"
     description:
@@ -289,4 +282,4 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.14.4 <3.0.0"
+  dart: ">=2.14.0 <3.0.0"

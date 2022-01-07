@@ -11,7 +11,6 @@ dependencies:
   app_package_publisher: ^0.1.0
   args: ^2.2.0
   colorize: ^3.0.0
-  console_bars: ^1.0.3
   dio: ^4.0.4
   flutter_app_builder: ^0.1.0
   flutter_app_packager: ^0.1.0

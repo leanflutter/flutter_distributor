@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 import 'package:app_package_publisher/app_package_publisher.dart';
-import 'package:console_bars/console_bars.dart';
 import 'package:colorize/colorize.dart';
 import 'package:flutter_app_builder/flutter_app_builder.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
@@ -13,6 +12,7 @@ import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
 import 'utils/logger.dart';
+import 'utils/progress_bar.dart';
 import 'utils/pub_dev_api.dart';
 import 'distribute_options.dart';
 import 'release.dart';
@@ -191,25 +191,22 @@ class FlutterDistributor {
     List<PublishResult> publishResultList = [];
     try {
       for (String target in targets) {
-        FillingBar? fillingBar;
+        ProgressBar progressBar = ProgressBar(
+          format: 'Publishing to $target: {bar} {value}/{total} {percentage}%',
+        );
         PublishResult publishResult = await _publisher.publish(
           file,
           target: target,
           environment: this.environment,
           onPublishProgress: (sent, total) {
-            if (fillingBar == null) {
-              fillingBar = FillingBar(
-                desc: "Publishing to $target",
-                space: '-',
-                total: total,
-                time: false,
-                percentage: true,
-              );
+            if (!progressBar.isActive) {
+              progressBar.start(total, sent);
+            } else {
+              progressBar.update(sent);
             }
-            fillingBar?.update(sent);
           },
         );
-        logger.info('');
+        if (progressBar.isActive) progressBar.stop();
         logger.info(
           Colorize('Successfully published ${publishResult.url}').green(),
         );
