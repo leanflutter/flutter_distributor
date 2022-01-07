@@ -21,7 +21,14 @@ class AppBuilder {
   }) async {
     List<String> arguments = [];
     for (String key in buildArguments.keys) {
-      arguments.addAll(['--$key', buildArguments[key]]);
+      dynamic value = buildArguments[key];
+      if (value is Map) {
+        for (String subKey in value.keys) {
+          arguments.addAll(['--$key', '$subKey=${value[subKey]}']);
+        }
+      } else {
+        arguments.addAll(['--$key', value]);
+      }
     }
 
     Process process = await Process.start(

@@ -11,7 +11,7 @@ class CommandPackage extends Command {
     argParser.addOption('build-flavor', valueHelp: '');
     argParser.addOption('build-target-platform', valueHelp: '');
     argParser.addOption('build-export-options-plist', valueHelp: '');
-    argParser.addOption('build-dart-define', valueHelp: 'foo=bar');
+    argParser.addMultiOption('build-dart-define', valueHelp: 'foo=bar');
   }
 
   @override
@@ -29,9 +29,19 @@ class CommandPackage extends Command {
     if (argResults?.options != null) {
       for (var option in argResults!.options) {
         if (!option.startsWith('build-')) continue;
+        dynamic value = argResults?[option];
+
+        if (value is List) {
+          value = Map.fromIterable(
+            value,
+            key: (e) => e.split('=')[0],
+            value: (e) => e.split('=')[1],
+          );
+        }
+
         buildArguments.putIfAbsent(
           option.replaceAll('build-', ''),
-          () => argResults?[option],
+          () => value,
         );
       }
     }
