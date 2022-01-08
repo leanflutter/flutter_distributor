@@ -29,7 +29,11 @@ class ProgressBar {
     this.barCompleteChar = '\u2588',
     this.barIncompleteChar = '\u2591',
   }) {
-    barSize = (stdout.terminalColumns * 0.5).toInt();
+    try {
+      barSize = (stdout.terminalColumns * 0.5).toInt();
+    } catch (_) {
+      barSize = 40;
+    }
   }
 
   /// Starts the progress bar and set the total and initial value
