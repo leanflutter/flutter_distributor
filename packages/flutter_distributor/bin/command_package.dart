@@ -7,6 +7,7 @@ class CommandPackage extends Command {
   CommandPackage(this.distributor) {
     argParser.addOption('platform', valueHelp: '');
     argParser.addOption('targets', valueHelp: '');
+    argParser.addFlag('skip-clean');
     argParser.addOption('build-target', valueHelp: 'path');
     argParser.addOption('build-flavor', valueHelp: '');
     argParser.addOption('build-target-platform', valueHelp: '');
@@ -24,6 +25,7 @@ class CommandPackage extends Command {
   Future run() async {
     String platform = argResults?['platform'];
     List<String> targets = '${argResults?['targets']}'.split(',');
+    bool isSkipClean = argResults?.wasParsed('skip-clean') ?? false;
     Map<String, dynamic> buildArguments = {};
 
     if (argResults?.options != null) {
@@ -49,7 +51,8 @@ class CommandPackage extends Command {
     await distributor.package(
       platform,
       targets,
-      buildArguments,
+      cleanOnceBeforeBuild: !isSkipClean,
+      buildArguments: buildArguments,
     );
   }
 }

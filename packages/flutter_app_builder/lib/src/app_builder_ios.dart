@@ -15,18 +15,20 @@ class AppBuilderIos extends AppBuilder {
   @override
   Future<BuildResult> build({
     String? target,
-    Map<String, dynamic> buildArguments = const {},
-    ProcessStdOutCallback? onBuildProcessStdOut,
-    ProcessStdErrCallback? onBuildProcessStdErr,
+    bool cleanOnceBeforeBuild = false,
+    required Map<String, dynamic> buildArguments,
+    required ProcessStdOutCallback onProcessStdOut,
+    required ProcessStdErrCallback onProcessStdErr,
   }) {
     if (!buildArguments.containsKey('export-options-plist')) {
       throw BuildError('Missing `export-options-plist` build argument.');
     }
     return super.build(
       target: target,
+      cleanOnceBeforeBuild: cleanOnceBeforeBuild,
       buildArguments: buildArguments,
-      onBuildProcessStdOut: onBuildProcessStdOut,
-      onBuildProcessStdErr: onBuildProcessStdErr,
+      onProcessStdOut: onProcessStdOut,
+      onProcessStdErr: onProcessStdErr,
     );
   }
 

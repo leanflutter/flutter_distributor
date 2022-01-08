@@ -124,9 +124,10 @@ class FlutterDistributor {
 
   Future<List<MakeResult>> package(
     String platform,
-    List<String> targets,
-    Map<String, dynamic> buildArguments,
-  ) async {
+    List<String> targets, {
+    required bool cleanOnceBeforeBuild,
+    required Map<String, dynamic> buildArguments,
+  }) async {
     List<MakeResult> makeResultList = [];
 
     try {
@@ -145,11 +146,12 @@ class FlutterDistributor {
           buildResult = await _builder.build(
             platform,
             target,
-            buildArguments,
-            onBuildProcessStdOut: (message) {
+            cleanOnceBeforeBuild: cleanOnceBeforeBuild,
+            buildArguments: buildArguments,
+            onProcessStdOut: (message) {
               logger.info(Colorize(message).darkGray());
             },
-            onBuildProcessStdErr: (message) {
+            onProcessStdErr: (message) {
               logger.info(Colorize(message).darkGray());
             },
           );
@@ -221,8 +223,9 @@ class FlutterDistributor {
   }
 
   Future<void> release(
-    String name,
-  ) async {
+    String name, {
+    required bool cleanOnceBeforeBuild,
+  }) async {
     Directory outputDirectory = distributeOptions.outputDirectory;
     if (!outputDirectory.existsSync()) {
       outputDirectory.createSync(recursive: true);
@@ -244,7 +247,8 @@ class FlutterDistributor {
         List<MakeResult> makeResultList = await package(
           job.package.platform,
           [job.package.target],
-          job.package.buildArgs ?? {},
+          cleanOnceBeforeBuild: cleanOnceBeforeBuild,
+          buildArguments: job.package.buildArgs ?? {},
         );
 
         if (job.publishTo != null) {

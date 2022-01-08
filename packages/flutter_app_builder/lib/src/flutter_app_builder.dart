@@ -19,10 +19,11 @@ class FlutterAppBuilder {
 
   Future<BuildResult> build(
     String platform,
-    String target,
-    Map<String, dynamic> buildArguments, {
-    ProcessStdOutCallback? onBuildProcessStdOut,
-    ProcessStdErrCallback? onBuildProcessStdErr,
+    String target, {
+    required bool cleanOnceBeforeBuild,
+    required Map<String, dynamic> buildArguments,
+    required ProcessStdOutCallback onProcessStdOut,
+    required ProcessStdErrCallback onProcessStdErr,
   }) async {
     AppBuilder builder = _builders.firstWhere(
       (e) {
@@ -40,9 +41,10 @@ class FlutterAppBuilder {
 
     return await builder.build(
       target: target,
+      cleanOnceBeforeBuild: cleanOnceBeforeBuild,
       buildArguments: buildArguments,
-      onBuildProcessStdOut: onBuildProcessStdOut,
-      onBuildProcessStdErr: onBuildProcessStdErr,
+      onProcessStdOut: onProcessStdOut,
+      onProcessStdErr: onProcessStdErr,
     );
   }
 }

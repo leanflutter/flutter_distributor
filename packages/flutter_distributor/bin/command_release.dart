@@ -6,6 +6,7 @@ class CommandRelease extends Command {
 
   CommandRelease(this.distributor) {
     argParser.addOption('name', valueHelp: '');
+    argParser.addFlag('skip-clean');
   }
 
   @override
@@ -17,7 +18,11 @@ class CommandRelease extends Command {
   @override
   Future run() async {
     String name = argResults!['name'] ?? '';
+    bool isSkipClean = argResults?.wasParsed('skip-clean') ?? false;
 
-    await distributor.release(name);
+    await distributor.release(
+      name,
+      cleanOnceBeforeBuild: !isSkipClean,
+    );
   }
 }

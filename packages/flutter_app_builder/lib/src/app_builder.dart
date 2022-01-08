@@ -15,10 +15,27 @@ class AppBuilder {
 
   Future<BuildResult> build({
     String? target,
-    Map<String, dynamic> buildArguments = const {},
-    ProcessStdOutCallback? onBuildProcessStdOut,
-    ProcessStdErrCallback? onBuildProcessStdErr,
+    required bool cleanOnceBeforeBuild,
+    required Map<String, dynamic> buildArguments,
+    required ProcessStdOutCallback onProcessStdOut,
+    required ProcessStdErrCallback onProcessStdErr,
   }) async {
+    if (cleanOnceBeforeBuild) {
+      Process process = await Process.start(
+        'flutter',
+        ['clean'],
+        runInShell: true,
+      );
+      process.stdout.listen((event) {
+        onProcessStdOut(utf8.decoder.convert(event).trim());
+      });
+      process.stderr.listen((event) {
+        onProcessStdErr(utf8.decoder.convert(event).trim());
+      });
+
+      await process.exitCode;
+    }
+
     List<String> arguments = [];
     for (String key in buildArguments.keys) {
       dynamic value = buildArguments[key];
@@ -37,12 +54,10 @@ class AppBuilder {
       runInShell: true,
     );
     process.stdout.listen((event) {
-      String msg = utf8.decoder.convert(event).trim();
-      if (onBuildProcessStdOut != null) onBuildProcessStdOut(msg);
+      onProcessStdOut(utf8.decoder.convert(event).trim());
     });
     process.stderr.listen((event) {
-      String msg = utf8.decoder.convert(event).trim();
-      if (onBuildProcessStdErr != null) onBuildProcessStdErr(msg);
+      onProcessStdErr(utf8.decoder.convert(event).trim());
     });
 
     int exitCode = await process.exitCode;
