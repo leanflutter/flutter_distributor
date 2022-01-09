@@ -30,30 +30,9 @@ abstract class AppPackageMaker {
     Directory appDirectory, {
     required Directory outputDirectory,
     String? flavor,
+    void Function(List<int> data)? onProcessStdOut,
+    void Function(List<int> data)? onProcessStdErr,
   });
-
-  Future<void> exec(
-    String executable,
-    List<String> arguments, {
-    bool runInShell = false,
-  }) async {
-    Process process = await Process.start(
-      executable,
-      arguments,
-      runInShell: runInShell,
-    );
-    process.stdout.listen((event) {
-      String log = utf8.decoder.convert(event).trim();
-      print(log);
-    });
-    process.stderr.listen((event) {
-      String log = utf8.decoder.convert(event).trim();
-      print(log);
-    });
-
-    int exitCode = await process.exitCode;
-    print('exitCode: $exitCode');
-  }
 }
 
 class MakeConfig {

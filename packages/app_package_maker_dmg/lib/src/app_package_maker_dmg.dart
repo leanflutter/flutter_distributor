@@ -25,6 +25,8 @@ class AppPackageMakerDmg extends AppPackageMaker {
     Directory appDirectory, {
     required Directory outputDirectory,
     String? flavor,
+    void Function(List<int> data)? onProcessStdOut,
+    void Function(List<int> data)? onProcessStdErr,
   }) async {
     MakeDmgConfig makeConfig = (await loadMakeConfig() as MakeDmgConfig)
       ..outputDirectory = outputDirectory;
@@ -36,17 +38,33 @@ class AppPackageMakerDmg extends AppPackageMaker {
         .map((e) => File(e.path))
         .first;
 
-    await exec('cp', ['-RH', appFile.path, packagingDirectory.path]);
-    await exec('cp', ['-RH', 'macos/packaging/dmg/.', packagingDirectory.path]);
+    Process process1 = await Process.start(
+        'cp', ['-RH', appFile.path, packagingDirectory.path]);
+    process1.stdout.listen(onProcessStdOut);
+    process1.stderr.listen(onProcessStdErr);
+    await process1.exitCode;
+
+    Process process2 = await Process.start(
+        'cp', ['-RH', 'macos/packaging/dmg/.', packagingDirectory.path]);
+    process2.stdout.listen(onProcessStdOut);
+    process2.stderr.listen(onProcessStdErr);
+    await process2.exitCode;
 
     File makeDmgConfigJsonFile =
         File('${packagingDirectory.path}/make_config.json');
     makeDmgConfigJsonFile.writeAsStringSync(json.encode(makeConfig.toJson()));
 
-    await exec('appdmg', [
+    Process process3 = await Process.start('appdmg', [
       makeDmgConfigJsonFile.path,
       makeConfig.outputFile.path,
     ]);
+    process3.stdout.listen(onProcessStdOut);
+    process3.stderr.listen(onProcessStdErr);
+
+    int exitCode = await process3.exitCode;
+    if (exitCode != 0) {
+      throw MakeError();
+    }
 
     packagingDirectory.deleteSync(recursive: true);
 

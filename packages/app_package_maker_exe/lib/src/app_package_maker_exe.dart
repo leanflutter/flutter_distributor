@@ -28,6 +28,8 @@ class AppPackageMakerExe extends AppPackageMaker {
     Directory appDirectory, {
     required Directory outputDirectory,
     String? flavor,
+    void Function(List<int> data)? onProcessStdOut,
+    void Function(List<int> data)? onProcessStdErr,
   }) async {
     MakeConfig makeConfig = await loadMakeConfig()
       ..outputDirectory = outputDirectory;
@@ -56,15 +58,8 @@ class AppPackageMakerExe extends AppPackageMaker {
       p.join(innoSetupDirectory.path, 'ISCC.exe'),
       [setupScriptFile.path],
     );
-
-    process.stdout.listen((event) {
-      String log = utf8.decoder.convert(event).trim();
-      print(log);
-    });
-    process.stderr.listen((event) {
-      String log = utf8.decoder.convert(event).trim();
-      print(log);
-    });
+    process.stdout.listen(onProcessStdOut);
+    process.stderr.listen(onProcessStdErr);
 
     int exitCode = await process.exitCode;
     if (exitCode != 0) {

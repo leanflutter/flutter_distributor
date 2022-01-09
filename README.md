@@ -62,9 +62,10 @@ releases:
           platform: android
           target: apk
           build_args:
-            target: lib/main.dart
             flavor: dev
             target-platform: android-arm,android-arm64
+            dart-define:
+              APP_ENV: dev
         publish_to: pgyer
       # Build and publish your ipa pkg to pgyer
       - name: release-dev-ios
@@ -72,9 +73,10 @@ releases:
           platform: ios
           target: ipa
           build_args:
-            target: lib/main.dart
             flavor: dev
             export-options-plist: ios/dev_ExportOptions.plist
+            dart-define:
+              APP_ENV: dev
         publish_to: pgyer
 ```
 

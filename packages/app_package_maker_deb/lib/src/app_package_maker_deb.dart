@@ -14,6 +14,8 @@ class AppPackageMakerDeb extends AppPackageMaker {
     Directory appDirectory, {
     required Directory outputDirectory,
     String? flavor,
+    void Function(List<int> data)? onProcessStdOut,
+    void Function(List<int> data)? onProcessStdErr,
   }) async {
     MakeConfig makeConfig = await loadMakeConfig()
       ..outputDirectory = outputDirectory;
@@ -33,11 +35,20 @@ class AppPackageMakerDeb extends AppPackageMaker {
       '${appDirectory.path}/.',
       '${packagingDirectory.path}/usr/lib/${makeConfig.appName}/',
     ]);
-    Process.runSync('dpkg-deb', [
+
+    Process process = await Process.start('dpkg-deb', [
       '--build',
       '--root-owner-group',
       '${packagingDirectory.path}',
     ]);
+    process.stdout.listen(onProcessStdOut);
+    process.stderr.listen(onProcessStdErr);
+
+    int exitCode = await process.exitCode;
+    if (exitCode != 0) {
+      throw MakeError();
+    }
+
     packagingDirectory.deleteSync(recursive: true);
     return MakeResult(makeConfig);
   }
