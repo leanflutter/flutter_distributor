@@ -7,21 +7,21 @@ packages:
       path: "../app_package_parser"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.3"
   app_package_parser_apk:
     dependency: "direct main"
     description:
       path: "../app_package_parser_apk"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.3"
   app_package_parser_ipa:
     dependency: "direct main"
     description:
       path: "../app_package_parser_ipa"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.3"
   archive:
     dependency: transitive
     description:
