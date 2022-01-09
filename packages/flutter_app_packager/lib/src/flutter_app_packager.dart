@@ -28,6 +28,8 @@ class FlutterAppPackager {
     required String platform,
     String? flavor,
     required String target,
+    void Function(List<int> data)? onProcessStdOut,
+    void Function(List<int> data)? onProcessStdErr,
   }) async {
     AppPackageMaker maker = _makers.firstWhere(
       (e) => e.platform == platform && e.name == target,
@@ -36,6 +38,8 @@ class FlutterAppPackager {
       appDirectory,
       outputDirectory: outputDirectory,
       flavor: flavor,
+      onProcessStdOut: onProcessStdOut,
+      onProcessStdErr: onProcessStdErr,
     );
   }
 }

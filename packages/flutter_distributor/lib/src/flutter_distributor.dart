@@ -170,6 +170,14 @@ class FlutterDistributor {
             platform: platform,
             flavor: buildArguments['flavor'],
             target: target,
+            onProcessStdOut: (data) {
+              String message = utf8.decoder.convert(data).trim();
+              logger.info(Colorize(message).darkGray());
+            },
+            onProcessStdErr: (data) {
+              String message = utf8.decoder.convert(data).trim();
+              logger.info(Colorize(message).darkGray());
+            },
           );
 
           logger.info(

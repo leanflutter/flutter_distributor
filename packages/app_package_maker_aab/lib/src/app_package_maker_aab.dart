@@ -12,6 +12,8 @@ class AppPackageMakerAab extends AppPackageMaker {
     Directory appDirectory, {
     required Directory outputDirectory,
     String? flavor,
+    void Function(List<int> data)? onProcessStdOut,
+    void Function(List<int> data)? onProcessStdErr,
   }) async {
     MakeConfig makeConfig = await loadMakeConfig()
       ..flavor = flavor

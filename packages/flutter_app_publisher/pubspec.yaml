@@ -1,15 +1,15 @@
 name: flutter_app_publisher
 description: ""
-version: 0.1.0
+version: 0.1.3
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  app_package_publisher: ^0.1.0
-  app_package_publisher_fir: ^0.1.0
-  app_package_publisher_pgyer: ^0.1.0
+  app_package_publisher: ^0.1.3
+  app_package_publisher_fir: ^0.1.3
+  app_package_publisher_pgyer: ^0.1.3
   args: ^2.2.0
   yaml: ^3.1.0
 
