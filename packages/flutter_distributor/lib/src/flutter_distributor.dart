@@ -148,10 +148,12 @@ class FlutterDistributor {
             target,
             cleanOnceBeforeBuild: cleanOnceBeforeBuild,
             buildArguments: buildArguments,
-            onProcessStdOut: (message) {
+            onProcessStdOut: (data) {
+              String message = utf8.decoder.convert(data).trim();
               logger.info(Colorize(message).darkGray());
             },
-            onProcessStdErr: (message) {
+            onProcessStdErr: (data) {
+              String message = utf8.decoder.convert(data).trim();
               logger.info(Colorize(message).darkGray());
             },
           );

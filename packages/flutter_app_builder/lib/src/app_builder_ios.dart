@@ -17,8 +17,8 @@ class AppBuilderIos extends AppBuilder {
     String? target,
     bool cleanOnceBeforeBuild = false,
     required Map<String, dynamic> buildArguments,
-    required ProcessStdOutCallback onProcessStdOut,
-    required ProcessStdErrCallback onProcessStdErr,
+    required void Function(List<int> data) onProcessStdOut,
+    required void Function(List<int> data) onProcessStdErr,
   }) {
     if (!buildArguments.containsKey('export-options-plist')) {
       throw BuildError('Missing `export-options-plist` build argument.');

@@ -1,8 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-
-typedef ProcessStdOutCallback = void Function(String message);
-typedef ProcessStdErrCallback = void Function(String message);
 
 class AppBuilder {
   String get platform => throw UnimplementedError();
@@ -17,8 +13,8 @@ class AppBuilder {
     String? target,
     required bool cleanOnceBeforeBuild,
     required Map<String, dynamic> buildArguments,
-    required ProcessStdOutCallback onProcessStdOut,
-    required ProcessStdErrCallback onProcessStdErr,
+    required void Function(List<int> data) onProcessStdOut,
+    required void Function(List<int> data) onProcessStdErr,
   }) async {
     if (cleanOnceBeforeBuild) {
       Process process = await Process.start(
@@ -26,13 +22,8 @@ class AppBuilder {
         ['clean'],
         runInShell: true,
       );
-      process.stdout.listen((event) {
-        onProcessStdOut(utf8.decoder.convert(event).trim());
-      });
-      process.stderr.listen((event) {
-        onProcessStdErr(utf8.decoder.convert(event).trim());
-      });
-
+      process.stdout.listen(onProcessStdOut);
+      process.stderr.listen(onProcessStdErr);
       await process.exitCode;
     }
 
@@ -53,15 +44,10 @@ class AppBuilder {
       ['build', buildSubcommand]..addAll(arguments),
       runInShell: true,
     );
-    process.stdout.listen((event) {
-      onProcessStdOut(utf8.decoder.convert(event).trim());
-    });
-    process.stderr.listen((event) {
-      onProcessStdErr(utf8.decoder.convert(event).trim());
-    });
+    process.stdout.listen(onProcessStdOut);
+    process.stderr.listen(onProcessStdErr);
 
     int exitCode = await process.exitCode;
-
     if (exitCode != 0) {
       throw BuildError();
     }

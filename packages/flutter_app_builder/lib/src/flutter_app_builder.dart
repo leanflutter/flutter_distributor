@@ -22,8 +22,8 @@ class FlutterAppBuilder {
     String target, {
     required bool cleanOnceBeforeBuild,
     required Map<String, dynamic> buildArguments,
-    required ProcessStdOutCallback onProcessStdOut,
-    required ProcessStdErrCallback onProcessStdErr,
+    required void Function(List<int> data) onProcessStdOut,
+    required void Function(List<int> data) onProcessStdErr,
   }) async {
     AppBuilder builder = _builders.firstWhere(
       (e) {
