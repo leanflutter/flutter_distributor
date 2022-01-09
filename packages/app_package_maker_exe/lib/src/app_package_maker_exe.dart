@@ -1,9 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 
-import 'windows_installer.dart';
-import 'windows_installer_inno_setup.dart';
+import 'make_exe_config.dart';
+import 'create_setup_script_file.dart';
 
 class AppPackageMakerExe extends AppPackageMaker {
   String get name => 'exe';
@@ -14,8 +15,11 @@ class AppPackageMakerExe extends AppPackageMaker {
 
   @override
   Future<MakeConfig> loadMakeConfig() async {
-    return await super.loadMakeConfig()
-      ..isInstaller = true;
+    final map = loadMakeConfigYaml('windows/packaging/exe/make_config.yaml');
+    return MakeExeConfig.fromJson(map)
+      ..isInstaller = true
+      ..platform = platform
+      ..packageFormat = packageFormat;
   }
 
   @override
@@ -28,17 +32,46 @@ class AppPackageMakerExe extends AppPackageMaker {
       ..outputDirectory = outputDirectory;
     Directory packagingDirectory = makeConfig.packagingDirectory;
 
-    Process.runSync('cp', [
-      '-fr',
-      '${appDirectory.path}/*',
-      '${packagingDirectory.path}',
-    ]);
+    Directory innoSetupDirectory =
+        Directory('C:\\Program Files (x86)\\Inno Setup 6');
 
-    WindowsInstaller windowsInstaller = WindowsInstallerInnoSetup();
+    if (!innoSetupDirectory.existsSync()) {
+      throw Exception('`Inno Setup 6` was not installed.');
+    }
 
-    await windowsInstaller.compile(packagingDirectory: packagingDirectory);
+    Process.runSync(
+      'cp',
+      [
+        '-R',
+        '${appDirectory.path}/*',
+        packagingDirectory.path,
+      ],
+    );
+
+    File setupScriptFile =
+        await createSetupScriptFile(makeConfig as MakeExeConfig);
+
+    Process process = await Process.start(
+      'iscc',
+      [setupScriptFile.path],
+    );
+
+    process.stdout.listen((event) {
+      String log = utf8.decoder.convert(event).trim();
+      print(log);
+    });
+    process.stderr.listen((event) {
+      String log = utf8.decoder.convert(event).trim();
+      print(log);
+    });
+
+    int exitCode = await process.exitCode;
+    if (exitCode != 0) {
+      throw MakeError();
+    }
 
     packagingDirectory.deleteSync(recursive: true);
+    setupScriptFile.deleteSync(recursive: true);
 
     return MakeResult(makeConfig);
   }

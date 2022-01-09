@@ -90,7 +90,7 @@ class MakeConfig {
     if (isInstaller) {
       filename = filename.replaceAll(
         '.$packageFormat',
-        '-setup.$packageFormat}',
+        '-setup.$packageFormat',
       );
     }
 
