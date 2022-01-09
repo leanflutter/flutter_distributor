@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
+import 'package:path/path.dart' as p;
 
 import 'make_exe_config.dart';
 import 'create_setup_script_file.dart';
@@ -52,7 +53,7 @@ class AppPackageMakerExe extends AppPackageMaker {
         await createSetupScriptFile(makeConfig as MakeExeConfig);
 
     Process process = await Process.start(
-      'iscc',
+      p.join(innoSetupDirectory.path, 'ISCC.exe'),
       [setupScriptFile.path],
     );
 
