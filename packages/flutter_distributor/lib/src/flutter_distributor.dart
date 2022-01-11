@@ -118,8 +118,8 @@ class FlutterDistributor {
     return Future.value();
   }
 
-  Future<void> init() {
-    return Future.value();
+  Future<String?> getCurrentVersion() async {
+    return await _getCurrentVersion();
   }
 
   Future<List<MakeResult>> package(
