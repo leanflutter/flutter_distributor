@@ -19,6 +19,7 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
   Future<PublishResult> publish(
     File file, {
     Map<String, String>? environment,
+    Map<String, dynamic>? publishArguments,
     PublishProgressCallback? onPublishProgress,
   }) async {
     String? apiKey = (environment ?? Platform.environment)[kEnvPgyerApiKey];

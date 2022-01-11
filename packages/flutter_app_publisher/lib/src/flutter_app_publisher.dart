@@ -14,6 +14,7 @@ class FlutterAppPublisher {
     File file, {
     required String target,
     Map<String, String>? environment,
+    Map<String, dynamic>? publishArguments,
     PublishProgressCallback? onPublishProgress,
   }) async {
     AppPackagePublisher publisher = _publishers.firstWhere(
@@ -22,6 +23,7 @@ class FlutterAppPublisher {
     return await publisher.publish(
       file,
       environment: environment,
+      publishArguments: publishArguments,
       onPublishProgress: onPublishProgress,
     );
   }

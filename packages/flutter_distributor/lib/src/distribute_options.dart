@@ -17,7 +17,7 @@ class DistributeOptions {
 
   factory DistributeOptions.fromJson(Map<String, dynamic> json) {
     Map<String, String> env = {};
-    if (json.containsKey('env')) {
+    if (json.containsKey('env') && json['env'] != null) {
       env = Map<String, String>.from(json['env']);
     }
     List<Release> releases = ((json['releases'] ?? []) as List)

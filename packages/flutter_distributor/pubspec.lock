@@ -161,7 +161,7 @@ packages:
       path: "../flutter_app_builder"
       relative: true
     source: path
-    version: "0.1.2"
+    version: "0.1.3"
   flutter_app_packager:
     dependency: "direct main"
     description:

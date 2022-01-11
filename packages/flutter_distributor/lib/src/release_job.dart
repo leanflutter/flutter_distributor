@@ -26,14 +26,40 @@ class ReleaseJobPackage {
   }
 }
 
+class ReleaseJobPublish {
+  final String target;
+  final Map<String, dynamic>? args;
+
+  ReleaseJobPublish({
+    required this.target,
+    this.args,
+  });
+
+  factory ReleaseJobPublish.fromJson(Map<String, dynamic> json) {
+    return ReleaseJobPublish(
+      target: json['target'],
+      args: json['args'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'target': target,
+      'args': args,
+    }..removeWhere((key, value) => value == null);
+  }
+}
+
 class ReleaseJob {
   final String name;
   final ReleaseJobPackage package;
+  final ReleaseJobPublish? publish;
   final String? publishTo;
 
   ReleaseJob({
     required this.name,
     required this.package,
+    this.publish,
     this.publishTo,
   });
 
@@ -41,6 +67,9 @@ class ReleaseJob {
     return ReleaseJob(
       name: json['name'],
       package: ReleaseJobPackage.fromJson(json['package']),
+      publish: json['publish'] != null
+          ? ReleaseJobPublish.fromJson(json['publish'])
+          : null,
       publishTo: json['publish_to'],
     );
   }
@@ -49,6 +78,7 @@ class ReleaseJob {
     return {
       'name': name,
       'package': package.toJson(),
+      'publish': publish?.toJson(),
       'publish_to': publishTo,
     }..removeWhere((key, value) => value == null);
   }

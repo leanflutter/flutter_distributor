@@ -198,8 +198,9 @@ class FlutterDistributor {
 
   Future<List<PublishResult>> publish(
     File file,
-    List<String> targets,
-  ) async {
+    List<String> targets, {
+    Map<String, dynamic>? publishArguments,
+  }) async {
     List<PublishResult> publishResultList = [];
     try {
       for (String target in targets) {
@@ -210,6 +211,7 @@ class FlutterDistributor {
           file,
           target: target,
           environment: this.environment,
+          publishArguments: publishArguments,
           onPublishProgress: (sent, total) {
             if (!progressBar.isActive) {
               progressBar.start(total, sent);
@@ -261,11 +263,13 @@ class FlutterDistributor {
           buildArguments: job.package.buildArgs ?? {},
         );
 
-        if (job.publishTo != null) {
+        if (job.publish != null || job.publishTo != null) {
+          String? publishTarget = job.publishTo ?? job.publish?.target;
           MakeResult makeResult = makeResultList.first;
           await publish(
             makeResult.outputFile,
-            [job.publishTo!],
+            [publishTarget!],
+            publishArguments: job.publish?.args,
           );
         }
       }
