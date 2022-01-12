@@ -62,7 +62,6 @@ releases:
           platform: android
           target: apk
           build_args:
-            flavor: dev
             target-platform: android-arm,android-arm64
             dart-define:
               APP_ENV: dev
@@ -73,7 +72,6 @@ releases:
           platform: ios
           target: ipa
           build_args:
-            flavor: dev
             export-options-plist: ios/dev_ExportOptions.plist
             dart-define:
               APP_ENV: dev
@@ -92,7 +90,7 @@ flutter_distributor release --name dev
 
 - [Biyi](https://biyidev.com/) - A convenient translation and dictionary app.
 - [Qianji](https://qianjiapp.com/) - A purely bookkeeping app.
-- 
+
 ## License
 
 [MIT](./LICENSE)
