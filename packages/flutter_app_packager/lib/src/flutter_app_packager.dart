@@ -20,6 +20,7 @@ class FlutterAppPackager {
     AppPackageMakerZip('linux'),
     AppPackageMakerZip('macos'),
     AppPackageMakerZip('windows'),
+    AppPackageMakerZip('web'),
   ];
 
   Future<MakeResult> package(
