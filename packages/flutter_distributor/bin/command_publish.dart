@@ -9,6 +9,11 @@ class CommandPublish extends Command {
   CommandPublish(this.distributor) {
     argParser.addOption('path', valueHelp: '');
     argParser.addOption('targets', valueHelp: '');
+    // Qiniu
+    argParser.addSeparator('qiniu');
+    argParser.addOption('qiniu-bucket', valueHelp: '');
+    argParser.addOption('qiniu-bucket-domain', valueHelp: '');
+    argParser.addOption('qiniu-savekey-prefix', valueHelp: '');
   }
 
   @override
@@ -21,7 +26,16 @@ class CommandPublish extends Command {
   Future run() async {
     String path = argResults?['path'];
     List<String> targets = '${argResults?['targets']}'.split(',');
+    Map<String, String?> publishArguments = {
+      'qiniu-bucket': argResults?['qiniu-bucket'],
+      'qiniu-bucket-domain': argResults?['qiniu-bucket-domain'],
+      'qiniu-savekey-prefix': argResults?['qiniu-savekey-prefix'],
+    }..removeWhere((key, value) => value == null);
 
-    await distributor.publish(File(path), targets);
+    await distributor.publish(
+      File(path),
+      targets,
+      publishArguments: publishArguments,
+    );
   }
 }

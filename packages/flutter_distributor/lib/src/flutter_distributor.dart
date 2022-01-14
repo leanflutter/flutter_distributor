@@ -207,11 +207,38 @@ class FlutterDistributor {
         ProgressBar progressBar = ProgressBar(
           format: 'Publishing to $target: {bar} {value}/{total} {percentage}%',
         );
+
+        Map<String, dynamic>? newPublishArguments = {};
+
+        if (publishArguments != null) {
+          for (var key in publishArguments.keys) {
+            if (!key.startsWith('$target-')) continue;
+            dynamic value = publishArguments[key];
+
+            if (value is List) {
+              value = Map.fromIterable(
+                value,
+                key: (e) => e.split('=')[0],
+                value: (e) => e.split('=')[1],
+              );
+            }
+
+            newPublishArguments.putIfAbsent(
+              key.replaceAll('$target-', ''),
+              () => value,
+            );
+          }
+        }
+
+        if (newPublishArguments.keys.isEmpty) {
+          newPublishArguments = publishArguments;
+        }
+
         PublishResult publishResult = await _publisher.publish(
           file,
           target: target,
           environment: this.environment,
-          publishArguments: publishArguments,
+          publishArguments: newPublishArguments,
           onPublishProgress: (sent, total) {
             if (!progressBar.isActive) {
               progressBar.start(total, sent);
