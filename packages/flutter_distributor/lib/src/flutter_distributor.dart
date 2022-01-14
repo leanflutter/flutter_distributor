@@ -236,6 +236,8 @@ class FlutterDistributor {
 
   Future<void> release(
     String name, {
+    required List<String> jobNameList,
+    required List<String> skipJobNameList,
     required bool cleanOnceBeforeBuild,
   }) async {
     Directory outputDirectory = distributeOptions.outputDirectory;
@@ -255,7 +257,19 @@ class FlutterDistributor {
     }
 
     for (Release release in releases) {
-      for (ReleaseJob job in release.jobs) {
+      List<ReleaseJob> filteredJobs = release.jobs.where((e) {
+        if (jobNameList.isNotEmpty) {
+          return jobNameList.contains(e.name);
+        }
+        if (skipJobNameList.isNotEmpty) {
+          return !skipJobNameList.contains(e.name);
+        }
+        return true;
+      }).toList();
+      if (filteredJobs.isEmpty) {
+        throw Exception('No available jobs found in ${release.name}.');
+      }
+      for (ReleaseJob job in filteredJobs) {
         List<MakeResult> makeResultList = await package(
           job.package.platform,
           [job.package.target],
