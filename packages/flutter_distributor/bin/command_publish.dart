@@ -36,9 +36,6 @@ class CommandPublish extends Command {
     String path = argResults?['path'];
     List<String> targets = '${argResults?['targets']}'.split(',');
     Map<String, String?> publishArguments = {
-      'qiniu-bucket': argResults?['qiniu-bucket'],
-      'qiniu-bucket-domain': argResults?['qiniu-bucket-domain'],
-      'qiniu-savekey-prefix': argResults?['qiniu-savekey-prefix'],
       'firebase-app': argResults?['firebase-app'],
       'firebase-release-notes': argResults?['firebase-release-notes'],
       'firebase-release-notes-file': argResults?['firebase-release-notes-file'],
@@ -46,6 +43,9 @@ class CommandPublish extends Command {
       'firebase-testers-file': argResults?['firebase-testers-file'],
       'firebase-groups': argResults?['firebase-groups'],
       'firebase-groups-file': argResults?['firebase-groups-file'],
+      'qiniu-bucket': argResults?['qiniu-bucket'],
+      'qiniu-bucket-domain': argResults?['qiniu-bucket-domain'],
+      'qiniu-savekey-prefix': argResults?['qiniu-savekey-prefix'],
     }..removeWhere((key, value) => value == null);
 
     await distributor.publish(

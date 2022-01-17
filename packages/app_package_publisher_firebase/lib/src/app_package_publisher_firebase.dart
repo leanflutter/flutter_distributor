@@ -12,6 +12,9 @@ class AppPackagePublisherFirebase extends AppPackagePublisher {
   String get name => 'firebase';
 
   @override
+  List<String> get supportedPlatforms => ['android', 'ios'];
+
+  @override
   Future<PublishResult> publish(
     File file, {
     Map<String, String>? environment,
@@ -28,7 +31,7 @@ class AppPackagePublisherFirebase extends AppPackagePublisher {
         'appdistribution:distribute',
         file.path,
         // cmd list
-        ...publishConfig.toCmdList()
+        ...publishConfig.toArgs()
       ],
     );
     process.stdout.listen((event) {

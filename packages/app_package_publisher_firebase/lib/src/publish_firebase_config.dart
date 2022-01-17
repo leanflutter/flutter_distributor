@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:app_package_publisher/app_package_publisher.dart';
 
-const kFirebaseAppId = 'FIREBASE_APP_ID';
 const kEnvFirebaseToken = 'FIREBASE_TOKEN';
 
 class PublishFirebaseConfig extends PublishConfig {
@@ -52,7 +51,7 @@ class PublishFirebaseConfig extends PublishConfig {
     );
   }
 
-  List<String> toCmdList() {
+  List<String> toArgs() {
     Map<String, String?> cmdData = {
       '--app': app,
       '--token': token,
