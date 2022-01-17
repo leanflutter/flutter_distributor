@@ -34,7 +34,7 @@ class PublishFirebaseConfig extends PublishConfig {
     String? appId = (environment ?? Platform.environment)[kFirebaseAppId];
     if ((appId ?? '').isEmpty) {
       throw PublishError(
-          'Missing `$kFirebaseAppId` environment variable. see:https://console.firebase.google.com/project/_/settings/general/?authuser=0');
+          'Missing `$kFirebaseAppId` environment variable. See:https://console.firebase.google.com/project/_/settings/general/?authuser=0');
     }
     // Get token
     String? token = (environment ?? Platform.environment)[kEnvFirebaseToken];
@@ -72,7 +72,7 @@ class PublishFirebaseConfig extends PublishConfig {
     cmdData.forEach((key, value) {
       cmdList.addAll([key, value!]);
     });
-    print("cmdList:${cmdList.toString()}");
+    // print("cmdList:${cmdList.toString()}");
     return cmdList;
   }
 }

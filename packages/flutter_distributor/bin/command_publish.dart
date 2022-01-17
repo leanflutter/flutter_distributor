@@ -9,6 +9,14 @@ class CommandPublish extends Command {
   CommandPublish(this.distributor) {
     argParser.addOption('path', valueHelp: '');
     argParser.addOption('targets', valueHelp: '');
+    // Firebase
+    argParser.addSeparator('firebase');
+    argParser.addOption('firebase-release-notes', valueHelp: '');
+    argParser.addOption('firebase-release-notes-file', valueHelp: '');
+    argParser.addOption('firebase-testers', valueHelp: '');
+    argParser.addOption('firebase-testers-file', valueHelp: '');
+    argParser.addOption('firebase-groups', valueHelp: '');
+    argParser.addOption('firebase-groups-file', valueHelp: '');
     // Qiniu
     argParser.addSeparator('qiniu');
     argParser.addOption('qiniu-bucket', valueHelp: '');
@@ -30,6 +38,12 @@ class CommandPublish extends Command {
       'qiniu-bucket': argResults?['qiniu-bucket'],
       'qiniu-bucket-domain': argResults?['qiniu-bucket-domain'],
       'qiniu-savekey-prefix': argResults?['qiniu-savekey-prefix'],
+      'firebase-release-notes': argResults?['firebase-release-notes'],
+      'firebase-release-notes-file': argResults?['firebase-release-notes-file'],
+      'firebase-testers': argResults?['firebase-testers'],
+      'firebase-testers-file': argResults?['firebase-testers-file'],
+      'firebase-groups': argResults?['firebase-groups'],
+      'firebase-groups-file': argResults?['firebase-groups-file'],
     }..removeWhere((key, value) => value == null);
 
     await distributor.publish(
