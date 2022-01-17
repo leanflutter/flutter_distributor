@@ -35,6 +35,7 @@
 - [app_package_maker_ipa](./packages/app_package_maker_ipa/) - 为你的应用创建一个 `ipa` 包。
 - [app_package_maker_zip](./packages/app_package_maker_zip/) - 为你的应用创建一个 `zip` 包。
 - [app_package_publisher_fir](./packages/app_package_publisher_fir/) - 把你的应用发布到 `fir`。
+- [app_package_publisher_firebase](./packages/app_package_publisher_firebase/) - 把你的应用发布到 `firebase`。
 - [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/) - 把你的应用发布到 `pgyer`。
 - [app_package_publisher_qiniu](./packages/app_package_publisher_qiniu/) - 把你的应用发布到 `qiniu`。
 

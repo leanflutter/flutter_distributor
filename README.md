@@ -35,6 +35,7 @@ These are the available packages in this repository.
 - [app_package_maker_ipa](./packages/app_package_maker_ipa/) - Create a `ipa` package for your app.
 - [app_package_maker_zip](./packages/app_package_maker_zip/) - Create a `zip` package for your app.
 - [app_package_publisher_fir](./packages/app_package_publisher_fir/) - Publish your app to `fir`.
+- [app_package_publisher_firebase](./packages/app_package_publisher_firebase/) - Publish your app to `firebase`.
 - [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/) - Publish your app to `pgyer`.
 - [app_package_publisher_qiniu](./packages/app_package_publisher_qiniu/) - Publish your app to `qiniu`.
 
