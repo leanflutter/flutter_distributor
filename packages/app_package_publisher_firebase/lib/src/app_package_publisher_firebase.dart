@@ -31,7 +31,7 @@ class AppPackagePublisherFirebase extends AppPackagePublisher {
         'appdistribution:distribute',
         file.path,
         // cmd list
-        ...publishConfig.toArgs()
+        ...publishConfig.toFirebaseCliDistributeArgs()
       ],
     );
     process.stdout.listen((event) {

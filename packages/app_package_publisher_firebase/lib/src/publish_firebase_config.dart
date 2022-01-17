@@ -51,7 +51,7 @@ class PublishFirebaseConfig extends PublishConfig {
     );
   }
 
-  List<String> toArgs() {
+  List<String> toFirebaseCliDistributeArgs() {
     Map<String, String?> cmdData = {
       '--app': app,
       '--token': token,
