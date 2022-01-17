@@ -11,6 +11,7 @@ class CommandPublish extends Command {
     argParser.addOption('targets', valueHelp: '');
     // Firebase
     argParser.addSeparator('firebase');
+    argParser.addOption('firebase-app', valueHelp: '');
     argParser.addOption('firebase-release-notes', valueHelp: '');
     argParser.addOption('firebase-release-notes-file', valueHelp: '');
     argParser.addOption('firebase-testers', valueHelp: '');
@@ -38,6 +39,7 @@ class CommandPublish extends Command {
       'qiniu-bucket': argResults?['qiniu-bucket'],
       'qiniu-bucket-domain': argResults?['qiniu-bucket-domain'],
       'qiniu-savekey-prefix': argResults?['qiniu-savekey-prefix'],
+      'firebase-app': argResults?['firebase-app'],
       'firebase-release-notes': argResults?['firebase-release-notes'],
       'firebase-release-notes-file': argResults?['firebase-release-notes-file'],
       'firebase-testers': argResults?['firebase-testers'],
