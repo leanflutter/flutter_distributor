@@ -6,6 +6,8 @@ class CommandRelease extends Command {
 
   CommandRelease(this.distributor) {
     argParser.addOption('name', valueHelp: '');
+    argParser.addOption('jobs', valueHelp: '');
+    argParser.addOption('skip-jobs', valueHelp: '');
     argParser.addFlag('skip-clean');
   }
 
@@ -17,11 +19,21 @@ class CommandRelease extends Command {
 
   @override
   Future run() async {
-    String name = argResults!['name'] ?? '';
+    String name = argResults?['name'] ?? '';
+    List<String> jobNameList = (argResults?['jobs'] ?? '')
+        .split(',')
+        .where((String e) => e.isNotEmpty)
+        .toList();
+    List<String> skipJobNameList = (argResults?['skip-jobs'] ?? '')
+        .split(',')
+        .where((String e) => e.isNotEmpty)
+        .toList();
     bool isSkipClean = argResults?.wasParsed('skip-clean') ?? false;
 
     await distributor.release(
       name,
+      jobNameList: jobNameList,
+      skipJobNameList: skipJobNameList,
       cleanOnceBeforeBuild: !isSkipClean,
     );
   }

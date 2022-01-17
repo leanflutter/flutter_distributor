@@ -36,6 +36,7 @@ These are the available packages in this repository.
 - [app_package_maker_zip](./packages/app_package_maker_zip/) - Create a `zip` package for your app.
 - [app_package_publisher_fir](./packages/app_package_publisher_fir/) - Publish your app to `fir`.
 - [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/) - Publish your app to `pgyer`.
+- [app_package_publisher_qiniu](./packages/app_package_publisher_qiniu/) - Publish your app to `qiniu`.
 
 ## Getting Started
 
@@ -62,7 +63,6 @@ releases:
           platform: android
           target: apk
           build_args:
-            flavor: dev
             target-platform: android-arm,android-arm64
             dart-define:
               APP_ENV: dev
@@ -73,7 +73,6 @@ releases:
           platform: ios
           target: ipa
           build_args:
-            flavor: dev
             export-options-plist: ios/dev_ExportOptions.plist
             dart-define:
               APP_ENV: dev
@@ -92,7 +91,7 @@ flutter_distributor release --name dev
 
 - [Biyi](https://biyidev.com/) - A convenient translation and dictionary app.
 - [Qianji](https://qianjiapp.com/) - A purely bookkeeping app.
-- 
+
 ## License
 
 [MIT](./LICENSE)

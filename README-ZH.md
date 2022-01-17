@@ -36,6 +36,7 @@
 - [app_package_maker_zip](./packages/app_package_maker_zip/) - 为你的应用创建一个 `zip` 包。
 - [app_package_publisher_fir](./packages/app_package_publisher_fir/) - 把你的应用发布到 `fir`。
 - [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/) - 把你的应用发布到 `pgyer`。
+- [app_package_publisher_qiniu](./packages/app_package_publisher_qiniu/) - 把你的应用发布到 `qiniu`。
 
 ## 立即开始
 
@@ -62,7 +63,6 @@ releases:
           platform: android
           target: apk
           build_args:
-            flavor: dev
             target-platform: android-arm,android-arm64
             dart-define:
               APP_ENV: dev
@@ -73,7 +73,6 @@ releases:
           platform: ios
           target: ipa
           build_args:
-            flavor: dev
             export-options-plist: ios/dev_ExportOptions.plist
             dart-define:
               APP_ENV: dev

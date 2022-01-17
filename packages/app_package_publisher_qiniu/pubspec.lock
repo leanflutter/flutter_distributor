@@ -29,27 +29,6 @@ packages:
       relative: true
     source: path
     version: "0.1.4"
-  app_package_publisher_fir:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_fir"
-      relative: true
-    source: path
-    version: "0.1.4"
-  app_package_publisher_pgyer:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_pgyer"
-      relative: true
-    source: path
-    version: "0.1.4"
-  app_package_publisher_qiniu:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_qiniu"
-      relative: true
-    source: path
-    version: "0.1.4"
   archive:
     dependency: transitive
     description:
@@ -58,7 +37,7 @@ packages:
     source: hosted
     version: "3.1.6"
   args:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: args
       url: "https://pub.dartlang.org"
@@ -107,7 +86,7 @@ packages:
     source: hosted
     version: "1.7.0"
   parse_app_package:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       path: "../parse_app_package"
       relative: true
@@ -128,7 +107,7 @@ packages:
     source: hosted
     version: "4.4.0"
   qiniu_sdk_base:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: qiniu_sdk_base
       url: "https://pub.dartlang.org"
@@ -169,12 +148,5 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.3.1"
-  yaml:
-    dependency: "direct main"
-    description:
-      name: yaml
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.0"
 sdks:
   dart: ">=2.14.0 <3.0.0"
