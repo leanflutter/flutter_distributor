@@ -5,9 +5,12 @@ import 'package:app_package_publisher/app_package_publisher.dart';
 const kEnvGithubToken = 'GITHUB_TOKEN';
 
 class PublishGithubConfig extends PublishConfig {
+  // Personal access tokens
   final String token;
-  String? rep;
-  String? releaseId;
+  // Repository Owner
+  String repoOwner;
+  // Repository Name
+  String repoName;
 
   factory PublishGithubConfig.parse(
     Map<String, String>? environment,
@@ -17,16 +20,27 @@ class PublishGithubConfig extends PublishConfig {
     if ((token ?? '').isEmpty) {
       throw PublishError('Missing `$kEnvGithubToken` environment variable.');
     }
+    print("publishArguments:${publishArguments.toString()}");
+    String? owner = publishArguments?['repo-owner'];
+    if ((owner ?? '').isEmpty) {
+      throw PublishError('<repo-owner> is null');
+    }
+
+    String? name = publishArguments?['repo-name'];
+    if ((name ?? '').isEmpty) {
+      throw PublishError('<repo-name> is null');
+    }
+
     return PublishGithubConfig(
       token: token!,
-      rep: publishArguments?['rep'],
-      releaseId: publishArguments?['release_id'] ?? '',
+      repoOwner: owner!,
+      repoName: name!,
     );
   }
 
   PublishGithubConfig({
     required this.token,
-    this.rep,
-    this.releaseId,
+    required this.repoOwner,
+    required this.repoName,
   });
 }
