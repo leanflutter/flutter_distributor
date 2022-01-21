@@ -2,12 +2,12 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:app_package_publisher/app_package_publisher.dart';
-import 'package:github/github.dart';
+import 'package:dio/dio.dart';
 
 import 'publish_github_config.dart';
 
 class AppPackagePublisherGithub extends AppPackagePublisher {
-  var github = GitHub();
+  final Dio _dio = Dio();
 
   @override
   String get name => 'github';
@@ -33,38 +33,83 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
       environment,
       publishArguments,
     );
-    try {
-      // Set auth
-      github.auth = Authentication.withToken(publishConfig.token);
-      // Get latest release
-      Release latestRelease = await github.repositories.getLatestRelease(
-          RepositorySlug(publishConfig.repoOwner, publishConfig.repoName));
-      // upload file
-      String fileName = file.path.split('/').last;
-      Uint8List fileData = await file.readAsBytes();
-      List<ReleaseAsset> releaseAssetList =
-          await github.repositories.uploadReleaseAssets(
-        latestRelease,
-        [
-          CreateReleaseAsset(
-            name: fileName,
-            contentType: 'application/octet-stream',
-            assetData: fileData,
-          )
-        ],
-      );
-      // Check ReleaseAsset
-      if (releaseAssetList.isNotEmpty) {
-        print(
-            "releaseAssetList:${releaseAssetList.map((e) => e.toJson()).toString()}");
-        return PublishResult(
-          url: releaseAssetList.first.browserDownloadUrl,
-        );
-      } else {
-        throw PublishError('ReleaseAssetList isEmpty');
-      }
-    } catch (error) {
-      throw PublishError('${error.toString()}');
+    // Set auth
+    _dio.options = BaseOptions(headers: {
+      'Authorization': 'token ${publishConfig.token}',
+    });
+
+    // Get uploadUrl
+    String? uploadUrl;
+    if (publishConfig.releaseName?.isEmpty ?? true) {
+      uploadUrl = await getUploadurlByLatestRelease(publishConfig);
+    } else {
+      uploadUrl = await getUploadurlByReleaseName(publishConfig);
     }
+    if (uploadUrl?.isEmpty ?? true) {
+      throw PublishError('Upload url isEmpty');
+    }
+    // Upload file
+    String browserDownloadUrl =
+        await uploadReleaseAsset(file, uploadUrl!, onPublishProgress);
+    return PublishResult(
+      url: browserDownloadUrl,
+    );
+  }
+
+  /// Get uploadUrl by releaseName
+  Future<String?> getUploadurlByReleaseName(
+      PublishGithubConfig publishConfig) async {
+    assert(publishConfig.releaseName?.isEmpty ?? true);
+    Response resp = await _dio.get(
+        'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases');
+    List relist = (resp.data as List?) ?? [];
+    var release = relist.firstWhere(
+      (item) => item['name'] == publishConfig.releaseName,
+      orElse: () => {},
+    );
+    return release?['upload_url'];
+  }
+
+  /// Get uploadUrl by latest release
+  Future<String?> getUploadurlByLatestRelease(
+      PublishGithubConfig publishConfig) async {
+    Response resp = await _dio.get(
+        'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases/latest');
+    return resp.data?['upload_url'];
+  }
+
+  /// Upload Release Asset
+  Future<String> uploadReleaseAsset(File file, String uploadUrl,
+      PublishProgressCallback? onPublishProgress) async {
+    // Fromat uploadUrl
+    uploadUrl = uploadUrl.split('{').first;
+    print('Release uploadUrl3: $uploadUrl');
+    String fileName = file.path.split('/').last;
+    Uint8List fileData = await file.readAsBytes();
+    String url = '$uploadUrl?name=$fileName';
+    // dio upload
+    _dio.options.headers
+        .putIfAbsent('Content-Type', () => 'application/octet-stream');
+    print('Release headers: ${_dio.options.headers.toString()}');
+    String? browserDownloadUrl;
+    try {
+      Response resp = await _dio.post(
+        url,
+        data: fileData,
+        onSendProgress: (int sent, int total) {
+          if (onPublishProgress != null) {
+            onPublishProgress(sent, total);
+          }
+        },
+      );
+      browserDownloadUrl = resp.data?['browser_download_url'];
+    } catch (e) {
+      throw PublishError(e.toString());
+    }
+    // Check release asset
+    if (browserDownloadUrl?.isEmpty ?? true) {
+      throw PublishError('Release asset exist [$fileName]');
+    }
+    return browserDownloadUrl!;
   }
 }
