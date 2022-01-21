@@ -41,11 +41,11 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
     // Get uploadUrl
     String? uploadUrl;
     if (publishConfig.releaseTitle?.isEmpty ?? true) {
-      uploadUrl = await getUploadurlByLatestRelease(publishConfig);
+      uploadUrl = await _getUploadurlByLatestRelease(publishConfig);
     } else {
-      uploadUrl = await getUploadurlByReleaseName(publishConfig);
+      uploadUrl = await _getUploadurlByReleaseName(publishConfig);
       if (uploadUrl?.isEmpty ?? true) {
-        uploadUrl = await createRelease(publishConfig);
+        uploadUrl = await _createRelease(publishConfig);
       }
     }
     if (uploadUrl?.isEmpty ?? true) {
@@ -53,14 +53,14 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
     }
     // Upload file
     String browserDownloadUrl =
-        await uploadReleaseAsset(file, uploadUrl!, onPublishProgress);
+        await _uploadReleaseAsset(file, uploadUrl!, onPublishProgress);
     return PublishResult(
       url: browserDownloadUrl,
     );
   }
 
   /// Get uploadUrl by releaseName
-  Future<String?> getUploadurlByReleaseName(
+  Future<String?> _getUploadurlByReleaseName(
       PublishGithubConfig publishConfig) async {
     Response resp = await _dio.get(
         'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases');
@@ -73,7 +73,7 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
   }
 
   /// Create release
-  Future<String?> createRelease(PublishGithubConfig publishConfig) async {
+  Future<String?> _createRelease(PublishGithubConfig publishConfig) async {
     Response resp = await _dio.post(
       'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases',
       data: {
@@ -86,7 +86,7 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
   }
 
   /// Get uploadUrl by latest release
-  Future<String?> getUploadurlByLatestRelease(
+  Future<String?> _getUploadurlByLatestRelease(
       PublishGithubConfig publishConfig) async {
     Response resp = await _dio.get(
         'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases/latest');
@@ -94,7 +94,7 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
   }
 
   /// Upload Release Asset
-  Future<String> uploadReleaseAsset(File file, String uploadUrl,
+  Future<String> _uploadReleaseAsset(File file, String uploadUrl,
       PublishProgressCallback? onPublishProgress) async {
     // Fromat uploadUrl
     uploadUrl = uploadUrl.split('{').first;
