@@ -83,14 +83,12 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
       PublishProgressCallback? onPublishProgress) async {
     // Fromat uploadUrl
     uploadUrl = uploadUrl.split('{').first;
-    print('Release uploadUrl3: $uploadUrl');
     String fileName = file.path.split('/').last;
     Uint8List fileData = await file.readAsBytes();
     String url = '$uploadUrl?name=$fileName';
     // dio upload
     _dio.options.headers
         .putIfAbsent('Content-Type', () => 'application/octet-stream');
-    print('Release headers: ${_dio.options.headers.toString()}');
     String? browserDownloadUrl;
     try {
       Response resp = await _dio.post(

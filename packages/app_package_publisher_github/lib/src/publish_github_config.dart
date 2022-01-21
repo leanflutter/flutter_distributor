@@ -22,7 +22,6 @@ class PublishGithubConfig extends PublishConfig {
     if ((token ?? '').isEmpty) {
       throw PublishError('Missing `$kEnvGithubToken` environment variable.');
     }
-    print("publishArguments:${publishArguments.toString()}");
     String? owner = publishArguments?['repo-owner'];
     if ((owner ?? '').isEmpty) {
       throw PublishError('<repo-owner> is null');
