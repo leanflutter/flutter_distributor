@@ -40,10 +40,13 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
 
     // Get uploadUrl
     String? uploadUrl;
-    if (publishConfig.releaseName?.isEmpty ?? true) {
+    if (publishConfig.releaseTitle?.isEmpty ?? true) {
       uploadUrl = await getUploadurlByLatestRelease(publishConfig);
     } else {
       uploadUrl = await getUploadurlByReleaseName(publishConfig);
+      if (uploadUrl?.isEmpty ?? true) {
+        uploadUrl = await createRelease(publishConfig);
+      }
     }
     if (uploadUrl?.isEmpty ?? true) {
       throw PublishError('Upload url isEmpty');
@@ -59,15 +62,27 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
   /// Get uploadUrl by releaseName
   Future<String?> getUploadurlByReleaseName(
       PublishGithubConfig publishConfig) async {
-    assert(publishConfig.releaseName?.isEmpty ?? true);
     Response resp = await _dio.get(
         'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases');
     List relist = (resp.data as List?) ?? [];
     var release = relist.firstWhere(
-      (item) => item['name'] == publishConfig.releaseName,
+      (item) => item['name'] == publishConfig.releaseTitle,
       orElse: () => {},
     );
     return release?['upload_url'];
+  }
+
+  /// Create release
+  Future<String?> createRelease(PublishGithubConfig publishConfig) async {
+    Response resp = await _dio.post(
+      'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases',
+      data: {
+        "tag_name": publishConfig.releaseTitle,
+        "name": publishConfig.releaseTitle,
+        "draft": true
+      },
+    );
+    return resp.data?['upload_url'];
   }
 
   /// Get uploadUrl by latest release

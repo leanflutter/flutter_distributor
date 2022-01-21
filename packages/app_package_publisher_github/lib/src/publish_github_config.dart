@@ -11,8 +11,8 @@ class PublishGithubConfig extends PublishConfig {
   String repoOwner;
   // Repository Name
   String repoName;
-  // Release Name
-  String? releaseName;
+  // Release title
+  String? releaseTitle;
 
   factory PublishGithubConfig.parse(
     Map<String, String>? environment,
@@ -36,7 +36,7 @@ class PublishGithubConfig extends PublishConfig {
       token: token!,
       repoOwner: owner!,
       repoName: name!,
-      releaseName: publishArguments?['release-name'],
+      releaseTitle: publishArguments?['release-title'],
     );
   }
 
@@ -44,6 +44,6 @@ class PublishGithubConfig extends PublishConfig {
     required this.token,
     required this.repoOwner,
     required this.repoName,
-    this.releaseName,
+    this.releaseTitle,
   });
 }
