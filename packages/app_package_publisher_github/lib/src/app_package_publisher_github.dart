@@ -100,7 +100,7 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
     uploadUrl = uploadUrl.split('{').first;
     String fileName = file.path.split('/').last;
     Uint8List fileData = await file.readAsBytes();
-    String url = '$uploadUrl?name=$fileName';
+    String url = '$uploadUrl?name=${Uri.encodeComponent(fileName)}';
     // dio upload
     _dio.options.headers
         .putIfAbsent('Content-Type', () => 'application/octet-stream');

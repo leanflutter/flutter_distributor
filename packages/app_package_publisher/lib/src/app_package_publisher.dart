@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:pubspec_parse/pubspec_parse.dart';
+
 typedef PublishProgressCallback = void Function(int sent, int total);
 
 abstract class AppPackagePublisher {
@@ -14,7 +16,17 @@ abstract class AppPackagePublisher {
   });
 }
 
-class PublishConfig {}
+class PublishConfig {
+  Pubspec? _pubspec;
+
+  Pubspec get pubspec {
+    if (_pubspec == null) {
+      final yamlString = File('pubspec.yaml').readAsStringSync();
+      _pubspec = Pubspec.parse(yamlString);
+    }
+    return _pubspec!;
+  }
+}
 
 class PublishResult {
   final String? url;

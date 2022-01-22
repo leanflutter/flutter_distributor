@@ -69,7 +69,6 @@ class PublishFirebaseConfig extends PublishConfig {
     cmdData.forEach((key, value) {
       cmdList.addAll([key, value!]);
     });
-    // print("cmdList:${cmdList.toString()}");
     return cmdList;
   }
 }

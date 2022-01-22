@@ -1,9 +1,14 @@
+## 0.1.5
+
+- Add `firebase` publisher.
+- Add `github` publisher.
+
 ## 0.1.4
 
 - Add `--version` flag.
-- Add qiniu publisher.
+- Add `qiniu` publisher.
 - #21 Add `--jobs` and `--skip-jobs` option to `release` command.
-- #22 zip maker supports web platform.
+- #22 `zip` maker supports web platform.
 
 ## 0.1.3
 

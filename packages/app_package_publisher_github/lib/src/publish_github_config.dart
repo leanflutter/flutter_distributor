@@ -32,12 +32,27 @@ class PublishGithubConfig extends PublishConfig {
       throw PublishError('<repo-name> is null');
     }
 
-    return PublishGithubConfig(
+    PublishGithubConfig publishConfig = PublishGithubConfig(
       token: token!,
       repoOwner: owner!,
       repoName: name!,
       releaseTitle: publishArguments?['release-title'],
     );
+
+    String appVersion =
+        publishConfig.pubspec.version.toString().split('+').first;
+    String appBuildNumber =
+        publishConfig.pubspec.version.toString().split('+').last;
+
+    if ((publishConfig.releaseTitle ?? '').trim().isEmpty) {
+      publishConfig.releaseTitle = 'v${appVersion}';
+    } else {
+      publishConfig.releaseTitle = publishConfig.releaseTitle
+          ?.replaceAll('{appVersion}', appVersion)
+          .replaceAll('{appBuildNumber}', appBuildNumber);
+    }
+
+    return publishConfig;
   }
 
   PublishGithubConfig({
