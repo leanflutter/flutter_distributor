@@ -18,6 +18,11 @@ class CommandPublish extends Command {
     argParser.addOption('firebase-testers-file', valueHelp: '');
     argParser.addOption('firebase-groups', valueHelp: '');
     argParser.addOption('firebase-groups-file', valueHelp: '');
+    // Github
+    argParser.addSeparator('github');
+    argParser.addOption('github-repo-owner', valueHelp: '');
+    argParser.addOption('github-repo-name', valueHelp: '');
+    argParser.addOption('github-release-title', valueHelp: '');
     // Qiniu
     argParser.addSeparator('qiniu');
     argParser.addOption('qiniu-bucket', valueHelp: '');
@@ -43,6 +48,9 @@ class CommandPublish extends Command {
       'firebase-testers-file': argResults?['firebase-testers-file'],
       'firebase-groups': argResults?['firebase-groups'],
       'firebase-groups-file': argResults?['firebase-groups-file'],
+      'github-repo-owner': argResults?['github-repo-owner'],
+      'github-repo-name': argResults?['github-repo-name'],
+      'github-release-title': argResults?['github-release-title'],
       'qiniu-bucket': argResults?['qiniu-bucket'],
       'qiniu-bucket-domain': argResults?['qiniu-bucket-domain'],
       'qiniu-savekey-prefix': argResults?['qiniu-savekey-prefix'],

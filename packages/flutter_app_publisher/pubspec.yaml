@@ -11,9 +11,12 @@ dependencies:
   app_package_publisher_fir: ^0.1.4
   app_package_publisher_pgyer: ^0.1.4
   app_package_publisher_qiniu: ^0.1.4
+  app_package_publisher_firebase:
+    path: ../app_package_publisher_firebase
+  app_package_publisher_github:
+    path: ../app_package_publisher_github
   args: ^2.2.0
   yaml: ^3.1.0
-
 # dependency_overrides:
 #   app_package_publisher:
 #     path: ../app_package_publisher
