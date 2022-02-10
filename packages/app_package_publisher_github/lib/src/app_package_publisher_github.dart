@@ -102,13 +102,14 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
     Uint8List fileData = await file.readAsBytes();
     String url = '$uploadUrl?name=${Uri.encodeComponent(fileName)}';
     // dio upload
+    _dio.options.contentType = 'application/octet-stream';
     _dio.options.headers
-        .putIfAbsent('Content-Type', () => 'application/octet-stream');
+        .putIfAbsent(Headers.contentLengthHeader, () => fileData.length);
     String? browserDownloadUrl;
     try {
       Response resp = await _dio.post(
         url,
-        data: fileData,
+        data: Stream.fromIterable(fileData.map((e) => [e])),
         onSendProgress: (int sent, int total) {
           if (onPublishProgress != null) {
             onPublishProgress(sent, total);
