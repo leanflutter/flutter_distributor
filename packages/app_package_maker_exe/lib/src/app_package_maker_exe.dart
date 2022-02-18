@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 import 'package:path/path.dart' as p;
+import 'package:io/io.dart';
 
 import 'make_exe_config.dart';
 import 'create_setup_script_file.dart';
@@ -42,14 +42,7 @@ class AppPackageMakerExe extends AppPackageMaker {
       throw Exception('`Inno Setup 6` was not installed.');
     }
 
-    Process.runSync(
-      'cp',
-      [
-        '-R',
-        '${appDirectory.path}/*',
-        packagingDirectory.path,
-      ],
-    );
+    copyPathSync(appDirectory.path, packagingDirectory.path);
 
     File setupScriptFile =
         await createSetupScriptFile(makeConfig as MakeExeConfig);
