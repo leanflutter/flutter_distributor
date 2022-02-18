@@ -38,6 +38,9 @@ class AppBuilder {
         arguments.addAll(['--$key', value]);
       }
     }
+    print(
+      (['flutter', 'build', buildSubcommand]..addAll(arguments)).join(' '),
+    );
 
     Process process = await Process.start(
       'flutter',
