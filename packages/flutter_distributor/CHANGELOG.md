@@ -1,3 +1,8 @@
+## 0.1.6
+
+- `PowerShell` support.
+- Fix the problem of broken files after uploading.
+
 ## 0.1.5
 
 - Add `firebase` publisher.

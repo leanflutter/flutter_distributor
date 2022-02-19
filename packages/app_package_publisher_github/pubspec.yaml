@@ -1,6 +1,6 @@
 name: app_package_publisher_github
 description: Publish your app to github.
-version: 0.1.5
+version: 0.1.6
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:

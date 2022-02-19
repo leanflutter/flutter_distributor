@@ -49,7 +49,7 @@ packages:
       path: "../app_package_publisher_github"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.1.6"
   app_package_publisher_pgyer:
     dependency: "direct main"
     description:
