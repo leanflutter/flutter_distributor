@@ -283,6 +283,22 @@ class FlutterDistributor {
       throw Exception('Missing/incomplete `distribute_options.yaml` file.');
     }
 
+    if (cleanOnceBeforeBuild) {
+      void onProcessStd(List<int> data) {
+        String message = utf8.decoder.convert(data).trim();
+        logger.info(Colorize(message).darkGray());
+      }
+
+      Process process = await Process.start(
+        'flutter',
+        ['clean'],
+        runInShell: true,
+      );
+      process.stdout.listen(onProcessStd);
+      process.stderr.listen(onProcessStd);
+      await process.exitCode;
+    }
+
     for (Release release in releases) {
       List<ReleaseJob> filteredJobs = release.jobs.where((e) {
         if (jobNameList.isNotEmpty) {
@@ -300,7 +316,7 @@ class FlutterDistributor {
         List<MakeResult> makeResultList = await package(
           job.package.platform,
           [job.package.target],
-          cleanOnceBeforeBuild: cleanOnceBeforeBuild,
+          cleanOnceBeforeBuild: false,
           buildArguments: job.package.buildArgs ?? {},
         );
 
