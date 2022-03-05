@@ -93,6 +93,7 @@ flutter_distributor release --name dev
 
 - [比译](https://biyidev.com/) - 一个便捷的翻译和词典应用。
 - [钱迹](https://qianjiapp.com/) - 一款纯粹记账的应用。
+- [Alga](https://github.com/laiiihz/alga/) - 一个开发者工具应用。
 
 ## 许可证
 
