@@ -1,3 +1,8 @@
+## 0.1.7
+
+- Change parameter `cleanOnceBeforeBuild` to `cleanBeforeBuild`
+- Changed to only clean once before build #41
+
 ## 0.1.6
 
 - `PowerShell` support.

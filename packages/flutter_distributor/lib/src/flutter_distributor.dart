@@ -92,9 +92,8 @@ class FlutterDistributor {
 
         return yamlDoc['packages']['flutter_distributor']['version'];
       }
-    } on Exception catch (_) {
-      return null;
-    }
+    } catch (_) {}
+    return null;
   }
 
   Future<void> checkVersion() async {
@@ -125,7 +124,7 @@ class FlutterDistributor {
   Future<List<MakeResult>> package(
     String platform,
     List<String> targets, {
-    required bool cleanOnceBeforeBuild,
+    required bool cleanBeforeBuild,
     required Map<String, dynamic> buildArguments,
   }) async {
     List<MakeResult> makeResultList = [];
@@ -146,7 +145,7 @@ class FlutterDistributor {
           buildResult = await _builder.build(
             platform,
             target,
-            cleanOnceBeforeBuild: cleanOnceBeforeBuild,
+            cleanBeforeBuild: cleanBeforeBuild,
             buildArguments: buildArguments,
             onProcessStdOut: (data) {
               String message = utf8.decoder.convert(data).trim();
@@ -265,7 +264,7 @@ class FlutterDistributor {
     String name, {
     required List<String> jobNameList,
     required List<String> skipJobNameList,
-    required bool cleanOnceBeforeBuild,
+    required bool cleanBeforeBuild,
   }) async {
     Directory outputDirectory = distributeOptions.outputDirectory;
     if (!outputDirectory.existsSync()) {
@@ -296,13 +295,18 @@ class FlutterDistributor {
       if (filteredJobs.isEmpty) {
         throw Exception('No available jobs found in ${release.name}.');
       }
+
+      bool needCleanBeforeBuild = cleanBeforeBuild;
+
       for (ReleaseJob job in filteredJobs) {
         List<MakeResult> makeResultList = await package(
           job.package.platform,
           [job.package.target],
-          cleanOnceBeforeBuild: cleanOnceBeforeBuild,
+          cleanBeforeBuild: needCleanBeforeBuild,
           buildArguments: job.package.buildArgs ?? {},
         );
+        // Clean only once
+        needCleanBeforeBuild = false;
 
         if (job.publish != null || job.publishTo != null) {
           String? publishTarget = job.publishTo ?? job.publish?.target;

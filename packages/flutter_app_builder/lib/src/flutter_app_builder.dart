@@ -20,7 +20,7 @@ class FlutterAppBuilder {
   Future<BuildResult> build(
     String platform,
     String target, {
-    required bool cleanOnceBeforeBuild,
+    required bool cleanBeforeBuild,
     required Map<String, dynamic> buildArguments,
     required void Function(List<int> data) onProcessStdOut,
     required void Function(List<int> data) onProcessStdErr,
@@ -41,7 +41,7 @@ class FlutterAppBuilder {
 
     return await builder.build(
       target: target,
-      cleanOnceBeforeBuild: cleanOnceBeforeBuild,
+      cleanBeforeBuild: cleanBeforeBuild,
       buildArguments: buildArguments,
       onProcessStdOut: onProcessStdOut,
       onProcessStdErr: onProcessStdErr,

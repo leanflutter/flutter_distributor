@@ -34,7 +34,7 @@ class CommandRelease extends Command {
       name,
       jobNameList: jobNameList,
       skipJobNameList: skipJobNameList,
-      cleanOnceBeforeBuild: !isSkipClean,
+      cleanBeforeBuild: !isSkipClean,
     );
   }
 }

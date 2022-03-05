@@ -51,7 +51,7 @@ class CommandPackage extends Command {
     await distributor.package(
       platform,
       targets,
-      cleanOnceBeforeBuild: !isSkipClean,
+      cleanBeforeBuild: !isSkipClean,
       buildArguments: buildArguments,
     );
   }

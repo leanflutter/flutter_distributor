@@ -11,12 +11,12 @@ class AppBuilder {
 
   Future<BuildResult> build({
     String? target,
-    required bool cleanOnceBeforeBuild,
+    required bool cleanBeforeBuild,
     required Map<String, dynamic> buildArguments,
     required void Function(List<int> data) onProcessStdOut,
     required void Function(List<int> data) onProcessStdErr,
   }) async {
-    if (cleanOnceBeforeBuild) {
+    if (cleanBeforeBuild) {
       Process process = await Process.start(
         'flutter',
         ['clean'],

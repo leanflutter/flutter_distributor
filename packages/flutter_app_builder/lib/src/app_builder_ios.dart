@@ -15,7 +15,7 @@ class AppBuilderIos extends AppBuilder {
   @override
   Future<BuildResult> build({
     String? target,
-    bool cleanOnceBeforeBuild = false,
+    bool cleanBeforeBuild = false,
     required Map<String, dynamic> buildArguments,
     required void Function(List<int> data) onProcessStdOut,
     required void Function(List<int> data) onProcessStdErr,
@@ -25,7 +25,7 @@ class AppBuilderIos extends AppBuilder {
     }
     return super.build(
       target: target,
-      cleanOnceBeforeBuild: cleanOnceBeforeBuild,
+      cleanBeforeBuild: cleanBeforeBuild,
       buildArguments: buildArguments,
       onProcessStdOut: onProcessStdOut,
       onProcessStdErr: onProcessStdErr,

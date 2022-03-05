@@ -13,12 +13,12 @@ releases:
             target-platform: android-arm,android-arm64
             dart-define:
               APP_ENV: dev
-        publish:
-          target: qiniu
-          args:
-            bucket: your bucket
-            # bucket-domain: https://dl.example.com
-            # savekey-prefix: myapp/
+        # publish:
+        #   target: qiniu
+        #   args:
+        #     bucket: your bucket
+        #     # bucket-domain: https://dl.example.com
+        #     # savekey-prefix: myapp/
       # Build and publish your ipa pkg to pgyer
       - name: release-dev-ios
         package:
@@ -28,4 +28,4 @@ releases:
             export-options-plist: ios/ExportOptions.plist
             dart-define:
               APP_ENV: dev
-        publish_to: pgyer
+        # publish_to: pgyer
