@@ -5,7 +5,7 @@ import 'package:app_package_publisher/app_package_publisher.dart';
 
 import 'publish_appstore_config.dart';
 
-/// AppStore doc []
+/// AppStore doc [https://help.apple.com/asc/appsaltool/]
 class AppPackagePublisherAppStore extends AppPackagePublisher {
   String get name => 'appstore';
 
@@ -24,8 +24,6 @@ class AppPackagePublisherAppStore extends AppPackagePublisher {
     // Get config
     PublishAppStoreConfig publishConfig =
         PublishAppStoreConfig.parse(environment, publishArguments);
-
-    print('publishConfig:${publishConfig.toAppStoreCliDistributeArgs()}');
     // Publish to AppStore
     Process process = await Process.start(
       'xcrun',
@@ -51,7 +49,7 @@ class AppPackagePublisherAppStore extends AppPackagePublisher {
     int code = await process.exitCode;
     if (code == 0) {
       return PublishResult(
-        url: 'https://console.appstore.google.com/project/_/appdistribution',
+        url: 'https://appstoreconnect.apple.com/apps',
       );
     } else {
       throw PublishError('$code - Upload of appstore failed');
