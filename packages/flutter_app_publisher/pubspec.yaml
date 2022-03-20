@@ -8,6 +8,8 @@ environment:
 
 dependencies:
   app_package_publisher: ^0.1.5
+  app_package_publisher_appstore:
+    path: ../app_package_publisher_appstore
   app_package_publisher_fir: ^0.1.5
   app_package_publisher_pgyer: ^0.1.5
   app_package_publisher_qiniu: ^0.1.5

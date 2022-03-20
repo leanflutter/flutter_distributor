@@ -6,17 +6,17 @@ import 'package:app_package_publisher/app_package_publisher.dart';
 import 'package:colorize/colorize.dart';
 import 'package:flutter_app_builder/flutter_app_builder.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
-import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:flutter_app_publisher/flutter_app_publisher.dart';
 import 'package:path/path.dart' as p;
+import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
-import 'utils/logger.dart';
-import 'utils/progress_bar.dart';
-import 'utils/pub_dev_api.dart';
 import 'distribute_options.dart';
 import 'release.dart';
 import 'release_job.dart';
+import 'utils/logger.dart';
+import 'utils/progress_bar.dart';
+import 'utils/pub_dev_api.dart';
 
 class FlutterDistributor {
   final FlutterAppBuilder _builder = FlutterAppBuilder();
