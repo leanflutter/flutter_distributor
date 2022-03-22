@@ -1,3 +1,8 @@
+## 0.1.8
+
+- [aab maker] support flavor arg #46
+- Add `appstore` publisher. #45
+
 ## 0.1.7
 
 - Change parameter `cleanOnceBeforeBuild` to `cleanBeforeBuild`
