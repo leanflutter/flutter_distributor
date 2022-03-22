@@ -19,7 +19,7 @@ class AppBuilderAndroid extends AppBuilder {
   @override
   Directory get outputDirectory {
     if (target == 'aab') {
-      return Directory('build/app/outputs/bundle/release');
+      return Directory('build/app/outputs/bundle');
     } else {
       return Directory('build/app/outputs/flutter-apk');
     }

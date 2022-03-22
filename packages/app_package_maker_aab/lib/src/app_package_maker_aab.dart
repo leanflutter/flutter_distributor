@@ -19,9 +19,14 @@ class AppPackageMakerAab extends AppPackageMaker {
       ..flavor = flavor
       ..outputDirectory = outputDirectory;
 
-    File aabFile = appDirectory
+    Directory aabDirectory = Directory('${appDirectory.path}/release');
+    if ((flavor ?? '').isNotEmpty) {
+      aabDirectory = Directory('${appDirectory.path}/${flavor}Release');
+    }
+
+    File aabFile = aabDirectory
         .listSync()
-        .where((e) => e.path.endsWith('${flavor ?? ''}-release.$packageFormat'))
+        .where((e) => e.path.endsWith('-release.$packageFormat'))
         .map((e) => File(e.path))
         .first;
 
