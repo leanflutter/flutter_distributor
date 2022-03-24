@@ -27,11 +27,13 @@ class AppPackageMakerExe extends AppPackageMaker {
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
+    String? jobName,
     String? flavor,
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   }) async {
     MakeConfig makeConfig = await loadMakeConfig()
+      ..jobName = jobName
       ..outputDirectory = outputDirectory;
     Directory packagingDirectory = makeConfig.packagingDirectory;
 

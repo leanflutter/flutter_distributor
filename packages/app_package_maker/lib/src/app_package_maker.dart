@@ -7,6 +7,10 @@ import 'package:yaml/yaml.dart';
 
 const _kArtifactName = '{name}-{flavor}-{version}-{platform}.{ext}';
 const _kArtifactNameNoFlavor = '{name}-{version}-{platform}.{ext}';
+const _kArtifactNameWithJobName =
+    '{name}-{flavor}-{version}-{platform}-{jobName}.{ext}';
+const _kArtifactNameNoFlavorWithJobName =
+    '{name}-{version}-{platform}-{jobName}.{ext}';
 
 Map<String, dynamic> loadMakeConfigYaml(String path) {
   final yamlDoc = loadYaml(File(path).readAsStringSync());
@@ -29,6 +33,7 @@ abstract class AppPackageMaker {
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
+    String? jobName,
     String? flavor,
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
@@ -39,6 +44,7 @@ class MakeConfig {
   String? artifactName;
   late bool isInstaller = false;
   late String platform;
+  String? jobName;
   String? flavor;
   late String packageFormat;
   late Directory outputDirectory;
@@ -54,12 +60,18 @@ class MakeConfig {
       'name': appName,
       'version': appVersion.toString(),
       'platform': platform,
+      'jobName': jobName,
       'flavor': flavor,
       'ext': packageFormat,
     }..removeWhere((key, value) => value == null);
 
     String filename = flavor != null ? _kArtifactName : _kArtifactNameNoFlavor;
     if (artifactName != null) filename = artifactName!;
+    if (jobName != null) {
+      filename = flavor != null
+          ? _kArtifactNameWithJobName
+          : _kArtifactNameNoFlavorWithJobName;
+    }
 
     for (String key in variables.keys) {
       dynamic value = variables[key];

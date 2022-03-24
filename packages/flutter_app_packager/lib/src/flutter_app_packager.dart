@@ -27,6 +27,7 @@ class FlutterAppPackager {
     Directory appDirectory, {
     required Directory outputDirectory,
     required String platform,
+    String? jobName,
     String? flavor,
     required String target,
     void Function(List<int> data)? onProcessStdOut,
@@ -39,6 +40,7 @@ class FlutterAppPackager {
       appDirectory,
       outputDirectory: outputDirectory,
       flavor: flavor,
+      jobName: jobName,
       onProcessStdOut: onProcessStdOut,
       onProcessStdErr: onProcessStdErr,
     );

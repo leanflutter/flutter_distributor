@@ -126,6 +126,7 @@ class FlutterDistributor {
     List<String> targets, {
     required bool cleanBeforeBuild,
     required Map<String, dynamic> buildArguments,
+    String? jobName,
   }) async {
     List<MakeResult> makeResultList = [];
 
@@ -166,6 +167,7 @@ class FlutterDistributor {
           MakeResult makeResult = await _packager.package(
             buildResult.outputDirectory,
             outputDirectory: outputDirectory,
+            jobName: jobName,
             platform: platform,
             flavor: buildArguments['flavor'],
             target: target,
@@ -304,6 +306,7 @@ class FlutterDistributor {
           [job.package.target],
           cleanBeforeBuild: needCleanBeforeBuild,
           buildArguments: job.package.buildArgs ?? {},
+          jobName: job.name,
         );
         // Clean only once
         needCleanBeforeBuild = false;

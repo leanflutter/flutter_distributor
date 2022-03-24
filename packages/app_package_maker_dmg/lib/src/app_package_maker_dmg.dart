@@ -24,11 +24,13 @@ class AppPackageMakerDmg extends AppPackageMaker {
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
+    String? jobName,
     String? flavor,
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   }) async {
     MakeDmgConfig makeConfig = (await loadMakeConfig() as MakeDmgConfig)
+      ..jobName = jobName
       ..outputDirectory = outputDirectory;
     Directory packagingDirectory = makeConfig.packagingDirectory;
 
