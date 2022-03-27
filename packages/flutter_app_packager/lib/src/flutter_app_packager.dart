@@ -7,6 +7,7 @@ import 'package:app_package_maker_deb/app_package_maker_deb.dart';
 import 'package:app_package_maker_dmg/app_package_maker_dmg.dart';
 import 'package:app_package_maker_exe/app_package_maker_exe.dart';
 import 'package:app_package_maker_ipa/app_package_maker_ipa.dart';
+import 'package:app_package_maker_msix/app_package_maker_msix.dart';
 import 'package:app_package_maker_zip/app_package_maker_zip.dart';
 
 class FlutterAppPackager {
@@ -17,6 +18,7 @@ class FlutterAppPackager {
     AppPackageMakerDmg(),
     AppPackageMakerExe(),
     AppPackageMakerIpa(),
+    AppPackageMakerMsix(),
     AppPackageMakerZip('linux'),
     AppPackageMakerZip('macos'),
     AppPackageMakerZip('windows'),

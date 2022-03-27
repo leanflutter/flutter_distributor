@@ -29,3 +29,10 @@ releases:
             dart-define:
               APP_ENV: dev
         # publish_to: pgyer
+      - name: release-dev-windows
+        package:
+          platform: windows
+          target: msix
+          build_args:
+            dart-define:
+              APP_ENV: dev
