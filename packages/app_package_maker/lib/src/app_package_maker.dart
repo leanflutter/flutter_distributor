@@ -49,8 +49,6 @@ class MakeConfig {
   }
 
   String get appName => displayName ?? pubspec.name;
-
-  String get appName => pubspec.name;
   Version get appVersion => pubspec.version!;
 
   Pubspec? _pubspec;
