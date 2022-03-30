@@ -15,7 +15,7 @@ class AppPackageMakerExe extends AppPackageMaker {
   bool get isSupportedOnCurrentPlatform => Platform.isWindows;
 
   @override
-  Future<MakeConfig> loadMakeConfig() async {
+  Future<MakeExeConfig> loadMakeConfig() async {
     final map = loadMakeConfigYaml('windows/packaging/exe/make_config.yaml');
     return MakeExeConfig.fromJson(map)
       ..isInstaller = true
@@ -31,12 +31,16 @@ class AppPackageMakerExe extends AppPackageMaker {
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   }) async {
-    MakeConfig makeConfig = await loadMakeConfig()
+    MakeExeConfig makeConfig = await loadMakeConfig()
       ..outputDirectory = outputDirectory;
+    if(makeConfig.appDisplayName!=null&&makeConfig.appDisplayName!.isNotEmpty){
+      makeConfig.displayName = makeConfig.appDisplayName!;
+    }
     Directory packagingDirectory = makeConfig.packagingDirectory;
 
     Directory innoSetupDirectory =
-        Directory('C:\\Program Files (x86)\\Inno Setup 6');
+    Directory(makeConfig.innoSetupDir ?? 'C:\\Program Files (x86)\\Inno Setup 6');
+
 
     if (!innoSetupDirectory.existsSync()) {
       throw Exception('`Inno Setup 6` was not installed.');

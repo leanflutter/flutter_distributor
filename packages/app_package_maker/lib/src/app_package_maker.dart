@@ -43,6 +43,13 @@ class MakeConfig {
   late String packageFormat;
   late Directory outputDirectory;
 
+  String? displayName;
+  set disPlayName(String? displayname){
+    this.displayName=displayname;
+  }
+
+  String get appName => displayName ?? pubspec.name;
+
   String get appName => pubspec.name;
   Version get appVersion => pubspec.version!;
 

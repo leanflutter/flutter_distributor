@@ -13,6 +13,8 @@ String _issFileTemplate = """
 
 #define MyAppPackagingDir "{{appPackagingDir}}"
 #define MyAppOutputBaseFilename "{{appOutputBaseFilename}}"
+#define DeskTopIconChecked "{{deskTopIconChecked}}"
+
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -40,7 +42,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ;Name: "chinesesimplified"; MessagesFile: "compiler:Languages\\ChineseSimplified.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";{#DeskTopIconChecked}
 
 [Files]
 Source: "{#MyAppPackagingDir}\\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -67,10 +69,11 @@ Future<File> createSetupScriptFile(MakeExeConfig makeConfig) async {
     'appVersion': makeConfig.appVersion.toString(),
     'appPublisher': makeConfig.appPublisher ?? '',
     'appPublisherUrl': makeConfig.appPublisherUrl ?? '',
-    'appExeName': p.basename(exeFile.path),
+    'appExeName': makeConfig.appExeFileName ?? p.basename(exeFile.path),
     'appPackagingDir': p.basename(makeConfig.packagingDirectory.path),
     'appOutputBaseFilename':
         p.basename(makeConfig.outputFile.path).replaceAll('.exe', ''),
+    'deskTopIconChecked':makeConfig.defaultDesktopIconCkecked ? "" : " Flags: unchecked"
   };
 
   String content = _issFileTemplate;
