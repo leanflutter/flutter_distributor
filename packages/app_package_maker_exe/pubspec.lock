@@ -43,6 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.4.0"
+  liquid_engine:
+    dependency: "direct main"
+    description:
+      name: liquid_engine
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.2"
   meta:
     dependency: transitive
     description:

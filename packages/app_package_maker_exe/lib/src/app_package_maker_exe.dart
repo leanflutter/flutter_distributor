@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
-import 'package:path/path.dart' as p;
 import 'package:io/io.dart';
 
+import 'inno_setup/inno_setup_compiler.dart';
+import 'inno_setup/inno_setup_script.dart';
 import 'make_exe_config.dart';
-import 'create_setup_script_file.dart';
 
 class AppPackageMakerExe extends AppPackageMaker {
   String get name => 'exe';
@@ -31,36 +31,25 @@ class AppPackageMakerExe extends AppPackageMaker {
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   }) async {
-    MakeConfig makeConfig = await loadMakeConfig()
+    MakeExeConfig makeConfig = await loadMakeConfig() as MakeExeConfig
       ..outputDirectory = outputDirectory;
     Directory packagingDirectory = makeConfig.packagingDirectory;
-
-    Directory innoSetupDirectory =
-        Directory('C:\\Program Files (x86)\\Inno Setup 6');
-
-    if (!innoSetupDirectory.existsSync()) {
-      throw Exception('`Inno Setup 6` was not installed.');
-    }
-
     copyPathSync(appDirectory.path, packagingDirectory.path);
 
-    File setupScriptFile =
-        await createSetupScriptFile(makeConfig as MakeExeConfig);
+    InnoSetupScript script = InnoSetupScript.fromMakeConfig(makeConfig);
+    InnoSetupCompiler compiler = InnoSetupCompiler();
 
-    Process process = await Process.start(
-      p.join(innoSetupDirectory.path, 'ISCC.exe'),
-      [setupScriptFile.path],
+    bool compiled = await compiler.compile(
+      script,
+      onProcessStdErr: onProcessStdErr,
+      onProcessStdOut: onProcessStdOut,
     );
-    process.stdout.listen(onProcessStdOut);
-    process.stderr.listen(onProcessStdErr);
 
-    int exitCode = await process.exitCode;
-    if (exitCode != 0) {
+    if (!compiled) {
       throw MakeError();
     }
 
     packagingDirectory.deleteSync(recursive: true);
-    setupScriptFile.deleteSync(recursive: true);
 
     return MakeResult(makeConfig);
   }

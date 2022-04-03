@@ -279,6 +279,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.4.0"
+  liquid_engine:
+    dependency: transitive
+    description:
+      name: liquid_engine
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.2"
   logging:
     dependency: "direct main"
     description:
