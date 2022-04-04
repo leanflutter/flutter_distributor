@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:liquid_engine/liquid_engine.dart';
@@ -81,10 +82,10 @@ class InnoSetupScript {
       Source.fromString(_template),
     );
 
-    String content = await template.render(context);
+    String content = '\uFEFF' + await template.render(context);
     File file = File('${makeConfig.packagingDirectory.path}.iss');
 
-    file.writeAsStringSync(content);
+    file.writeAsBytesSync(utf8.encode(content));
     return file;
   }
 }
