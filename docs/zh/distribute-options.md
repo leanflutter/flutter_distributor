@@ -33,10 +33,10 @@ releases:
         publish_to: pgyer
 ```
 
-## Specification <a href="#specification" id="specification"></a>
+## Specification
 
 | Field Name | Type     | Description            |
 | ---------- | -------- | ---------------------- |
 | `env`      | `map`    | environment variables. |
 | `output`   | `string` | e.g. `dist/`           |
-| `releases` |          |                        |
+| `releases` | -        | -                      |

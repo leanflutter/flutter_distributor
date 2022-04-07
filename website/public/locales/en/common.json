@@ -1,0 +1,11 @@
+{
+  "language": {
+    "en": "English",
+    "zh": "中文"
+  },
+  "name": "Flutter Distributor",
+  "slogan": "A complete tool for packaging and publishing your Flutter apps.",
+  "btn-getting-started": "Getting Started",
+  "nav-item-docs": "Docs",
+  "nav-item-blog": "Blog"
+}

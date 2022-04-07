@@ -1,0 +1,3 @@
+# Ignore artifacts:
+.next
+build

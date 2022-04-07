@@ -1,0 +1,11 @@
+{
+  "language": {
+    "en": "English",
+    "zh": "中文"
+  },
+  "name": "Flutter Distributor",
+  "slogan": "一个完整的工具，用于打包和发布您的 Flutter 应用。",
+  "btn-getting-started": "立即开始",
+  "nav-item-docs": "文档",
+  "nav-item-blog": "博客"
+}
