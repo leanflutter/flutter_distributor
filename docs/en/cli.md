@@ -3,8 +3,6 @@ title: CLI
 description: How to use the command line interface (CLI) for Flutter Distributor
 ---
 
-# CLI
-
 ## Installation
 
 ```
@@ -13,9 +11,7 @@ dart pub global activate flutter_distributor
 
 ## Commands
 
-{% hint style="info" %}
-These commands are sorted in alphabetical order. The most commonly used are package, publish, and release.
-{% endhint %}
+> These commands are sorted in alphabetical order. The most commonly used are package, publish, and release.
 
 ### Package
 

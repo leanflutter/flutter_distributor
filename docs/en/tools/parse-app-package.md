@@ -1,4 +1,6 @@
-# Parse App Package
+---
+title: Parse App Package
+---
 
 ## Installation
 
@@ -14,7 +16,7 @@ parse_app_package hello_world-1.0.0+1-android.apk
 
 Output:
 
-```
+```json
 {
   "platform": "android",
   "identifier": "com.example.hello_world",

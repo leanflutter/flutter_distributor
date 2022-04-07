@@ -1,4 +1,6 @@
-# exe
+---
+title: exe
+---
 
 ## Requirements
 

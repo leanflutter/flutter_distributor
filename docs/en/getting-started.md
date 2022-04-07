@@ -1,10 +1,9 @@
 ---
+title: Getting Started
 description: >-
   Flutter Distributor is a complete tool for packaging and publishing your
   Flutter applications.
 ---
-
-# Getting Started
 
 ## Installation
 
@@ -24,8 +23,6 @@ output: dist/
 
 Let's take `pgyer` as an example, after logging in, click the user avatar on the right side to go to the [API information](https://www.pgyer.com/account/api) page from the menu, copy the `API Key` and add it to the env node.
 
-![https://www.pgyer.com/account/api](.gitbook/assets/pgyer-api-info.png)
-
 ```yaml
 env:
   PGYER_API_KEY: 'your api key'
@@ -37,9 +34,7 @@ Check out the [Publishers](configuration/publishers/) documentation for all poss
 
 The following example shows how to add a release that contains package `apk`, `ipa` and publish to `pgyer.com`, A `release` can include multiple jobs.
 
-{% hint style="info" %}
-The `build_args` are the args supported by the `flutter build` command, please modify it according to your project.
-{% endhint %}
+> The `build_args` are the args supported by the `flutter build` command, please modify it according to your project.
 
 ```yaml
 releases:

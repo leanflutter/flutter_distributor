@@ -3,8 +3,6 @@ title: CLI
 description: 如何使用 Flutter Distributor 的命令行界面（CLI）
 ---
 
-# CLI
-
 ## 安装
 
 ```
@@ -13,9 +11,7 @@ dart pub global activate flutter_distributor
 
 ## 命令
 
-{% hint style="info" %}
-These commands are sorted in alphabetical order. The most commonly used are package, publish, and release.
-{% endhint %}
+> These commands are sorted in alphabetical order. The most commonly used are package, publish, and release.
 
 ### Package
 

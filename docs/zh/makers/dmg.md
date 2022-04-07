@@ -1,8 +1,8 @@
-# dmg
+---
+title: dmg
+---
 
-{% hint style="warning" %}
-你只能在 macOS 机器上构建 DMG 目标。
-{% endhint %}
+> 你只能在 macOS 机器上构建 DMG 目标。
 
 ## 必要条件
 

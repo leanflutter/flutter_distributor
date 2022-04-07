@@ -1,4 +1,6 @@
-# github
+---
+title: github
+---
 
 The github target publishes your package artifacts to the [github](https://github.com/leanflutter/flutter\_distributor/releases) release.
 

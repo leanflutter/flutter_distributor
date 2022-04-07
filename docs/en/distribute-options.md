@@ -1,4 +1,6 @@
-# Distribute Options
+---
+title: Distribute Options
+---
 
 ## Example
 

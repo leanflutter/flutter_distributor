@@ -1,4 +1,6 @@
-# deb
+---
+title: deb
+---
 
 ## Usage
 

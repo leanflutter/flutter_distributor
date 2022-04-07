@@ -1,4 +1,6 @@
-# firebase
+---
+title: firebase
+---
 
 The firebase target publishes your package artifacts to the [firebase](https://console.firebase.google.com/project/_/appdistribution).
 

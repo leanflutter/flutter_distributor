@@ -1,4 +1,6 @@
-# fir
+---
+title: fir
+---
 
 The fir target publishes your `.apk` or `.ipa` artifacts to the [fir.im](https://betaqr.com).
 

@@ -1,8 +1,7 @@
 ---
+title: 开始
 description: Flutter Distributor 是一个完整的工具，用于打包和发布您的 Flutter 应用。
 ---
-
-# 开始
 
 ## 安装
 
@@ -22,8 +21,6 @@ output: dist/
 
 以 `pgyer` 为例，登录后，点击右侧的用户头像，从菜单中进入[API 信息](https://www.pgyer.com/account/api)页面，复制 `API Key` 并将其添加到 `env` 节点。
 
-![https://www.pgyer.com/account/api](.gitbook/assets/pgyer-api-info.png)
-
 ```yaml
 env:
   PGYER_API_KEY: 'your api key'
@@ -35,9 +32,7 @@ Check out the [Publishers](configuration/publishers/) documentation for all poss
 
 下面的例子展示了如何添加一个包含打包 `apk`、`ipa` 包并发布到 `pgyer.com` 的发布项，一个发布项可以包含多个作业。
 
-{% hint style="info" %}
-`build_args` 是 `flutter build` 命令所支持的参数，请根据你的项目进行修改。
-{% endhint %}
+> `build_args` 是 `flutter build` 命令所支持的参数，请根据你的项目进行修改。
 
 ```yaml
 releases:
