@@ -1,15 +1,12 @@
 # flutter_distributor
 
-[![pub version][pub-image]][pub-url] [![][awesomeflutter-image]][awesomeflutter-url] [![][discord-image]][discord-url] [![melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos)
+[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] [![melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos)
 
 [pub-image]: https://img.shields.io/pub/v/flutter_distributor.svg?style=flat-square
 [pub-url]: https://pub.dev/packages/flutter_distributor
 
 [discord-image]: https://img.shields.io/discord/884679008049037342.svg?style=flat-square
 [discord-url]: https://discord.gg/zPa6EZ2jqb
-
-[awesomeflutter-image]: https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true&style=flat-square
-[awesomeflutter-url]: https://github.com/Solido/awesome-flutter
 
 一个完整的工具，用于打包和发布您的 [Flutter](https://flutter.dev) 应用。
 
