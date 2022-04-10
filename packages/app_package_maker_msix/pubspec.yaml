@@ -11,7 +11,3 @@ dependencies:
   io: ^1.0.3
   msix: ^3.3.2
   path: ^1.8.1
-
-# dependency_overrides:
-#   app_package_maker:
-#     path: ../app_package_maker

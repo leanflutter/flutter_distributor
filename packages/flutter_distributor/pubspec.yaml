@@ -26,39 +26,5 @@ dependencies:
   pubspec_parse: ^1.1.0
   yaml: ^3.1.0
 
-# dependency_overrides:
-#   app_package_maker:
-#     path: ../app_package_maker
-#   app_package_maker_aab:
-#     path: ../app_package_maker_aab
-#   app_package_maker_apk:
-#     path: ../app_package_maker_apk
-#   app_package_maker_deb:
-#     path: ../app_package_maker_deb
-#   app_package_maker_dmg:
-#     path: ../app_package_maker_dmg
-#   app_package_maker_exe:
-#     path: ../app_package_maker_exe
-#   app_package_maker_ipa:
-#     path: ../app_package_maker_ipa
-#   app_package_maker_zip:
-#     path: ../app_package_maker_zip
-#   app_package_parser:
-#     path: ../app_package_parser
-#   app_package_parser_apk:
-#     path: ../app_package_parser_apk
-#   app_package_publisher:
-#     path: ../app_package_publisher
-#   app_package_publisher_fir:
-#     path: ../app_package_publisher_fir
-#   app_package_publisher_pgyer:
-#     path: ../app_package_publisher_pgyer
-#   flutter_app_builder:
-#     path: ../flutter_app_builder
-#   flutter_app_packager:
-#     path: ../flutter_app_packager
-#   flutter_app_publisher:
-#     path: ../flutter_app_publisher
-
 executables:
   flutter_distributor: main

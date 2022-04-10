@@ -42,7 +42,7 @@ packages:
       path: "../app_package_maker_exe"
       relative: true
     source: path
-    version: "0.1.6"
+    version: "0.1.9"
   app_package_maker_ipa:
     dependency: "direct main"
     description:
