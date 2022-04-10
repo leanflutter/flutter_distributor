@@ -18,7 +18,7 @@
 
 ## 文档
 
-完整的文档可以在 [distributor.leanflutter.org](https://distributor.leanflutter.org/v/zh) 上找到。
+完整的文档可以在 [distributor.leanflutter.org](https://distributor.leanflutter.org/zh) 上找到。
 
 ## 项目功能
 
