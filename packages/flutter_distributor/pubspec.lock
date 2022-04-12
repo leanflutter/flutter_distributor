@@ -92,6 +92,13 @@ packages:
       relative: true
     source: path
     version: "0.1.5"
+  app_package_publisher_appcenter:
+    dependency: "direct overridden"
+    description:
+      path: "../app_package_publisher_appcenter"
+      relative: true
+    source: path
+    version: "0.2.0"
   app_package_publisher_appstore:
     dependency: "direct overridden"
     description:
@@ -250,7 +257,7 @@ packages:
       path: "../flutter_app_publisher"
       relative: true
     source: path
-    version: "0.1.8"
+    version: "0.2.0"
   http_parser:
     dependency: transitive
     description:

@@ -1,6 +1,6 @@
 name: flutter_app_publisher
 description: Flutter app publisher
-version: 0.1.8
+version: 0.2.0
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   app_package_publisher: ^0.1.5
+  app_package_publisher_appcenter: ^0.2.0
   app_package_publisher_appstore: ^0.1.8
   app_package_publisher_fir: ^0.1.5
   app_package_publisher_pgyer: ^0.1.5

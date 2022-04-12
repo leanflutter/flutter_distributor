@@ -9,6 +9,11 @@ class CommandPublish extends Command {
   CommandPublish(this.distributor) {
     argParser.addOption('path', valueHelp: '');
     argParser.addOption('targets', valueHelp: '');
+    // AppCenter
+    argParser.addSeparator('appcenter');
+    argParser.addOption('appcenter-owner-name', valueHelp: '');
+    argParser.addOption('appcenter-app-name', valueHelp: '');
+    argParser.addOption('appcenter-distribution-group', valueHelp: '');
     // Firebase
     argParser.addSeparator('firebase');
     argParser.addOption('firebase-app', valueHelp: '');
@@ -41,6 +46,10 @@ class CommandPublish extends Command {
     String path = argResults?['path'];
     List<String> targets = '${argResults?['targets']}'.split(',');
     Map<String, String?> publishArguments = {
+      'appcenter-owner-name': argResults?['appcenter-owner-name'],
+      'appcenter-app-name': argResults?['appcenter-app-name'],
+      'appcenter-distribution-group':
+          argResults?['appcenter-distribution-group'],
       'firebase-app': argResults?['firebase-app'],
       'firebase-release-notes': argResults?['firebase-release-notes'],
       'firebase-release-notes-file': argResults?['firebase-release-notes-file'],
