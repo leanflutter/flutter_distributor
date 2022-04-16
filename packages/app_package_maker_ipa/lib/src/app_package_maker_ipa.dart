@@ -19,11 +19,17 @@ class AppPackageMakerIpa extends AppPackageMaker {
       ..flavor = flavor
       ..outputDirectory = outputDirectory;
 
-    File ipaFile = appDirectory
+    List<File> ipaFiles = appDirectory
         .listSync()
         .where((e) => e.path.endsWith('.$packageFormat'))
         .map((e) => File(e.path))
-        .first;
+        .toList();
+
+    ipaFiles.sort(
+      (a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()),
+    );
+
+    File ipaFile = ipaFiles.first;
 
     ipaFile.copySync(makeConfig.outputFile.path);
 

@@ -28,7 +28,12 @@ class AppPackageMakerApk extends AppPackageMaker {
 
     File apkFile = appDirectory
         .listSync()
-        .where((e) => e.path.endsWith('-release.$packageFormat'))
+        .where((e) {
+          if (flavor != null) {
+            return e.path.endsWith('$flavor-release.$packageFormat');
+          }
+          return e.path.endsWith('-release.$packageFormat');
+        })
         .map((e) => File(e.path))
         .first;
 
