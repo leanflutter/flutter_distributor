@@ -39,6 +39,7 @@ const mockdata = [
     label: "Publishers",
     icon: Notes,
     links: [
+      { label: "appcenter", link: "/docs/publishers/appcenter" },
       { label: "appstore", link: "/docs/publishers/appstore" },
       { label: "fir", link: "/docs/publishers/fir" },
       { label: "firebase", link: "/docs/publishers/firebase" },
