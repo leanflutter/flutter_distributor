@@ -1,0 +1,74 @@
+output: dist/
+releases:
+  - name: release-android
+    jobs:
+      - name: release-android-dev
+        package:
+          platform: android
+          target: apk
+          build_args:
+            flavor: dev
+            dart-define:
+              APP_ENV: dev
+      - name: release-android-prod
+        package:
+          platform: android
+          target: apk
+          build_args:
+            flavor: prod
+            dart-define:
+              APP_ENV: prod
+      - name: release-android-prod64
+        package:
+          platform: android
+          target: apk
+          build_args:
+            flavor: prod_64
+            target-platform: android-arm64
+            dart-define:
+              APP_ENV: prod
+      - name: release-android-dev-aab
+        package:
+          platform: android
+          target: aab
+          build_args:
+            flavor: dev
+            dart-define:
+              APP_ENV: dev
+      - name: release-android-prod-aab
+        package:
+          platform: android
+          target: aab
+          build_args:
+            flavor: prod
+            dart-define:
+              APP_ENV: prod
+      - name: release-android-prod64-aab
+        package:
+          platform: android
+          target: aab
+          build_args:
+            flavor: prod_64
+            target-platform: android-arm64
+            dart-define:
+              APP_ENV: prod
+  - name: release-ios
+    jobs:
+      - name: release-ios-dev-ipa
+        package:
+          platform: ios
+          target: ipa
+          build_args:
+            export-options-plist: ios/dev_ExportOptions.plist
+            flavor: dev
+            dart-define:
+              APP_ENV: dev
+      - name: release-ios-prod-ipa
+        package:
+          platform: ios
+          target: ipa
+          build_args:
+            export-options-plist: ios/prod_ExportOptions.plist
+            flavor: prod
+            dart-define:
+              APP_ENV: prod

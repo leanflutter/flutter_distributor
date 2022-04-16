@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - package_info_plus (0.4.5):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
+
+PODFILE CHECKSUM: dcd6e71a8d4cca129b2fec7f3f417de4396f3a9d
+
+COCOAPODS: 1.11.2
