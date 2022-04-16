@@ -7,6 +7,7 @@ import 'package:app_package_publisher_fir/app_package_publisher_fir.dart';
 import 'package:app_package_publisher_firebase/app_package_publisher_firebase.dart';
 import 'package:app_package_publisher_github/app_package_publisher_github.dart';
 import 'package:app_package_publisher_pgyer/app_package_publisher_pgyer.dart';
+import 'package:app_package_publisher_playstore/app_package_publisher_playstore.dart';
 import 'package:app_package_publisher_qiniu/app_package_publisher_qiniu.dart';
 
 class FlutterAppPublisher {
@@ -17,6 +18,7 @@ class FlutterAppPublisher {
     AppPackagePublisherFirebase(),
     AppPackagePublisherGithub(),
     AppPackagePublisherPgyer(),
+    AppPackagePublisherPlayStore(),
     AppPackagePublisherQiniu(),
   ];
 

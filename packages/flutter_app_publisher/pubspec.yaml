@@ -11,17 +11,10 @@ dependencies:
   app_package_publisher_appcenter: ^0.2.0
   app_package_publisher_appstore: ^0.1.8
   app_package_publisher_fir: ^0.1.5
-  app_package_publisher_pgyer: ^0.1.5
-  app_package_publisher_qiniu: ^0.1.5
   app_package_publisher_firebase: ^0.1.5
   app_package_publisher_github: ^0.1.6
+  app_package_publisher_pgyer: ^0.1.5
+  app_package_publisher_playstore: ^0.2.0
+  app_package_publisher_qiniu: ^0.1.5
   args: ^2.2.0
   yaml: ^3.1.0
-
-# dependency_overrides:
-#   app_package_publisher:
-#     path: ../app_package_publisher
-#   app_package_publisher_fir:
-#     path: ../app_package_publisher_fir
-#   app_package_publisher_pgyer:
-#     path: ../app_package_publisher_pgyer

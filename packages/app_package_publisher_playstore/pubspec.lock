@@ -36,71 +36,15 @@ packages:
       relative: true
     source: path
     version: "0.1.5"
-  app_package_publisher_appcenter:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_appcenter"
-      relative: true
-    source: path
-    version: "0.2.0"
-  app_package_publisher_appstore:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_appstore"
-      relative: true
-    source: path
-    version: "0.1.8"
-  app_package_publisher_fir:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_fir"
-      relative: true
-    source: path
-    version: "0.1.5"
-  app_package_publisher_firebase:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_firebase"
-      relative: true
-    source: path
-    version: "0.1.5"
-  app_package_publisher_github:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_github"
-      relative: true
-    source: path
-    version: "0.1.6"
-  app_package_publisher_pgyer:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_pgyer"
-      relative: true
-    source: path
-    version: "0.1.5"
-  app_package_publisher_playstore:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_playstore"
-      relative: true
-    source: path
-    version: "0.2.0"
-  app_package_publisher_qiniu:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher_qiniu"
-      relative: true
-    source: path
-    version: "0.1.5"
   archive:
     dependency: transitive
     description:
       name: archive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.6"
+    version: "3.1.9"
   args:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: args
       url: "https://pub.dartlang.org"
@@ -141,29 +85,22 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
-  dio:
-    dependency: transitive
-    description:
-      name: dio
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.4"
   googleapis:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: googleapis
       url: "https://pub.dartlang.org"
     source: hosted
     version: "8.1.0"
   googleapis_auth:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: googleapis_auth
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       url: "https://pub.dartlang.org"
@@ -191,7 +128,7 @@ packages:
     source: hosted
     version: "1.7.0"
   parse_app_package:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       path: "../parse_app_package"
       relative: true
@@ -203,7 +140,7 @@ packages:
       name: path
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.0"
+    version: "1.8.1"
   petitparser:
     dependency: transitive
     description:
@@ -225,20 +162,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
-  qiniu_sdk_base:
-    dependency: transitive
-    description:
-      name: qiniu_sdk_base
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.2"
   source_span:
     dependency: transitive
     description:
       name: source_span
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.1"
+    version: "1.8.2"
   string_scanner:
     dependency: transitive
     description:
@@ -268,7 +198,7 @@ packages:
     source: hosted
     version: "5.3.1"
   yaml:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: yaml
       url: "https://pub.dartlang.org"
