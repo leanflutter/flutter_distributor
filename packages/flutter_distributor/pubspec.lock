@@ -250,7 +250,7 @@ packages:
       path: "../flutter_app_packager"
       relative: true
     source: path
-    version: "0.1.9"
+    version: "0.2.0"
   flutter_app_publisher:
     dependency: "direct main"
     description:
