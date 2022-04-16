@@ -9,11 +9,11 @@ environment:
 dependencies:
   app_package_maker: ^0.1.3
   app_package_maker_aab: ^0.1.8
-  app_package_maker_apk: ^0.1.3
+  app_package_maker_apk: ^0.2.0
   app_package_maker_deb: ^0.1.3
   app_package_maker_dmg: ^0.1.3
   app_package_maker_exe: ^0.1.9
-  app_package_maker_ipa: ^0.1.3
+  app_package_maker_ipa: ^0.2.0
   app_package_maker_msix: ^0.1.9
   app_package_maker_zip: ^0.1.3
   args: ^2.2.0

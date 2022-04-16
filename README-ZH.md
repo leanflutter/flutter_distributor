@@ -32,6 +32,7 @@
 - [app_package_maker_ipa](./packages/app_package_maker_ipa/) - 为你的应用创建一个 `ipa` 包。
 - [app_package_maker_zip](./packages/app_package_maker_zip/) - 为你的应用创建一个 `zip` 包。
 - [app_package_maker_msix](./packages/app_package_maker_msix/) - 为你的应用创建一个 `msix` 包。
+- [app_package_publisher_appcenter](./packages/app_package_publisher_appcenter/) - 把你的应用发布到 `appcenter`.
 - [app_package_publisher_appstore](./packages/app_package_publisher_appstore/) - 把你的应用发布到 `appstore`.
 - [app_package_publisher_fir](./packages/app_package_publisher_fir/) - 把你的应用发布到 `fir`。
 - [app_package_publisher_firebase](./packages/app_package_publisher_firebase/) - 把你的应用发布到 `firebase`。

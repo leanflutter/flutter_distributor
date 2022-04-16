@@ -32,6 +32,7 @@ These are the available packages in this repository.
 - [app_package_maker_ipa](./packages/app_package_maker_ipa/) - Create a `ipa` package for your app.
 - [app_package_maker_msix](./packages/app_package_maker_msix/) - Create a `msix` package for your app.
 - [app_package_maker_zip](./packages/app_package_maker_zip/) - Create a `zip` package for your app.
+- [app_package_publisher_appcenter](./packages/app_package_publisher_appcenter/) - Publish your app to `appcenter`.
 - [app_package_publisher_appstore](./packages/app_package_publisher_appstore/) - Publish your app to `appstore`.
 - [app_package_publisher_fir](./packages/app_package_publisher_fir/) - Publish your app to `fir`.
 - [app_package_publisher_firebase](./packages/app_package_publisher_firebase/) - Publish your app to `firebase`.

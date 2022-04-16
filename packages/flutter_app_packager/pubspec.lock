@@ -21,7 +21,7 @@ packages:
       path: "../app_package_maker_apk"
       relative: true
     source: path
-    version: "0.1.3"
+    version: "0.2.0"
   app_package_maker_deb:
     dependency: "direct main"
     description:
@@ -49,7 +49,7 @@ packages:
       path: "../app_package_maker_ipa"
       relative: true
     source: path
-    version: "0.1.3"
+    version: "0.2.0"
   app_package_maker_msix:
     dependency: "direct main"
     description:
