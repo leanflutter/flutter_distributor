@@ -1,4 +1,6 @@
 output: dist/
+# See https://mustache.github.io/mustache.5.html for string template format.
+artifact_name: "{{name}}{{#channel}}-{{channel}}{{/channel}}-{{version}}-{{platform}}.{{ext}}"
 releases:
   - name: release-android
     jobs:
@@ -6,6 +8,7 @@ releases:
         package:
           platform: android
           target: apk
+          channel: dev2
           build_args:
             flavor: dev
             dart-define:
@@ -14,6 +17,7 @@ releases:
         package:
           platform: android
           target: apk
+          channel: prod2
           build_args:
             flavor: prod
             dart-define:
@@ -22,6 +26,7 @@ releases:
         package:
           platform: android
           target: apk
+          channel: prod2_64
           build_args:
             flavor: prod_64
             target-platform: android-arm64
@@ -58,6 +63,7 @@ releases:
         package:
           platform: ios
           target: ipa
+          channel: dev2
           build_args:
             export-options-plist: ios/dev_ExportOptions.plist
             flavor: dev
@@ -67,6 +73,7 @@ releases:
         package:
           platform: ios
           target: ipa
+          channel: prod2
           build_args:
             export-options-plist: ios/prod_ExportOptions.plist
             flavor: prod
