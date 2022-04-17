@@ -29,8 +29,8 @@ class FlutterAppPackager {
     Directory appDirectory, {
     required Directory outputDirectory,
     required String platform,
-    String? flavor,
     required String target,
+    Map<String, dynamic>? makeArguments,
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   }) async {
@@ -40,7 +40,7 @@ class FlutterAppPackager {
     return await maker.make(
       appDirectory,
       outputDirectory: outputDirectory,
-      flavor: flavor,
+      makeArguments: makeArguments,
       onProcessStdOut: onProcessStdOut,
       onProcessStdErr: onProcessStdErr,
     );

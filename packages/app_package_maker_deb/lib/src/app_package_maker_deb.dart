@@ -13,12 +13,15 @@ class AppPackageMakerDeb extends AppPackageMaker {
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    String? flavor,
+    Map<String, dynamic>? makeArguments,
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   }) async {
-    MakeConfig makeConfig = await loadMakeConfig()
-      ..outputDirectory = outputDirectory;
+    MakeConfig makeConfig = await loadMakeConfig(
+      outputDirectory,
+      makeArguments,
+    );
+
     Directory packagingDirectory = makeConfig.packagingDirectory;
 
     Process.runSync('cp', [

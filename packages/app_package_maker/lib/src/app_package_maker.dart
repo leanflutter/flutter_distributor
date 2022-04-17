@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:mustache_template/mustache_template.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
-const _kArtifactName = '{name}-{flavor}-{version}-{platform}.{ext}';
-const _kArtifactNameNoFlavor = '{name}-{version}-{platform}.{ext}';
+const _kArtifactName =
+    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{version}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
+const _kArtifactNameWithChannel =
+    '{{name}}-{{channel}}-{{version}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
 
 Map<String, dynamic> loadMakeConfigYaml(String path) {
   final yamlDoc = loadYaml(File(path).readAsStringSync());
@@ -20,26 +23,36 @@ abstract class AppPackageMaker {
 
   bool get isSupportedOnCurrentPlatform => true;
 
-  Future<MakeConfig> loadMakeConfig() async {
+  Future<MakeConfig> loadMakeConfig(
+    Directory outputDirectory,
+    Map<String, dynamic>? makeArguments,
+  ) async {
     return MakeConfig()
       ..platform = platform
-      ..packageFormat = packageFormat;
+      ..flavor = makeArguments?['flavor']
+      ..channel = makeArguments?['channel']
+      ..artifactName = makeArguments?['artifact_name']
+      ..packageFormat = packageFormat
+      ..outputDirectory = outputDirectory;
   }
 
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    String? flavor,
+    Map<String, dynamic>? makeArguments,
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   });
 }
 
 class MakeConfig {
-  String? artifactName;
   late bool isInstaller = false;
   late String platform;
   String? flavor;
+  String? channel;
+
+  /// https://mustache.github.io/mustache.5.html
+  String? artifactName;
   late String packageFormat;
   late Directory outputDirectory;
 
@@ -49,29 +62,32 @@ class MakeConfig {
   Pubspec? _pubspec;
   Directory? _packagingDirectory;
 
+  MakeConfig copyWith(MakeConfig makeConfig) {
+    platform = makeConfig.platform;
+    flavor = makeConfig.flavor;
+    channel = makeConfig.channel;
+    artifactName = makeConfig.artifactName;
+    packageFormat = makeConfig.packageFormat;
+    outputDirectory = makeConfig.outputDirectory;
+    return this;
+  }
+
   File get outputFile {
+    String useArtifactName = _kArtifactName;
+    if (channel != null) useArtifactName = _kArtifactNameWithChannel;
+    if (artifactName != null) useArtifactName = artifactName!;
+
     Map<String, dynamic> variables = {
+      'is_installer': isInstaller,
       'name': appName,
       'version': appVersion.toString(),
       'platform': platform,
       'flavor': flavor,
+      'channel': channel,
       'ext': packageFormat,
-    }..removeWhere((key, value) => value == null);
+    };
 
-    String filename = flavor != null ? _kArtifactName : _kArtifactNameNoFlavor;
-    if (artifactName != null) filename = artifactName!;
-
-    for (String key in variables.keys) {
-      dynamic value = variables[key];
-      filename = filename.replaceAll('{$key}', value);
-    }
-
-    if (isInstaller) {
-      filename = filename.replaceAll(
-        '.$packageFormat',
-        '-setup.$packageFormat',
-      );
-    }
+    String filename = Template(useArtifactName).renderString(variables);
 
     Directory versionOutputDirectory =
         Directory('${outputDirectory.path}${appVersion}');

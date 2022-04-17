@@ -13,23 +13,31 @@ class AppPackageMakerDmg extends AppPackageMaker {
   bool get isSupportedOnCurrentPlatform => Platform.isMacOS;
 
   @override
-  Future<MakeConfig> loadMakeConfig() async {
+  Future<MakeConfig> loadMakeConfig(
+    Directory outputDirectory,
+    Map<String, dynamic>? makeArguments,
+  ) async {
+    MakeConfig baseMakeConfig = await super.loadMakeConfig(
+      outputDirectory,
+      makeArguments,
+    );
     final map = loadMakeConfigYaml('macos/packaging/dmg/make_config.yaml');
-    return MakeDmgConfig.fromJson(map)
-      ..platform = 'macos'
-      ..packageFormat = packageFormat;
+    return MakeDmgConfig.fromJson(map).copyWith(baseMakeConfig);
   }
 
   @override
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    String? flavor,
+    Map<String, dynamic>? makeArguments,
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   }) async {
-    MakeDmgConfig makeConfig = (await loadMakeConfig() as MakeDmgConfig)
-      ..outputDirectory = outputDirectory;
+    MakeDmgConfig makeConfig = await loadMakeConfig(
+      outputDirectory,
+      makeArguments,
+    ) as MakeDmgConfig;
+
     Directory packagingDirectory = makeConfig.packagingDirectory;
 
     File appFile = appDirectory

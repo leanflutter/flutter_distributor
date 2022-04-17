@@ -1,14 +1,10 @@
 name: app_package_maker_aab
 description: Create a aab package for your app.
-version: 0.1.8
+version: 0.2.1
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  app_package_maker: ^0.1.3
-
-# dependency_overrides:
-#   app_package_maker:
-#     path: ../app_package_maker
+  app_package_maker: ^0.2.1

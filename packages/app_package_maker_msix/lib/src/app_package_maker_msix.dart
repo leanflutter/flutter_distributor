@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:app_package_maker/app_package_maker.dart';
 import 'package:msix/msix.dart';
 import 'package:path/path.dart' as p;
-import 'package:io/io.dart';
 
 import 'make_msix_config.dart';
 
@@ -15,24 +14,30 @@ class AppPackageMakerMsix extends AppPackageMaker {
   bool get isSupportedOnCurrentPlatform => Platform.isWindows;
 
   @override
-  Future<MakeConfig> loadMakeConfig() async {
+  Future<MakeConfig> loadMakeConfig(
+    Directory outputDirectory,
+    Map<String, dynamic>? makeArguments,
+  ) async {
+    MakeConfig baseMakeConfig = await super.loadMakeConfig(
+      outputDirectory,
+      makeArguments,
+    );
     final map = loadMakeConfigYaml('windows/packaging/msix/make_config.yaml');
-    return MakeMsixConfig.fromJson(map)
-      ..isInstaller = true
-      ..platform = platform
-      ..packageFormat = packageFormat;
+    return MakeMsixConfig.fromJson(map).copyWith(baseMakeConfig);
   }
 
   @override
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    String? flavor,
+    Map<String, dynamic>? makeArguments,
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   }) async {
-    MakeMsixConfig makeConfig = (await loadMakeConfig() as MakeMsixConfig)
-      ..outputDirectory = outputDirectory;
+    MakeMsixConfig makeConfig = (await loadMakeConfig(
+      outputDirectory,
+      makeArguments,
+    ) as MakeMsixConfig);
 
     makeConfig.output_path = makeConfig.outputFile.parent.path;
     makeConfig.output_name =

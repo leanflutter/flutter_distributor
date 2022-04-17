@@ -1,11 +1,13 @@
 class ReleaseJobPackage {
   final String platform;
   final String target;
+  final String? channel;
   final Map<String, dynamic>? buildArgs;
 
   ReleaseJobPackage({
     required this.platform,
     required this.target,
+    this.channel,
     this.buildArgs,
   });
 
@@ -13,6 +15,7 @@ class ReleaseJobPackage {
     return ReleaseJobPackage(
       platform: json['platform'],
       target: json['target'],
+      channel: json['channel'],
       buildArgs: json['build_args'],
     );
   }
@@ -21,6 +24,7 @@ class ReleaseJobPackage {
     return {
       'platform': platform,
       'target': target,
+      'channel': channel,
       'build_args': buildArgs,
     }..removeWhere((key, value) => value == null);
   }

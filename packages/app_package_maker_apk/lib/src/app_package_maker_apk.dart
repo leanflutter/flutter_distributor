@@ -8,29 +8,25 @@ class AppPackageMakerApk extends AppPackageMaker {
   String get packageFormat => 'apk';
 
   @override
-  Future<MakeConfig> loadMakeConfig() async {
-    return MakeConfig()
-      ..platform = 'android'
-      ..packageFormat = packageFormat;
-  }
-
-  @override
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    String? flavor,
+    Map<String, dynamic>? makeArguments,
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   }) async {
-    MakeConfig makeConfig = await loadMakeConfig()
-      ..flavor = flavor
-      ..outputDirectory = outputDirectory;
+    MakeConfig makeConfig = await loadMakeConfig(
+      outputDirectory,
+      makeArguments,
+    );
 
     File apkFile = appDirectory
         .listSync()
         .where((e) {
-          if (flavor != null) {
-            return e.path.endsWith('$flavor-release.$packageFormat');
+          if (makeConfig.flavor != null) {
+            return e.path.endsWith(
+              '${makeConfig.flavor}-release.$packageFormat',
+            );
           }
           return e.path.endsWith('-release.$packageFormat');
         })

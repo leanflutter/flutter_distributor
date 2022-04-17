@@ -5,6 +5,7 @@ import 'release.dart';
 class DistributeOptions {
   final Map<String, String>? env;
   final String output;
+  final String? artifactName;
   final List<Release> releases;
 
   Directory get outputDirectory => Directory(output);
@@ -12,6 +13,7 @@ class DistributeOptions {
   DistributeOptions({
     this.env,
     required this.output,
+    this.artifactName,
     required this.releases,
   });
 
@@ -26,6 +28,7 @@ class DistributeOptions {
     return DistributeOptions(
       env: env,
       output: json['output'],
+      artifactName: json['artifact_name'],
       releases: releases,
     );
   }
@@ -34,6 +37,7 @@ class DistributeOptions {
     return {
       'env': env,
       'output': output,
+      'artifact_name': artifactName,
       'releases': releases.map((e) => e.toJson()).toList(),
     }..removeWhere((key, value) => value == null);
   }

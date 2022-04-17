@@ -7,7 +7,7 @@ packages:
       path: "../app_package_maker"
       relative: true
     source: path
-    version: "0.1.3"
+    version: "0.2.1"
   archive:
     dependency: transitive
     description:
@@ -132,6 +132,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.3.2"
+  mustache_template:
+    dependency: transitive
+    description:
+      name: mustache_template
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   package_config:
     dependency: transitive
     description:

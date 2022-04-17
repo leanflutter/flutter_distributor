@@ -15,24 +15,32 @@ class AppPackageMakerExe extends AppPackageMaker {
   bool get isSupportedOnCurrentPlatform => Platform.isWindows;
 
   @override
-  Future<MakeConfig> loadMakeConfig() async {
+  Future<MakeConfig> loadMakeConfig(
+    Directory outputDirectory,
+    Map<String, dynamic>? makeArguments,
+  ) async {
+    MakeConfig baseMakeConfig = await super.loadMakeConfig(
+      outputDirectory,
+      makeArguments,
+    );
     final map = loadMakeConfigYaml('windows/packaging/exe/make_config.yaml');
-    return MakeExeConfig.fromJson(map)
-      ..isInstaller = true
-      ..platform = platform
-      ..packageFormat = packageFormat;
+    return MakeExeConfig.fromJson(map).copyWith(baseMakeConfig)
+      ..isInstaller = true;
   }
 
   @override
   Future<MakeResult> make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    String? flavor,
+    Map<String, dynamic>? makeArguments,
     void Function(List<int> data)? onProcessStdOut,
     void Function(List<int> data)? onProcessStdErr,
   }) async {
-    MakeExeConfig makeConfig = await loadMakeConfig() as MakeExeConfig
-      ..outputDirectory = outputDirectory;
+    MakeExeConfig makeConfig = await loadMakeConfig(
+      outputDirectory,
+      makeArguments,
+    ) as MakeExeConfig;
+
     Directory packagingDirectory = makeConfig.packagingDirectory;
     copyPathSync(appDirectory.path, packagingDirectory.path);
 

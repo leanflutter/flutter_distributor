@@ -124,6 +124,8 @@ class FlutterDistributor {
   Future<List<MakeResult>> package(
     String platform,
     List<String> targets, {
+    String? channel,
+    String? artifactName,
     required bool cleanBeforeBuild,
     required Map<String, dynamic> buildArguments,
   }) async {
@@ -163,12 +165,17 @@ class FlutterDistributor {
         }
 
         if (buildResult != null) {
+          Map<String, dynamic>? makeArguments = {
+            'flavor': buildArguments['flavor'],
+            'channel': channel,
+            'artifact_name': artifactName,
+          };
           MakeResult makeResult = await _packager.package(
             buildResult.outputDirectory,
             outputDirectory: outputDirectory,
             platform: platform,
-            flavor: buildArguments['flavor'],
             target: target,
+            makeArguments: makeArguments,
             onProcessStdOut: (data) {
               String message = utf8.decoder.convert(data).trim();
               logger.info(Colorize(message).darkGray());
@@ -302,6 +309,8 @@ class FlutterDistributor {
         List<MakeResult> makeResultList = await package(
           job.package.platform,
           [job.package.target],
+          channel: job.package.channel,
+          artifactName: distributeOptions.artifactName,
           cleanBeforeBuild: needCleanBeforeBuild,
           buildArguments: job.package.buildArgs ?? {},
         );
