@@ -30,7 +30,9 @@ class AppBuilder {
     List<String> arguments = [];
     for (String key in buildArguments.keys) {
       dynamic value = buildArguments[key];
-      if (value is Map) {
+      if (value == null) {
+        arguments.add('--$key');
+      } else if (value is Map) {
         for (String subKey in value.keys) {
           arguments.addAll(['--$key', '$subKey=${value[subKey]}']);
         }
