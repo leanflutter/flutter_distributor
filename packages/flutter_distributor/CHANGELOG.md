@@ -1,4 +1,4 @@
-## 0.2.1
+## 0.2.2
 
 * Support custom `artifact_name` & `channel`.
 * fix build_args map entries value may null #64
