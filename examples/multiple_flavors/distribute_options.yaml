@@ -1,6 +1,6 @@
 output: dist/
 # See https://mustache.github.io/mustache.5.html for string template format.
-artifact_name: "{{name}}{{#channel}}-{{channel}}{{/channel}}-{{version}}-{{platform}}.{{ext}}"
+artifact_name: "{{name}}{{#channel}}-{{channel}}{{/channel}}-{{build_name}}({{build_number}})-{{platform}}.{{ext}}"
 releases:
   - name: release-android
     jobs:

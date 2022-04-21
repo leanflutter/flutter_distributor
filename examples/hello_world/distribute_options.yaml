@@ -29,6 +29,13 @@ releases:
             dart-define:
               APP_ENV: dev
         # publish_to: pgyer
+      - name: release-dev-macos
+        package:
+          platform: macos
+          target: dmg
+          build_args:
+            dart-define:
+              APP_ENV: dev
       - name: release-dev-windows
         package:
           platform: windows

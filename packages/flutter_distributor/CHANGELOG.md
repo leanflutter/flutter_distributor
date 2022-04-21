@@ -1,6 +1,9 @@
 ## 0.2.1
 
 * Support custom `artifact_name` & `channel`.
+* fix build_args map entries value may null #64
+* Add dart-define `FLUTTER_BUILD_NAME` and `FLUTTER_BUILD_NUMBER` when building #65
+* `artifactName` adds `build_name` & `build_number` variables #66
 
 ## 0.2.0
 

@@ -7,9 +7,9 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 const _kArtifactName =
-    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{version}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
+    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{build_name}}+{{build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
 const _kArtifactNameWithChannel =
-    '{{name}}-{{channel}}-{{version}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
+    '{{name}}-{{channel}}-{{build_name}}+{{build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
 
 Map<String, dynamic> loadMakeConfigYaml(String path) {
   final yamlDoc = loadYaml(File(path).readAsStringSync());
@@ -58,6 +58,8 @@ class MakeConfig {
 
   String get appName => pubspec.name;
   Version get appVersion => pubspec.version!;
+  String get appBuildName => appVersion.toString().split('+').first;
+  String get appBuildNumber => appVersion.toString().split('+').last;
 
   Pubspec? _pubspec;
   Directory? _packagingDirectory;
@@ -81,6 +83,8 @@ class MakeConfig {
       'is_installer': isInstaller,
       'name': appName,
       'version': appVersion.toString(),
+      'build_name': appBuildName,
+      'build_number': appBuildNumber,
       'platform': platform,
       'flavor': flavor,
       'channel': channel,

@@ -1,3 +1,7 @@
+## 0.2.1
+
+* `artifactName` adds `build_name` & `build_number` variables #66
+
 ## 0.2.0
 
 * Fix apk, ipa makers copy wrong files #55

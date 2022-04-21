@@ -1,13 +1,27 @@
 import 'dart:io';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:pubspec_parse/pubspec_parse.dart';
 
 class AppBuilder {
   String get platform => throw UnimplementedError();
-
   bool get isSupportedOnCurrentPlatform => throw UnimplementedError();
-
   String get buildSubcommand => platform;
-
   Directory get outputDirectory => throw UnimplementedError();
+
+  String get appName => pubspec.name;
+  Version get appVersion => pubspec.version!;
+  String get appBuildName => appVersion.toString().split('+').first;
+  String get appBuildNumber => appVersion.toString().split('+').last;
+
+  Pubspec? _pubspec;
+
+  Pubspec get pubspec {
+    if (_pubspec == null) {
+      final yamlString = File('pubspec.yaml').readAsStringSync();
+      _pubspec = Pubspec.parse(yamlString);
+    }
+    return _pubspec!;
+  }
 
   Future<BuildResult> build({
     String? target,
@@ -40,6 +54,14 @@ class AppBuilder {
         arguments.addAll(['--$key', value]);
       }
     }
+
+    arguments.addAll([
+      '--dart-define',
+      'FLUTTER_BUILD_NAME=$appBuildName',
+      '--dart-define',
+      'FLUTTER_BUILD_NUMBER=$appBuildNumber',
+    ]);
+
     print(
       (['flutter', 'build', buildSubcommand]..addAll(arguments)).join(' '),
     );
