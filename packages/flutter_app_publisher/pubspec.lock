@@ -2,81 +2,81 @@
 # See https://dart.dev/tools/pub/glossary#lockfile
 packages:
   app_package_parser:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../app_package_parser"
-      relative: true
-    source: path
+      name: app_package_parser
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.3"
   app_package_parser_apk:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../app_package_parser_apk"
-      relative: true
-    source: path
+      name: app_package_parser_apk
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.3"
   app_package_parser_ipa:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../app_package_parser_ipa"
-      relative: true
-    source: path
+      name: app_package_parser_ipa
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.3"
   app_package_publisher:
     dependency: "direct main"
     description:
-      path: "../app_package_publisher"
-      relative: true
-    source: path
+      name: app_package_publisher
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.5"
   app_package_publisher_appcenter:
     dependency: "direct main"
     description:
-      path: "../app_package_publisher_appcenter"
-      relative: true
-    source: path
+      name: app_package_publisher_appcenter
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.2.0"
   app_package_publisher_appstore:
     dependency: "direct main"
     description:
-      path: "../app_package_publisher_appstore"
-      relative: true
-    source: path
+      name: app_package_publisher_appstore
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.8"
   app_package_publisher_fir:
     dependency: "direct main"
     description:
-      path: "../app_package_publisher_fir"
-      relative: true
-    source: path
+      name: app_package_publisher_fir
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.5"
   app_package_publisher_firebase:
     dependency: "direct main"
     description:
-      path: "../app_package_publisher_firebase"
-      relative: true
-    source: path
+      name: app_package_publisher_firebase
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.5"
   app_package_publisher_github:
     dependency: "direct main"
     description:
-      path: "../app_package_publisher_github"
-      relative: true
-    source: path
+      name: app_package_publisher_github
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.6"
   app_package_publisher_pgyer:
     dependency: "direct main"
     description:
-      path: "../app_package_publisher_pgyer"
-      relative: true
-    source: path
+      name: app_package_publisher_pgyer
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.5"
   app_package_publisher_qiniu:
     dependency: "direct main"
     description:
-      path: "../app_package_publisher_qiniu"
-      relative: true
-    source: path
+      name: app_package_publisher_qiniu
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.5"
   archive:
     dependency: transitive
@@ -149,11 +149,11 @@ packages:
     source: hosted
     version: "1.7.0"
   parse_app_package:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../parse_app_package"
-      relative: true
-    source: path
+      name: parse_app_package
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.1.3"
   path:
     dependency: transitive

@@ -10,6 +10,7 @@ dependencies:
   app_package_maker: ^0.2.1
   app_package_maker_aab: ^0.2.1
   app_package_maker_apk: ^0.2.1
+  app_package_maker_appimage: ^0.0.1
   app_package_maker_deb: ^0.2.1
   app_package_maker_dmg: ^0.2.1
   app_package_maker_exe: ^0.2.1
