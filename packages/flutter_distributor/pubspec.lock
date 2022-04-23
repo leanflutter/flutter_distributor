@@ -4,149 +4,149 @@ packages:
   app_package_maker:
     dependency: "direct main"
     description:
-      name: app_package_maker
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_maker"
+      relative: true
+    source: path
     version: "0.2.1"
   app_package_maker_aab:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_maker_aab
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_maker_aab"
+      relative: true
+    source: path
     version: "0.2.1"
   app_package_maker_apk:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_maker_apk
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_maker_apk"
+      relative: true
+    source: path
     version: "0.2.1"
   app_package_maker_appimage:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../app_package_maker_appimage"
       relative: true
     source: path
     version: "0.0.1"
   app_package_maker_deb:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_maker_deb
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_maker_deb"
+      relative: true
+    source: path
     version: "0.2.1"
   app_package_maker_dmg:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_maker_dmg
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_maker_dmg"
+      relative: true
+    source: path
     version: "0.2.1"
   app_package_maker_exe:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_maker_exe
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_maker_exe"
+      relative: true
+    source: path
     version: "0.2.1"
   app_package_maker_ipa:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_maker_ipa
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_maker_ipa"
+      relative: true
+    source: path
     version: "0.2.1"
   app_package_maker_msix:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_maker_msix
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_maker_msix"
+      relative: true
+    source: path
     version: "0.2.1"
   app_package_maker_zip:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_maker_zip
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_maker_zip"
+      relative: true
+    source: path
     version: "0.2.1"
   app_package_parser:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_parser
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_parser"
+      relative: true
+    source: path
     version: "0.1.3"
   app_package_parser_apk:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_parser_apk
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_parser_apk"
+      relative: true
+    source: path
     version: "0.1.3"
   app_package_parser_ipa:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_parser_ipa
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_parser_ipa"
+      relative: true
+    source: path
     version: "0.1.3"
   app_package_publisher:
     dependency: "direct main"
     description:
-      name: app_package_publisher
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_publisher"
+      relative: true
+    source: path
     version: "0.1.5"
   app_package_publisher_appcenter:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_publisher_appcenter
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_publisher_appcenter"
+      relative: true
+    source: path
     version: "0.2.0"
   app_package_publisher_appstore:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_publisher_appstore
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_publisher_appstore"
+      relative: true
+    source: path
     version: "0.1.8"
   app_package_publisher_fir:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_publisher_fir
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_publisher_fir"
+      relative: true
+    source: path
     version: "0.1.5"
   app_package_publisher_firebase:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_publisher_firebase
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_publisher_firebase"
+      relative: true
+    source: path
     version: "0.1.5"
   app_package_publisher_github:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_publisher_github
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_publisher_github"
+      relative: true
+    source: path
     version: "0.1.6"
   app_package_publisher_pgyer:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_publisher_pgyer
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_publisher_pgyer"
+      relative: true
+    source: path
     version: "0.1.5"
   app_package_publisher_qiniu:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_publisher_qiniu
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_publisher_qiniu"
+      relative: true
+    source: path
     version: "0.1.5"
   archive:
     dependency: transitive
@@ -247,9 +247,9 @@ packages:
   flutter_app_builder:
     dependency: "direct main"
     description:
-      name: flutter_app_builder
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../flutter_app_builder"
+      relative: true
+    source: path
     version: "0.2.1"
   flutter_app_packager:
     dependency: "direct main"
@@ -261,9 +261,9 @@ packages:
   flutter_app_publisher:
     dependency: "direct main"
     description:
-      name: flutter_app_publisher
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../flutter_app_publisher"
+      relative: true
+    source: path
     version: "0.2.0"
   http_parser:
     dependency: transitive
@@ -343,11 +343,11 @@ packages:
     source: hosted
     version: "2.0.2"
   parse_app_package:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: parse_app_package
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../parse_app_package"
+      relative: true
+    source: path
     version: "0.1.3"
   path:
     dependency: "direct main"

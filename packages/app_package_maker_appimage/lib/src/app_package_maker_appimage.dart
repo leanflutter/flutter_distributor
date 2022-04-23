@@ -65,6 +65,13 @@ class AppPackageMakerAppImage extends AppPackageMaker {
     await appDir.delete(recursive: true);
     await buildDir.delete(recursive: true);
 
+    final outputVersionedDir = Directory(
+      path.join(outputDirectory.path, makeConfig.appVersion.toString()),
+    );
+
+    if (!outputVersionedDir.existsSync())
+      outputVersionedDir.createSync(recursive: true);
+
     // move the output file to outputDirectory
     await outputFile.rename(
       path.join(

@@ -87,10 +87,10 @@ class MakeAppImageConfig extends MakeConfig {
     List<String> exclude = const [],
     List<String> exclude_files = const [],
     required this.appId,
-    required this.icon,
     required this.include,
-    this.default_excludes = true,
     required this.include_files,
+    this.icon,
+    this.default_excludes = true,
     this.default_excludes_files = true,
   })  : _script = script,
         _exclude = exclude,
@@ -100,15 +100,15 @@ class MakeAppImageConfig extends MakeConfig {
     return MakeAppImageConfig(
       appId: map['appId'],
       icon: map['icon'],
-      script: List.castFrom<dynamic, String>(map['script']),
-      include: List.castFrom<dynamic, String>(map['include']),
-      exclude: List.castFrom<dynamic, String>(map['exclude']),
-      default_excludes: map['default_excludes'],
+      script: List.castFrom<dynamic, String>(map['script'] ?? []),
+      include: List.castFrom<dynamic, String>(map['include'] ?? []),
+      exclude: List.castFrom<dynamic, String>(map['exclude'] ?? []),
+      default_excludes: map['default_excludes'] ?? true,
       include_files:
           List.castFrom<dynamic, String>(map['files']?['include'] ?? []),
       exclude_files:
           List.castFrom<dynamic, String>(map['files']?['exclude'] ?? []),
-      default_excludes_files: map['files']?['default_excludes'],
+      default_excludes_files: map['files']?['default_excludes'] ?? false,
     );
   }
 

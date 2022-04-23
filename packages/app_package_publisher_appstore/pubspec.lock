@@ -2,32 +2,32 @@
 # See https://dart.dev/tools/pub/glossary#lockfile
 packages:
   app_package_parser:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_parser
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_parser"
+      relative: true
+    source: path
     version: "0.1.3"
   app_package_parser_apk:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_parser_apk
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_parser_apk"
+      relative: true
+    source: path
     version: "0.1.3"
   app_package_parser_ipa:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_parser_ipa
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_parser_ipa"
+      relative: true
+    source: path
     version: "0.1.3"
   app_package_publisher:
     dependency: "direct main"
     description:
-      name: app_package_publisher
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../app_package_publisher"
+      relative: true
+    source: path
     version: "0.1.5"
   archive:
     dependency: transitive
@@ -88,9 +88,9 @@ packages:
   parse_app_package:
     dependency: "direct main"
     description:
-      name: parse_app_package
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../parse_app_package"
+      relative: true
+    source: path
     version: "0.1.3"
   path:
     dependency: transitive
