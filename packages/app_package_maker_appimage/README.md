@@ -1,4 +1,4 @@
-# app_package_maker_deb
+# app_package_maker_appimage
 
 Create an AppImage for your flutter linux application.
 
