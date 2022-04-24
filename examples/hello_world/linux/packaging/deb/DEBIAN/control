@@ -1,9 +1,0 @@
-Section: x11
-Priority: optional
-Maintainer: LiJianying <lijy91@foxmail.com>
-Version: 1.0.0
-Homepage: https://github.com/leanflutter/flutter_distributor
-Package: hello-world
-Architecture: amd64
-Description: A new Flutter project.
-
