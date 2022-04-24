@@ -122,10 +122,14 @@ class MakeDebConfig extends MakeConfig {
   String displayName;
   String packageName;
   String maintainer;
-  List<String>? coAuthors;
   String priority;
   String section;
   int installedSize;
+  bool? essential;
+  String? icon;
+  String? genericName;
+  bool? startupNotify;
+  List<String>? coAuthors;
   List<String>? dependencies;
   List<String>? buildDependenciesIndep;
   List<String>? buildDependencies;
@@ -137,16 +141,12 @@ class MakeDebConfig extends MakeConfig {
   List<String>? conflicts;
   List<String>? provides;
   List<String>? replaces;
-  bool essential = false;
-  String? icon;
   List<String> _postinstallScripts;
   List<String> _postuninstallScripts;
   List<String>? keywords;
   List<String>? supportedMimeType;
   List<String>? actions;
   List<String>? categories;
-  String? genericName;
-  bool startupNotify = true;
 
   List<String> get postinstallScripts => [
         "ln -s /usr/share/$appName/$appName /usr/bin/$appName",
@@ -269,7 +269,8 @@ class MakeDebConfig extends MakeConfig {
         "Section": section,
         "Priority": priority,
         "Architecture": "amd64",
-        "Essential": essential ? "yes" : "no",
+        "Essential":
+            essential != null ? (essential == true ? "yes" : "no") : null,
         "Installed-Size": installedSize,
         "Description": pubspec.description,
         "Homepage": pubspec.homepage,
