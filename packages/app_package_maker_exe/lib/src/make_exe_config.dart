@@ -10,7 +10,7 @@ class MakeExeConfig extends MakeConfig {
   String? publisherName;
   String? publisherUrl;
   bool? createDesktopIcon;
-  bool? addStartUp;
+  bool? launchAtStartup;
   String? installDirName;
   List<String>? locales;
 
@@ -36,7 +36,7 @@ class MakeExeConfig extends MakeConfig {
     this.publisherName,
     this.publisherUrl,
     this.createDesktopIcon,
-    this.addStartUp,
+    this.launchAtStartup,
     this.installDirName,
     this.locales,
   });
@@ -53,7 +53,7 @@ class MakeExeConfig extends MakeConfig {
       publisherName: json['publisher_name'] ?? json['appPublisher'],
       publisherUrl: json['publisher_url'] ?? json['appPublisherUrl'],
       createDesktopIcon: json['create_desktop_icon'],
-      addStartUp: json['add_start_up'],
+      launchAtStartup: json['launch_at_startup'],
       installDirName: json['install_dir_name'],
       locales: locales,
     );
@@ -70,7 +70,7 @@ class MakeExeConfig extends MakeConfig {
       'publisher_name': publisherName,
       'publisher_url': publisherUrl,
       'create_desktop_icon': createDesktopIcon,
-      'add_start_up': addStartUp,
+      'launch_at_startup': launchAtStartup,
       'install_dir_name': installDirName,
       'locales': locales,
     }..removeWhere((key, value) => value == null);
