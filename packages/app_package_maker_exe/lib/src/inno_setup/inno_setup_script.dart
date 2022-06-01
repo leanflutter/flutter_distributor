@@ -20,6 +20,7 @@ OutputDir=.
 OutputBaseFilename={{OUTPUT_BASE_FILENAME}}
 Compression=lzma
 SolidCompression=yes
+SetupIconFile={{SETUP_ICON_FILE}}
 WizardStyle=modern
 
 [Languages]
@@ -74,6 +75,7 @@ class InnoSetupScript {
       'SOURCE_DIR': makeConfig.sourceDir,
       'OUTPUT_BASE_FILENAME': makeConfig.outputBaseFileName,
       'LOCALES': makeConfig.locales,
+      'SETUP_ICON_FILE': makeConfig.setupIconFile ?? ""
     }..removeWhere((key, value) => value == null);
 
     Context context = Context.create();
