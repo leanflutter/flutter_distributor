@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:liquid_engine/liquid_engine.dart';
 
 import '../make_exe_config.dart';
@@ -79,9 +80,18 @@ class InnoSetupScript {
     Context context = Context.create();
     context.variables = variables;
 
+    String scriptTemplate = _template;
+    if (makeConfig.scriptTemplate != null) {
+      File scriptTemplateFile = File(path.join(
+        'windows/packaging/exe/',
+        makeConfig.scriptTemplate!,
+      ));
+      scriptTemplate = scriptTemplateFile.readAsStringSync();
+    }
+
     Template template = Template.parse(
       context,
-      Source.fromString(_template),
+      Source.fromString(scriptTemplate),
     );
 
     String content = '\uFEFF' + await template.render(context);

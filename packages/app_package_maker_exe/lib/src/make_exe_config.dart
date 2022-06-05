@@ -4,6 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:app_package_maker/app_package_maker.dart';
 
 class MakeExeConfig extends MakeConfig {
+  String? scriptTemplate;
   final String appId;
   String? executableName;
   String? displayName;
@@ -30,6 +31,7 @@ class MakeExeConfig extends MakeConfig {
       p.basename(outputFile.path).replaceAll('.exe', '');
 
   MakeExeConfig({
+    this.scriptTemplate,
     required this.appId,
     this.executableName,
     this.displayName,
@@ -47,6 +49,7 @@ class MakeExeConfig extends MakeConfig {
     if (locales == null || locales.isEmpty) locales = ['en'];
 
     MakeExeConfig makeExeConfig = MakeExeConfig(
+      scriptTemplate: json['script_template'],
       appId: json['app_id'] ?? json['appId'],
       executableName: json['executable_name'],
       displayName: json['display_name'],
@@ -62,6 +65,7 @@ class MakeExeConfig extends MakeConfig {
 
   Map<String, dynamic> toJson() {
     return {
+      'script_template': scriptTemplate,
       'app_id': appId,
       'app_name': appName,
       'app_version': appVersion.toString(),
