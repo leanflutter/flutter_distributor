@@ -1,0 +1,10 @@
+name: app_package_maker_appimage
+description: A starting point for Dart libraries or applications.
+version: 0.0.1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  app_package_maker: ^0.2.1
+  path: ^1.8.1

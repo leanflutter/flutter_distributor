@@ -1,0 +1,17 @@
+appId: org.leanflutter.examples.hello_world
+# icon filename without extension
+# icon: logo
+
+script:
+  - echo 'Running a Script'
+
+include: []
+exclude: []
+# its true by default
+default_excludes: true
+
+files:
+  include: []
+  exclude: []
+  # its true by default
+  default_excludes: true

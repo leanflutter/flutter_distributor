@@ -43,3 +43,10 @@ releases:
           build_args:
             dart-define:
               APP_ENV: dev
+      - name: release-dev-appimage
+        package:
+          platform: linux
+          target: appimage
+          build_args:
+            dart-define:
+              APP_ENV: dev
