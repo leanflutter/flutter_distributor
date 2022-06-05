@@ -24,7 +24,7 @@ class MakeExeConfig extends MakeConfig {
     return p.basename(executableFile.path);
   }
 
-  String get defaultInstallDirName => appName;
+  String get defaultInstallDirName => '{autopf64}\\${appName}';
 
   String get sourceDir => p.basename(packagingDirectory.path);
   String get outputBaseFileName =>
