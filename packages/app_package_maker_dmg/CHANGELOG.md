@@ -1,3 +1,7 @@
+## 0.2.3
+
+* Support `code-sign` configuration item.
+
 ## 0.2.1
 
 * Support custom `artifact_name` & `channel`.
