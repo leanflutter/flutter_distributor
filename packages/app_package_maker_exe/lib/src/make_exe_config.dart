@@ -13,6 +13,8 @@ class MakeExeConfig extends MakeConfig {
   bool? createDesktopIcon;
   bool? launchAtStartup;
   String? installDirName;
+  String? setupIconFile;
+  String? privilegesRequired;
   List<String>? locales;
 
   String get defaultExecutableName {
@@ -40,6 +42,8 @@ class MakeExeConfig extends MakeConfig {
     this.createDesktopIcon,
     this.launchAtStartup,
     this.installDirName,
+    this.setupIconFile,
+    this.privilegesRequired,
     this.locales,
   });
 
@@ -58,6 +62,8 @@ class MakeExeConfig extends MakeConfig {
       createDesktopIcon: json['create_desktop_icon'],
       launchAtStartup: json['launch_at_startup'],
       installDirName: json['install_dir_name'],
+      setupIconFile: json['setup_icon_file'],
+      privilegesRequired: json['privileges_required'],
       locales: locales,
     );
     return makeExeConfig;
@@ -76,6 +82,8 @@ class MakeExeConfig extends MakeConfig {
       'create_desktop_icon': createDesktopIcon,
       'launch_at_startup': launchAtStartup,
       'install_dir_name': installDirName,
+      'setup_icon_file': setupIconFile,
+      'privileges_required': privilegesRequired,
       'locales': locales,
     }..removeWhere((key, value) => value == null);
   }

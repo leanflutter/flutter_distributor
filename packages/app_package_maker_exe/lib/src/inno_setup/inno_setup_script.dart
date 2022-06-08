@@ -21,7 +21,9 @@ OutputDir=.
 OutputBaseFilename={{OUTPUT_BASE_FILENAME}}
 Compression=lzma
 SolidCompression=yes
+SetupIconFile={{SETUP_ICON_FILE}}
 WizardStyle=modern
+PrivilegesRequired={{PRIVILEGES_REQUIRED}}
 
 [Languages]
 {% for locale in LOCALES %}
@@ -38,11 +40,11 @@ Source: "{{SOURCE_DIR}}\\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdi
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{autoprograms}\\{{APP_NAME}}"; Filename: "{app}\\{{EXECUTABLE_NAME}}"
-Name: "{autodesktop}\\{{APP_NAME}}"; Filename: "{app}\\{{EXECUTABLE_NAME}}"; Tasks: desktopicon
-Name: "{userstartup}\\{{APP_NAME}}"; Filename: "{app}\\{{EXECUTABLE_NAME}}"; WorkingDir: "{app}"; Tasks: launchAtStartup
+Name: "{autoprograms}\\{{DISPLAY_NAME}}"; Filename: "{app}\\{{EXECUTABLE_NAME}}"
+Name: "{autodesktop}\\{{DISPLAY_NAME}}"; Filename: "{app}\\{{EXECUTABLE_NAME}}"; Tasks: desktopicon
+Name: "{userstartup}\\{{DISPLAY_NAME}}"; Filename: "{app}\\{{EXECUTABLE_NAME}}"; WorkingDir: "{app}"; Tasks: launchAtStartup
 [Run]
-Filename: "{app}\\{{EXECUTABLE_NAME}}"; Description: "{cm:LaunchProgram,{{DISPLAY_NAME}}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\\{{EXECUTABLE_NAME}}"; Description: "{cm:LaunchProgram,{{DISPLAY_NAME}}}"; Flags: {% if PRIVILEGES_REQUIRED == 'admin' %}runascurrentuser{% endif %} nowait postinstall skipifsilent
 """;
 
 class InnoSetupScript {
@@ -75,6 +77,8 @@ class InnoSetupScript {
       'SOURCE_DIR': makeConfig.sourceDir,
       'OUTPUT_BASE_FILENAME': makeConfig.outputBaseFileName,
       'LOCALES': makeConfig.locales,
+      'SETUP_ICON_FILE': makeConfig.setupIconFile ?? "",
+      'PRIVILEGES_REQUIRED': makeConfig.privilegesRequired ?? "none"
     }..removeWhere((key, value) => value == null);
 
     Context context = Context.create();
