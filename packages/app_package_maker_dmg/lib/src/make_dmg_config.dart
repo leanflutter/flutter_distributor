@@ -72,6 +72,30 @@ class DmgWindow {
   }
 }
 
+class DmgCodeSign {
+  final String signingIdentity;
+  final String? identifier;
+
+  DmgCodeSign({
+    required this.signingIdentity,
+    this.identifier,
+  });
+
+  factory DmgCodeSign.fromJson(Map<String, dynamic> json) {
+    return DmgCodeSign(
+      signingIdentity: json['signing-identity'],
+      identifier: json['identifier'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'signing-identity': signingIdentity,
+      'identifier': identifier,
+    }..removeWhere((key, value) => value == null);
+  }
+}
+
 class DmgContent {
   final num x;
   final num y;
@@ -116,6 +140,7 @@ class MakeDmgConfig extends MakeConfig {
   final int? iconSize;
   final String? format;
   final List<DmgContent> contents;
+  final DmgCodeSign? codeSign;
 
   MakeDmgConfig({
     required this.title,
@@ -125,6 +150,7 @@ class MakeDmgConfig extends MakeConfig {
     this.iconSize,
     this.format,
     required this.contents,
+    this.codeSign,
   });
 
   factory MakeDmgConfig.fromJson(Map<String, dynamic> json) {
@@ -140,6 +166,9 @@ class MakeDmgConfig extends MakeConfig {
       iconSize: json['iconSize'],
       format: json['format'],
       contents: contents,
+      codeSign: json['code-sign'] != null
+          ? DmgCodeSign.fromJson(json['code-sign'])
+          : null,
     );
   }
 
@@ -152,6 +181,7 @@ class MakeDmgConfig extends MakeConfig {
       'iconSize': iconSize,
       'format': format,
       'contents': contents.map((e) => e.toJson()).toList(),
+      'code-sign': codeSign?.toJson(),
     }..removeWhere((key, value) => value == null);
   }
 }

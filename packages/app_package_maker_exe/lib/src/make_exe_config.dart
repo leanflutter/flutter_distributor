@@ -4,13 +4,17 @@ import 'package:path/path.dart' as p;
 import 'package:app_package_maker/app_package_maker.dart';
 
 class MakeExeConfig extends MakeConfig {
+  String? scriptTemplate;
   final String appId;
   String? executableName;
   String? displayName;
   String? publisherName;
   String? publisherUrl;
   bool? createDesktopIcon;
+  bool? launchAtStartup;
   String? installDirName;
+  String? setupIconFile;
+  String? privilegesRequired;
   List<String>? locales;
 
   String get defaultExecutableName {
@@ -22,20 +26,24 @@ class MakeExeConfig extends MakeConfig {
     return p.basename(executableFile.path);
   }
 
-  String get defaultInstallDirName => appName;
+  String get defaultInstallDirName => '{autopf64}\\${appName}';
 
   String get sourceDir => p.basename(packagingDirectory.path);
   String get outputBaseFileName =>
       p.basename(outputFile.path).replaceAll('.exe', '');
 
   MakeExeConfig({
+    this.scriptTemplate,
     required this.appId,
     this.executableName,
     this.displayName,
     this.publisherName,
     this.publisherUrl,
     this.createDesktopIcon,
+    this.launchAtStartup,
     this.installDirName,
+    this.setupIconFile,
+    this.privilegesRequired,
     this.locales,
   });
 
@@ -45,13 +53,17 @@ class MakeExeConfig extends MakeConfig {
     if (locales == null || locales.isEmpty) locales = ['en'];
 
     MakeExeConfig makeExeConfig = MakeExeConfig(
+      scriptTemplate: json['script_template'],
       appId: json['app_id'] ?? json['appId'],
       executableName: json['executable_name'],
       displayName: json['display_name'],
       publisherName: json['publisher_name'] ?? json['appPublisher'],
       publisherUrl: json['publisher_url'] ?? json['appPublisherUrl'],
       createDesktopIcon: json['create_desktop_icon'],
+      launchAtStartup: json['launch_at_startup'],
       installDirName: json['install_dir_name'],
+      setupIconFile: json['setup_icon_file'],
+      privilegesRequired: json['privileges_required'],
       locales: locales,
     );
     return makeExeConfig;
@@ -59,6 +71,7 @@ class MakeExeConfig extends MakeConfig {
 
   Map<String, dynamic> toJson() {
     return {
+      'script_template': scriptTemplate,
       'app_id': appId,
       'app_name': appName,
       'app_version': appVersion.toString(),
@@ -67,7 +80,10 @@ class MakeExeConfig extends MakeConfig {
       'publisher_name': publisherName,
       'publisher_url': publisherUrl,
       'create_desktop_icon': createDesktopIcon,
+      'launch_at_startup': launchAtStartup,
       'install_dir_name': installDirName,
+      'setup_icon_file': setupIconFile,
+      'privileges_required': privilegesRequired,
       'locales': locales,
     }..removeWhere((key, value) => value == null);
   }

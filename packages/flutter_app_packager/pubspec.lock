@@ -42,7 +42,7 @@ packages:
       path: "../app_package_maker_dmg"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.3"
   app_package_maker_exe:
     dependency: "direct main"
     description:
@@ -126,7 +126,7 @@ packages:
       name: collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.15.0"
+    version: "1.16.0"
   crypto:
     dependency: transitive
     description:
@@ -187,7 +187,7 @@ packages:
       name: material_color_utilities
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.3"
+    version: "0.1.4"
   meta:
     dependency: transitive
     description:
@@ -283,7 +283,7 @@ packages:
       name: vector_math
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   win32:
     dependency: transitive
     description:

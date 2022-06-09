@@ -1,12 +1,14 @@
 # flutter_distributor
 
-[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] [![melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos)
+[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] ![][visits-count-image] [![melos](https://img.shields.io/badge/maintained%20with-melos-f700ff.svg?style=flat-square)](https://github.com/invertase/melos)
 
 [pub-image]: https://img.shields.io/pub/v/flutter_distributor.svg?style=flat-square
 [pub-url]: https://pub.dev/packages/flutter_distributor
 
 [discord-image]: https://img.shields.io/discord/884679008049037342.svg?style=flat-square
 [discord-url]: https://discord.gg/zPa6EZ2jqb
+
+[visits-count-image]: https://img.shields.io/badge/dynamic/json?label=Visits%20Count&query=value&url=https://api.countapi.xyz/hit/leanflutter.flutter_distributor/visits
 
 A complete tool for packaging and publishing your [Flutter](https://flutter.dev) apps.
 

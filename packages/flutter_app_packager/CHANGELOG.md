@@ -1,3 +1,7 @@
+## 0.2.3
+
+* [dmg maker] Support `code-sign` configuration item.
+
 ## 0.2.1
 
 * `artifactName` adds `build_name` & `build_number` variables #66
