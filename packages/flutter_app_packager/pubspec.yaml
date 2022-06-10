@@ -7,6 +7,9 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
+  flutter:
+    sdk: flutter
+
   app_package_maker: ^0.2.1
   app_package_maker_aab: ^0.2.1
   app_package_maker_apk: ^0.2.1
