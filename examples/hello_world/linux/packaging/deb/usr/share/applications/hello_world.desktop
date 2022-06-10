@@ -1,8 +1,0 @@
-[Desktop Entry]
-Version=1.0.0
-Type=Application
-Name=hello-world
-Icon=hello_world
-Exec=hello_world %U
-Categories=Utility;
-Keywords=Hello;

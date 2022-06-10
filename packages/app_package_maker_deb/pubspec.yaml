@@ -8,3 +8,4 @@ environment:
 
 dependencies:
   app_package_maker: ^0.2.1
+  path: ^1.8.1

@@ -1,6 +1,6 @@
 appId: org.leanflutter.examples.hello_world
-# icon filename without extension
-# icon: logo
+# relative path to the application's icon
+icon: assets/logo.png
 
 script:
   - echo 'Running a Script'
