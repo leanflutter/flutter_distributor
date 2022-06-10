@@ -8,4 +8,4 @@ environment:
 
 dependencies:
   pub_semver: ^2.1.0
-  pubspec_parse: ^1.1.0
+  pubspec_parse: 1.1.0
