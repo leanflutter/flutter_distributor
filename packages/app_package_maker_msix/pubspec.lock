@@ -7,7 +7,7 @@ packages:
       path: "../app_package_maker"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.3"
   archive:
     dependency: transitive
     description:

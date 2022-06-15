@@ -1,6 +1,11 @@
-## 0.2.3
+## 0.2.4
 
 * [dmg maker] Support `code-sign` configuration item.
+* [exe maker] Support use custom inno setup `script_template`. #69
+* [exe maker] Support use custom installDirName. #67
+* [exe maker] Add installer `setupIconFile`, `privilegesRequired` options (#79)
+* Downgrade pubspec_parse to 1.1.0
+* [exe maker] Set to default 64-bit mode #81
 
 ## 0.2.1
 

@@ -1,10 +1,10 @@
 name: app_package_maker_ipa
 description: Create a ipa package for your app.
-version: 0.2.1
+version: 0.2.3
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  app_package_maker: ^0.2.1
+  app_package_maker: ^0.2.3

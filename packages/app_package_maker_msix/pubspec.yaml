@@ -1,6 +1,6 @@
 name: app_package_maker_msix
 description: Create a msix package for your app.
-version: 0.2.1
+version: 0.2.3
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  app_package_maker: ^0.2.1
+  app_package_maker: ^0.2.3
   io: ^1.0.3
   msix: ^3.3.2
   path: ^1.8.1

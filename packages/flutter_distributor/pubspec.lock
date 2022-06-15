@@ -7,35 +7,35 @@ packages:
       path: "../app_package_maker"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.3"
   app_package_maker_aab:
     dependency: "direct overridden"
     description:
       path: "../app_package_maker_aab"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.3"
   app_package_maker_apk:
     dependency: "direct overridden"
     description:
       path: "../app_package_maker_apk"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.3"
   app_package_maker_appimage:
     dependency: "direct overridden"
     description:
       path: "../app_package_maker_appimage"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.2.3"
   app_package_maker_deb:
     dependency: "direct overridden"
     description:
       path: "../app_package_maker_deb"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.3"
   app_package_maker_dmg:
     dependency: "direct overridden"
     description:
@@ -49,105 +49,98 @@ packages:
       path: "../app_package_maker_exe"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.3"
   app_package_maker_ipa:
     dependency: "direct overridden"
     description:
       path: "../app_package_maker_ipa"
       relative: true
     source: path
-    version: "0.2.1"
-  app_package_maker_msix:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_maker_msix"
-      relative: true
-    source: path
-    version: "0.2.1"
+    version: "0.2.3"
   app_package_maker_zip:
     dependency: "direct overridden"
     description:
       path: "../app_package_maker_zip"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.3"
   app_package_parser:
     dependency: "direct overridden"
     description:
       path: "../app_package_parser"
       relative: true
     source: path
-    version: "0.1.3"
+    version: "0.2.3"
   app_package_parser_apk:
     dependency: "direct overridden"
     description:
       path: "../app_package_parser_apk"
       relative: true
     source: path
-    version: "0.1.3"
+    version: "0.2.3"
   app_package_parser_ipa:
     dependency: "direct overridden"
     description:
       path: "../app_package_parser_ipa"
       relative: true
     source: path
-    version: "0.1.3"
+    version: "0.2.3"
   app_package_publisher:
     dependency: "direct main"
     description:
       path: "../app_package_publisher"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.2.3"
   app_package_publisher_appcenter:
     dependency: "direct overridden"
     description:
       path: "../app_package_publisher_appcenter"
       relative: true
     source: path
-    version: "0.2.0"
+    version: "0.2.3"
   app_package_publisher_appstore:
     dependency: "direct overridden"
     description:
       path: "../app_package_publisher_appstore"
       relative: true
     source: path
-    version: "0.1.8"
+    version: "0.2.3"
   app_package_publisher_fir:
     dependency: "direct overridden"
     description:
       path: "../app_package_publisher_fir"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.2.3"
   app_package_publisher_firebase:
     dependency: "direct overridden"
     description:
       path: "../app_package_publisher_firebase"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.2.3"
   app_package_publisher_github:
     dependency: "direct overridden"
     description:
       path: "../app_package_publisher_github"
       relative: true
     source: path
-    version: "0.1.6"
+    version: "0.2.3"
   app_package_publisher_pgyer:
     dependency: "direct overridden"
     description:
       path: "../app_package_publisher_pgyer"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.2.3"
   app_package_publisher_qiniu:
     dependency: "direct overridden"
     description:
       path: "../app_package_publisher_qiniu"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.2.3"
   archive:
     dependency: transitive
     description:
@@ -162,13 +155,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.0"
-  characters:
-    dependency: transitive
-    description:
-      name: characters
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.2.0"
   charcode:
     dependency: transitive
     description:
@@ -183,20 +169,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
-  cli_dialog:
-    dependency: transitive
-    description:
-      name: cli_dialog
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.0"
-  cli_util:
-    dependency: transitive
-    description:
-      name: cli_util
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.5"
   collection:
     dependency: transitive
     description:
@@ -218,13 +190,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
-  dart_console:
-    dependency: transitive
-    description:
-      name: dart_console
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   dio:
     dependency: "direct main"
     description:
@@ -232,39 +197,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.4"
-  ffi:
-    dependency: transitive
-    description:
-      name: ffi
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.2"
-  flutter:
-    dependency: "direct main"
-    description: flutter
-    source: sdk
-    version: "0.0.0"
   flutter_app_builder:
     dependency: "direct main"
     description:
       path: "../flutter_app_builder"
       relative: true
     source: path
-    version: "0.2.1"
+    version: "0.2.3"
   flutter_app_packager:
     dependency: "direct main"
     description:
       path: "../flutter_app_packager"
       relative: true
     source: path
-    version: "0.2.3"
+    version: "0.2.4"
   flutter_app_publisher:
     dependency: "direct main"
     description:
       path: "../flutter_app_publisher"
       relative: true
     source: path
-    version: "0.2.0"
+    version: "0.2.3"
   http_parser:
     dependency: transitive
     description:
@@ -272,13 +225,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
-  image:
-    dependency: transitive
-    description:
-      name: image
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.3"
   io:
     dependency: transitive
     description:
@@ -307,13 +253,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
-  material_color_utilities:
-    dependency: transitive
-    description:
-      name: material_color_utilities
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.4"
   meta:
     dependency: transitive
     description:
@@ -321,13 +260,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
-  msix:
-    dependency: transitive
-    description:
-      name: msix
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.4.1"
   mustache_template:
     dependency: transitive
     description:
@@ -335,20 +267,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  package_config:
-    dependency: transitive
-    description:
-      name: package_config
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.2"
   parse_app_package:
     dependency: "direct overridden"
     description:
       path: "../parse_app_package"
       relative: true
     source: path
-    version: "0.1.3"
+    version: "0.2.3"
   path:
     dependency: "direct main"
     description:
@@ -384,11 +309,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.2"
-  sky_engine:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.99"
   source_span:
     dependency: transitive
     description:
@@ -417,20 +337,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
-  vector_math:
-    dependency: transitive
-    description:
-      name: vector_math
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.2"
-  win32:
-    dependency: transitive
-    description:
-      name: win32
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.4.4"
   xml:
     dependency: transitive
     description:
@@ -446,5 +352,4 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.15.0 <3.0.0"
-  flutter: ">=1.20.0"
+  dart: ">=2.14.0 <3.0.0"

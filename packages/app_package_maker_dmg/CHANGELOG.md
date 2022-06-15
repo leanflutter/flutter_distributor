@@ -1,6 +1,7 @@
 ## 0.2.3
 
 * Support `code-sign` configuration item.
+* Downgrade pubspec_parse to 1.1.0
 
 ## 0.2.1
 
