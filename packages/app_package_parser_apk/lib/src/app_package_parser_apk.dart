@@ -13,8 +13,10 @@ class AppPackageParserApk extends AppPackageParser {
       throw Exception('Missing `ANDROID_HOME` environment variable.');
     }
 
-    String buildToolsDir =
-        Directory('$androidHome/build-tools').listSync().first.path;
+    String buildToolsDir = Directory('$androidHome/build-tools')
+        .listSync()
+        .firstWhere((element) => !element.path.contains(".DS_Store"))
+        .path;
 
     ProcessResult processResult = Process.runSync(
       '$buildToolsDir/aapt',
