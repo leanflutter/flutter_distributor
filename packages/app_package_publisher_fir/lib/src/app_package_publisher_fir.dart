@@ -101,7 +101,7 @@ class AppPackagePublisherFir extends AppPackagePublisher {
     } on DioError catch (error) {
       String? message;
       if (error.response?.data != null) {
-        int code = error.response?.data['code'];
+        int? code = error.response?.data['code'];
         message = error.response?.data['errors']['exception'][0];
         message = '$code - $message';
       }
