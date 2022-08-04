@@ -1,3 +1,6 @@
+## 0.2.4+1
+* Fix an incorrectly worded message
+
 ## 0.2.4
 
 * [dmg maker] Support `code-sign` configuration item.
