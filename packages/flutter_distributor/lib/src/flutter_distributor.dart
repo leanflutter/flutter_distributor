@@ -159,7 +159,7 @@ class FlutterDistributor {
             },
           );
           logger.info(
-            Colorize('Successfully builded ${buildResult.outputDirectory}')
+            Colorize('Successfully built ${buildResult.outputDirectory}')
                 .green(),
           );
         }
