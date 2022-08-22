@@ -1,13 +1,6 @@
 import 'dart:io';
 
-import 'package:app_package_publisher/app_package_publisher.dart';
-import 'package:app_package_publisher_appcenter/app_package_publisher_appcenter.dart';
-import 'package:app_package_publisher_appstore/app_package_publisher_appstore.dart';
-import 'package:app_package_publisher_fir/app_package_publisher_fir.dart';
-import 'package:app_package_publisher_firebase/app_package_publisher_firebase.dart';
-import 'package:app_package_publisher_github/app_package_publisher_github.dart';
-import 'package:app_package_publisher_pgyer/app_package_publisher_pgyer.dart';
-import 'package:app_package_publisher_qiniu/app_package_publisher_qiniu.dart';
+import 'publishers/publishers.dart';
 
 class FlutterAppPublisher {
   final List<AppPackagePublisher> _publishers = [

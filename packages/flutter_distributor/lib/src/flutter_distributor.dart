@@ -9,16 +9,24 @@ import 'package:flutter_app_packager/flutter_app_packager.dart';
 import 'package:flutter_app_publisher/flutter_app_publisher.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:shell_executor/shell_executor.dart';
 import 'package:yaml/yaml.dart';
 
 import 'distribute_options.dart';
 import 'release.dart';
 import 'release_job.dart';
+import 'utils/colorize_shell_executor.dart';
 import 'utils/logger.dart';
 import 'utils/progress_bar.dart';
 import 'utils/pub_dev_api.dart';
 
+ShellExecutor get _shellExecutor => ShellExecutor.global;
+
 class FlutterDistributor {
+  FlutterDistributor() {
+    ShellExecutor.global = ColorizeShellExecutor();
+  }
+
   final FlutterAppBuilder _builder = FlutterAppBuilder();
   final FlutterAppPackager _packager = FlutterAppPackager();
   final FlutterAppPublisher _publisher = FlutterAppPublisher();
@@ -137,6 +145,10 @@ class FlutterDistributor {
         outputDirectory.createSync(recursive: true);
       }
 
+      if (cleanBeforeBuild) {
+        await _builder.clean();
+      }
+
       bool isBuildOnlyOnce = platform != 'android';
       BuildResult? buildResult;
 
@@ -147,16 +159,7 @@ class FlutterDistributor {
           buildResult = await _builder.build(
             platform,
             target,
-            cleanBeforeBuild: cleanBeforeBuild,
             buildArguments: buildArguments,
-            onProcessStdOut: (data) {
-              String message = utf8.decoder.convert(data).trim();
-              logger.info(Colorize(message).darkGray());
-            },
-            onProcessStdErr: (data) {
-              String message = utf8.decoder.convert(data).trim();
-              logger.info(Colorize(message).darkGray());
-            },
           );
           logger.info(
             Colorize('Successfully built ${buildResult.outputDirectory}')
@@ -176,14 +179,6 @@ class FlutterDistributor {
             platform: platform,
             target: target,
             makeArguments: makeArguments,
-            onProcessStdOut: (data) {
-              String message = utf8.decoder.convert(data).trim();
-              logger.info(Colorize(message).darkGray());
-            },
-            onProcessStdErr: (data) {
-              String message = utf8.decoder.convert(data).trim();
-              logger.info(Colorize(message).darkGray());
-            },
           );
 
           logger.info(
@@ -332,19 +327,10 @@ class FlutterDistributor {
   }
 
   Future<void> upgrade() async {
-    Process process = await Process.start(
+    await _shellExecutor.exec(
       'dart',
       ['pub', 'global', 'activate', 'flutter_distributor'],
     );
-    process.stdout.listen((event) {
-      String msg = utf8.decoder.convert(event).trim();
-      logger.info(msg);
-    });
-    process.stderr.listen((event) {
-      String msg = utf8.decoder.convert(event).trim();
-      logger.shout(msg);
-    });
-
     return Future.value();
   }
 }

@@ -40,8 +40,6 @@ abstract class AppPackageMaker {
     Directory appDirectory, {
     required Directory outputDirectory,
     Map<String, dynamic>? makeArguments,
-    void Function(List<int> data)? onProcessStdOut,
-    void Function(List<int> data)? onProcessStdErr,
   });
 }
 

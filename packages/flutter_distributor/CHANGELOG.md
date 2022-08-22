@@ -1,4 +1,4 @@
-## 0.2.4+1
+## 0.2.5
 * Fix an incorrectly worded message
 
 ## 0.2.4

@@ -1,19 +1,16 @@
 name: flutter_app_publisher
 description: Flutter app publisher
-version: 0.2.3
+version: 0.2.5
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  app_package_publisher: ^0.2.3
-  app_package_publisher_appcenter: ^0.2.3
-  app_package_publisher_appstore: ^0.2.3
-  app_package_publisher_fir: ^0.2.3
-  app_package_publisher_pgyer: ^0.2.3
-  app_package_publisher_qiniu: ^0.2.3
-  app_package_publisher_firebase: ^0.2.3
-  app_package_publisher_github: ^0.2.3
+  app_package_publisher: ^0.2.5
   args: ^2.2.0
+  dio: ^4.0.4
+  parse_app_package: ^0.2.3
+  qiniu_sdk_base: ^0.3.2
+  shell_executor: ^0.1.0
   yaml: ^3.1.0

@@ -7,63 +7,7 @@ packages:
       path: "../app_package_maker"
       relative: true
     source: path
-    version: "0.2.3"
-  app_package_maker_aab:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_maker_aab"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_maker_apk:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_maker_apk"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_maker_appimage:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_maker_appimage"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_maker_deb:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_maker_deb"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_maker_dmg:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_maker_dmg"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_maker_exe:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_maker_exe"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_maker_ipa:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_maker_ipa"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_maker_zip:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_maker_zip"
-      relative: true
-    source: path
-    version: "0.2.3"
+    version: "0.2.5"
   app_package_parser:
     dependency: "direct overridden"
     description:
@@ -71,73 +15,10 @@ packages:
       relative: true
     source: path
     version: "0.2.3"
-  app_package_parser_apk:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_parser_apk"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_parser_ipa:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_parser_ipa"
-      relative: true
-    source: path
-    version: "0.2.3"
   app_package_publisher:
     dependency: "direct main"
     description:
       path: "../app_package_publisher"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_publisher_appcenter:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_publisher_appcenter"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_publisher_appstore:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_publisher_appstore"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_publisher_fir:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_publisher_fir"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_publisher_firebase:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_publisher_firebase"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_publisher_github:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_publisher_github"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_publisher_pgyer:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_publisher_pgyer"
-      relative: true
-    source: path
-    version: "0.2.3"
-  app_package_publisher_qiniu:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_publisher_qiniu"
       relative: true
     source: path
     version: "0.2.3"
@@ -203,21 +84,21 @@ packages:
       path: "../flutter_app_builder"
       relative: true
     source: path
-    version: "0.2.3"
+    version: "0.2.5"
   flutter_app_packager:
     dependency: "direct main"
     description:
       path: "../flutter_app_packager"
       relative: true
     source: path
-    version: "0.2.4"
+    version: "0.2.5"
   flutter_app_publisher:
     dependency: "direct main"
     description:
       path: "../flutter_app_publisher"
       relative: true
     source: path
-    version: "0.2.3"
+    version: "0.2.5"
   http_parser:
     dependency: transitive
     description:
@@ -273,7 +154,7 @@ packages:
       path: "../parse_app_package"
       relative: true
     source: path
-    version: "0.2.3"
+    version: "0.2.5"
   path:
     dependency: "direct main"
     description:
@@ -287,7 +168,7 @@ packages:
       name: petitparser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.4.0"
+    version: "5.0.0"
   pub_semver:
     dependency: "direct main"
     description:
@@ -308,7 +189,14 @@ packages:
       name: qiniu_sdk_base
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.2"
+    version: "0.3.3"
+  shell_executor:
+    dependency: "direct overridden"
+    description:
+      path: "../shell_executor"
+      relative: true
+    source: path
+    version: "0.1.0"
   source_span:
     dependency: transitive
     description:
@@ -343,7 +231,7 @@ packages:
       name: xml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.3.1"
+    version: "5.4.1"
   yaml:
     dependency: "direct main"
     description:
@@ -352,4 +240,4 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.14.0 <3.0.0"
+  dart: ">=2.16.0 <3.0.0"

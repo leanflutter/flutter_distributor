@@ -1,6 +1,6 @@
 name: flutter_distributor
 description: A complete tool for packaging and publishing your Flutter apps.
-version: 0.2.4+1
+version: 0.2.5
 homepage: https://github.com/leanflutter/flutter_distributor
 
 platforms:
@@ -12,14 +12,14 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  app_package_maker: ^0.2.3
-  app_package_publisher: ^0.2.3
+  app_package_maker: ^0.2.5
+  app_package_publisher: ^0.2.5
   args: ^2.2.0
   colorize: ^3.0.0
   dio: ^4.0.4
-  flutter_app_builder: ^0.2.3
-  flutter_app_packager: ^0.2.4
-  flutter_app_publisher: ^0.2.3
+  flutter_app_builder: ^0.2.5
+  flutter_app_packager: ^0.2.5
+  flutter_app_publisher: ^0.2.5
   logging: ^1.0.2
   path: ^1.8.1
   pub_semver: ^2.1.0

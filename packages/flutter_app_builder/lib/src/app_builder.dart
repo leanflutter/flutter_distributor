@@ -1,6 +1,10 @@
 import 'dart:io';
+
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:shell_executor/shell_executor.dart';
+
+ShellExecutor get _shellExecutor => ShellExecutor.global;
 
 class AppBuilder {
   String get platform => throw UnimplementedError();
@@ -25,22 +29,8 @@ class AppBuilder {
 
   Future<BuildResult> build({
     String? target,
-    required bool cleanBeforeBuild,
     required Map<String, dynamic> buildArguments,
-    required void Function(List<int> data) onProcessStdOut,
-    required void Function(List<int> data) onProcessStdErr,
   }) async {
-    if (cleanBeforeBuild) {
-      Process process = await Process.start(
-        'flutter',
-        ['clean'],
-        runInShell: true,
-      );
-      process.stdout.listen(onProcessStdOut);
-      process.stderr.listen(onProcessStdErr);
-      await process.exitCode;
-    }
-
     List<String> arguments = [];
     for (String key in buildArguments.keys) {
       dynamic value = buildArguments[key];
@@ -62,20 +52,12 @@ class AppBuilder {
       'FLUTTER_BUILD_NUMBER=$appBuildNumber',
     ]);
 
-    print(
-      (['flutter', 'build', buildSubcommand]..addAll(arguments)).join(' '),
-    );
-
-    Process process = await Process.start(
+    ProcessResult processResult = await _shellExecutor.exec(
       'flutter',
       ['build', buildSubcommand]..addAll(arguments),
-      runInShell: true,
     );
-    process.stdout.listen(onProcessStdOut);
-    process.stderr.listen(onProcessStdErr);
 
-    int exitCode = await process.exitCode;
-    if (exitCode != 0) {
+    if (processResult.exitCode != 0) {
       throw BuildError();
     }
 

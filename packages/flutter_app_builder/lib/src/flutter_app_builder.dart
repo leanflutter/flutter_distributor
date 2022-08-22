@@ -1,3 +1,5 @@
+import 'package:shell_executor/shell_executor.dart';
+
 import 'app_builder_android.dart';
 import 'app_builder_ios.dart';
 import 'app_builder_linux.dart';
@@ -5,6 +7,8 @@ import 'app_builder_macos.dart';
 import 'app_builder_web.dart';
 import 'app_builder_windows.dart';
 import 'app_builder.dart';
+
+ShellExecutor get _shellExecutor => ShellExecutor.global;
 
 class FlutterAppBuilder {
   final List<AppBuilder> _builders = [
@@ -17,13 +21,14 @@ class FlutterAppBuilder {
     AppBuilderWindows(),
   ];
 
+  Future<void> clean() async {
+    await _shellExecutor.exec('flutter', ['clean']);
+  }
+
   Future<BuildResult> build(
     String platform,
     String target, {
-    required bool cleanBeforeBuild,
     required Map<String, dynamic> buildArguments,
-    required void Function(List<int> data) onProcessStdOut,
-    required void Function(List<int> data) onProcessStdErr,
   }) async {
     AppBuilder builder = _builders.firstWhere(
       (e) {
@@ -41,10 +46,7 @@ class FlutterAppBuilder {
 
     return await builder.build(
       target: target,
-      cleanBeforeBuild: cleanBeforeBuild,
       buildArguments: buildArguments,
-      onProcessStdOut: onProcessStdOut,
-      onProcessStdErr: onProcessStdErr,
     );
   }
 }
