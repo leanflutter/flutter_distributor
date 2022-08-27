@@ -11,7 +11,7 @@ class FlutterAppPackager {
     AppPackageMakerDmg(),
     AppPackageMakerExe(),
     AppPackageMakerIpa(),
-    // AppPackageMakerMsix(),
+    AppPackageMakerMsix(),
     AppPackageMakerZip('linux'),
     AppPackageMakerZip('macos'),
     AppPackageMakerZip('windows'),

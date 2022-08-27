@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
-import 'package:msix/msix.dart';
 import 'package:path/path.dart' as p;
+import 'package:shell_executor/shell_executor.dart';
 
 import 'make_msix_config.dart';
+
+ShellExecutor get _shellExecutor => ShellExecutor.global;
 
 class AppPackageMakerMsix extends AppPackageMaker {
   String get name => 'msix';
@@ -57,7 +59,10 @@ class AppPackageMakerMsix extends AppPackageMaker {
         arguments.addAll(['--$newKey', value]);
       }
     }
-    await Msix(arguments).create();
+    await _shellExecutor.exec(
+      'flutter',
+      ['pub', 'run', 'msix:create']..addAll(arguments),
+    );
     return MakeResult(makeConfig);
   }
 }

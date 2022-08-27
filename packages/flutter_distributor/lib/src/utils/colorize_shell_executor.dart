@@ -16,6 +16,7 @@ class ColorizeShellExecutor extends ShellExecutor {
       executable,
       arguments,
       environment: environment,
+      runInShell: true,
     );
 
     logger.info('$executable ${arguments.join(' ')}');
