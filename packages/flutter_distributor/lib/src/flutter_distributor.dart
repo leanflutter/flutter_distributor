@@ -3,28 +3,24 @@ import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 import 'package:app_package_publisher/app_package_publisher.dart';
-import 'package:colorize/colorize.dart';
 import 'package:flutter_app_builder/flutter_app_builder.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
 import 'package:flutter_app_publisher/flutter_app_publisher.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:shell_executor/shell_executor.dart';
+import 'package:shell_uikit/shell_uikit.dart';
 import 'package:yaml/yaml.dart';
 
 import 'distribute_options.dart';
 import 'release.dart';
 import 'release_job.dart';
-import 'utils/colorize_shell_executor.dart';
-import 'utils/logger.dart';
-import 'utils/progress_bar.dart';
-import 'utils/pub_dev_api.dart';
-
-ShellExecutor get _shellExecutor => ShellExecutor.global;
+import 'extensions/extensions.dart';
+import 'utils/utils.dart';
 
 class FlutterDistributor {
   FlutterDistributor() {
-    ShellExecutor.global = ColorizeShellExecutor();
+    ShellExecutor.global = DefaultShellExecutor();
   }
 
   final FlutterAppBuilder _builder = FlutterAppBuilder();
@@ -112,15 +108,15 @@ class FlutterDistributor {
     if (currentVersion != null &&
         latestVersion != null &&
         currentVersion.compareTo(latestVersion) < 0) {
-      Colorize msg = Colorize([
+      String msg = [
         '╔════════════════════════════════════════════════════════════════════════════╗',
         '║ A new version of Flutter Distributor is available!                         ║',
         '║                                                                            ║',
         '║ To update to the latest version, run "flutter_distributor upgrade".        ║',
         '╚════════════════════════════════════════════════════════════════════════════╝',
         '',
-      ].join('\n'));
-      print(msg.yellow());
+      ].join('\n');
+      print(msg);
     }
     return Future.value();
   }
@@ -155,16 +151,20 @@ class FlutterDistributor {
       for (String target in targets) {
         logger.info('Packaging ${pubspec.name} ${pubspec.version} as $target:');
         if (!isBuildOnlyOnce || (isBuildOnlyOnce && buildResult == null)) {
-          logger.info('Building...');
-          buildResult = await _builder.build(
-            platform,
-            target,
-            buildArguments: buildArguments,
-          );
-          logger.info(
-            Colorize('Successfully built ${buildResult.outputDirectory}')
-                .green(),
-          );
+          try {
+            buildResult = await _builder.build(
+              platform,
+              target,
+              buildArguments: buildArguments,
+            );
+            logger.info(
+              'Successfully built ${buildResult.outputDirectory} in ${buildResult.duration.inSeconds}s'
+                  .brightGreen(),
+            );
+          } on UnsupportedError catch (error) {
+            logger.warning('Warning: ${error.message}'.yellow());
+            continue;
+          }
         }
 
         if (buildResult != null) {
@@ -182,16 +182,14 @@ class FlutterDistributor {
           );
 
           logger.info(
-            Colorize('Successfully packaged ${makeResult.outputFile.path}')
-                .green(),
+            'Successfully packaged ${makeResult.outputFile.path}'.brightGreen(),
           );
-
           makeResultList.add(makeResult);
         }
       }
     } on Error catch (error) {
-      logger.shout(Colorize(error.toString()).red());
-      logger.shout(Colorize(error.stackTrace.toString()).red());
+      logger.severe(error.toString().red());
+      logger.severe(error.stackTrace.toString().red());
     }
 
     return makeResultList;
@@ -250,14 +248,13 @@ class FlutterDistributor {
         );
         if (progressBar.isActive) progressBar.stop();
         logger.info(
-          Colorize('Successfully published ${publishResult.url}').green(),
+          'Successfully published ${publishResult.url}'.brightGreen(),
         );
-
         publishResultList.add(publishResult);
       }
     } on Error catch (error) {
-      logger.shout(Colorize(error.toString()).red());
-      logger.shout(Colorize(error.stackTrace.toString()).red());
+      logger.severe(error.toString().brightRed());
+      logger.severe(error.stackTrace.toString().brightRed());
     }
     return publishResultList;
   }
@@ -268,66 +265,87 @@ class FlutterDistributor {
     required List<String> skipJobNameList,
     required bool cleanBeforeBuild,
   }) async {
-    Directory outputDirectory = distributeOptions.outputDirectory;
-    if (!outputDirectory.existsSync()) {
-      outputDirectory.createSync(recursive: true);
-    }
+    final time = Stopwatch()..start();
 
-    List<Release> releases = [];
-
-    if (name.isNotEmpty) {
-      releases =
-          distributeOptions.releases.where((e) => e.name == name).toList();
-    }
-
-    if (releases.isEmpty) {
-      throw Exception('Missing/incomplete `distribute_options.yaml` file.');
-    }
-
-    for (Release release in releases) {
-      List<ReleaseJob> filteredJobs = release.jobs.where((e) {
-        if (jobNameList.isNotEmpty) {
-          return jobNameList.contains(e.name);
-        }
-        if (skipJobNameList.isNotEmpty) {
-          return !skipJobNameList.contains(e.name);
-        }
-        return true;
-      }).toList();
-      if (filteredJobs.isEmpty) {
-        throw Exception('No available jobs found in ${release.name}.');
+    try {
+      Directory outputDirectory = distributeOptions.outputDirectory;
+      if (!outputDirectory.existsSync()) {
+        outputDirectory.createSync(recursive: true);
       }
 
-      bool needCleanBeforeBuild = cleanBeforeBuild;
+      List<Release> releases = [];
 
-      for (ReleaseJob job in filteredJobs) {
-        List<MakeResult> makeResultList = await package(
-          job.package.platform,
-          [job.package.target],
-          channel: job.package.channel,
-          artifactName: distributeOptions.artifactName,
-          cleanBeforeBuild: needCleanBeforeBuild,
-          buildArguments: job.package.buildArgs ?? {},
-        );
-        // Clean only once
-        needCleanBeforeBuild = false;
+      if (name.isNotEmpty) {
+        releases =
+            distributeOptions.releases.where((e) => e.name == name).toList();
+      }
 
-        if (job.publish != null || job.publishTo != null) {
-          String? publishTarget = job.publishTo ?? job.publish?.target;
-          MakeResult makeResult = makeResultList.first;
-          await publish(
-            makeResult.outputFile,
-            [publishTarget!],
-            publishArguments: job.publish?.args,
+      if (releases.isEmpty) {
+        throw Exception('Missing/incomplete `distribute_options.yaml` file.');
+      }
+
+      for (Release release in releases) {
+        List<ReleaseJob> filteredJobs = release.jobs.where((e) {
+          if (jobNameList.isNotEmpty) {
+            return jobNameList.contains(e.name);
+          }
+          if (skipJobNameList.isNotEmpty) {
+            return !skipJobNameList.contains(e.name);
+          }
+          return true;
+        }).toList();
+        if (filteredJobs.isEmpty) {
+          throw Exception('No available jobs found in ${release.name}.');
+        }
+
+        bool needCleanBeforeBuild = cleanBeforeBuild;
+
+        for (ReleaseJob job in filteredJobs) {
+          logger.info('');
+          logger.info(
+            '${'===>'.blue()} ${'Executing'.white(bold: true)} ${job.name.green(bold: true)}',
           );
+
+          List<MakeResult> makeResultList = await package(
+            job.package.platform,
+            [job.package.target],
+            channel: job.package.channel,
+            artifactName: distributeOptions.artifactName,
+            cleanBeforeBuild: needCleanBeforeBuild,
+            buildArguments: job.package.buildArgs ?? {},
+          );
+          // Clean only once
+          needCleanBeforeBuild = false;
+
+          if (job.publish != null || job.publishTo != null) {
+            String? publishTarget = job.publishTo ?? job.publish?.target;
+            MakeResult makeResult = makeResultList.first;
+            await publish(
+              makeResult.outputFile,
+              [publishTarget!],
+              publishArguments: job.publish?.args,
+            );
+          }
         }
       }
+
+      time.stop();
+      logger.info('');
+      logger.info(
+        'RELEASE SUCCESSFUL in ${time.elapsed.inSeconds}s'.green(bold: true),
+      );
+    } catch (error) {
+      time.stop();
+      logger.info('');
+      logger.severe(
+        'RELEASE FAILED in ${time.elapsed.inSeconds}s'.red(bold: true),
+      );
     }
     return Future.value();
   }
 
   Future<void> upgrade() async {
-    await _shellExecutor.exec(
+    await $(
       'dart',
       ['pub', 'global', 'activate', 'flutter_distributor'],
     );

@@ -7,8 +7,6 @@ import 'package:shell_executor/shell_executor.dart';
 
 import 'publish_appcenter_config.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 const _kUploadDomain = "https://file.appcenter.ms/upload";
 
 class AppPackagePublisherAppCenter extends AppPackagePublisher {
@@ -154,9 +152,9 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
     PublishProgressCallback? onPublishProgress,
   }) async {
     String chunkingPath = '${file.path}_chunking/';
-    await _shellExecutor.exec('rm', ['-rf', chunkingPath]);
-    await _shellExecutor.exec('mkdir', [chunkingPath]);
-    await _shellExecutor.exec(
+    await $('rm', ['-rf', chunkingPath]);
+    await $('mkdir', [chunkingPath]);
+    await $(
       'split',
       ['-b', '$chunkSize', file.path, chunkingPath],
     );
@@ -183,7 +181,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
         },
       );
     }
-    await _shellExecutor.exec('rm', ['-rf', chunkingPath]);
+    await $('rm', ['-rf', chunkingPath]);
     return Map<String, dynamic>.from({});
   }
 

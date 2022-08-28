@@ -123,10 +123,14 @@ class MakeConfig {
 
 class MakeResult {
   final MakeConfig makeConfig;
+  final Duration? duration;
 
   File get outputFile => makeConfig.outputFile;
 
-  MakeResult(this.makeConfig);
+  MakeResult(
+    this.makeConfig, {
+    this.duration,
+  });
 }
 
 class MakeError extends Error {

@@ -6,8 +6,6 @@ import 'package:shell_executor/shell_executor.dart';
 
 import 'make_msix_config.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 class AppPackageMakerMsix extends AppPackageMaker {
   String get name => 'msix';
   String get platform => 'windows';
@@ -59,7 +57,7 @@ class AppPackageMakerMsix extends AppPackageMaker {
         arguments.addAll(['--$newKey', value]);
       }
     }
-    await _shellExecutor.exec(
+    await $(
       'flutter',
       ['pub', 'run', 'msix:create']..addAll(arguments),
     );

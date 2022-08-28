@@ -5,8 +5,6 @@ import 'package:shell_executor/shell_executor.dart';
 
 import 'publish_appstore_config.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 /// AppStore doc [https://help.apple.com/asc/appsaltool/]
 class AppPackagePublisherAppStore extends AppPackagePublisher {
   String get name => 'appstore';
@@ -27,7 +25,7 @@ class AppPackagePublisherAppStore extends AppPackagePublisher {
     PublishAppStoreConfig publishConfig =
         PublishAppStoreConfig.parse(environment, publishArguments);
     // Publish to AppStore
-    ProcessResult processResult = await _shellExecutor.exec(
+    ProcessResult processResult = await $(
       'xcrun',
       [
         'altool',

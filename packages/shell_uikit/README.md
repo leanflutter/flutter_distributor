@@ -1,9 +1,9 @@
-# shell_executor
+# shell_uikit
 
 [![pub version][pub-image]][pub-url]
 
-[pub-image]: https://img.shields.io/pub/v/shell_executor.svg
-[pub-url]: https://pub.dev/packages/shell_executor
+[pub-image]: https://img.shields.io/pub/v/shell_uikit.svg
+[pub-url]: https://pub.dev/packages/shell_uikit
 
 ---
 

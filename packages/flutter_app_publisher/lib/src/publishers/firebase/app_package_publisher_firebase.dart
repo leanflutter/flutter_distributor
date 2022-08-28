@@ -5,8 +5,6 @@ import 'package:shell_executor/shell_executor.dart';
 
 import 'publish_firebase_config.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 /// Firebase doc
 /// iOS: [https://firebase.google.com/docs/app-distribution/ios/distribute-cli]
 /// Android: [https://firebase.google.com/docs/app-distribution/android/distribute-cli]
@@ -27,7 +25,7 @@ class AppPackagePublisherFirebase extends AppPackagePublisher {
         PublishFirebaseConfig.parse(environment, publishArguments);
 
     // Publish to Firebase
-    ProcessResult processResult = await _shellExecutor.exec(
+    ProcessResult processResult = await $(
       'firebase',
       [
         'appdistribution:distribute',

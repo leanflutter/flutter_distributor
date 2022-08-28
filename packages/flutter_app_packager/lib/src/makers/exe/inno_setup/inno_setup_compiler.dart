@@ -4,8 +4,6 @@ import 'package:shell_executor/shell_executor.dart';
 
 import './inno_setup_script.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 class InnoSetupCompiler {
   Future<bool> compile(InnoSetupScript script) async {
     Directory innoSetupDirectory =
@@ -17,7 +15,7 @@ class InnoSetupCompiler {
 
     File file = await script.createFile();
 
-    ProcessResult processResult = await _shellExecutor.exec(
+    ProcessResult processResult = await $(
       p.join(innoSetupDirectory.path, 'ISCC.exe'),
       [file.path],
     );

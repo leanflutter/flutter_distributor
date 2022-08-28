@@ -6,8 +6,6 @@ import 'package:shell_executor/shell_executor.dart';
 
 import 'make_deb_config.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 class AppPackageMakerDeb extends AppPackageMaker {
   String get name => 'deb';
   String get platform => 'linux';
@@ -58,7 +56,7 @@ class AppPackageMakerDeb extends AppPackageMaker {
       packagingDirectory.path,
       "usr/share/icons/hicolor/256x256/apps",
     );
-    final mkdirProcessResult = await _shellExecutor.exec("mkdir", [
+    final mkdirProcessResult = await $("mkdir", [
       "-p",
       debianDir,
       path.join(packagingDirectory.path, "usr/share", makeConfig.appName),
@@ -97,17 +95,16 @@ class AppPackageMakerDeb extends AppPackageMaker {
     await postrmFile.writeAsString(files["postrm"]!);
 
     // give execution permission to shell scripts
-    await _shellExecutor
-        .exec('chmod', ["+x", postinstFile.path, postrmFile.path]);
+    await $('chmod', ["+x", postinstFile.path, postrmFile.path]);
 
     // copy the application binary to /usr/share/$appName
-    await _shellExecutor.exec('cp', [
+    await $('cp', [
       '-fr',
       '${appDirectory.path}/.',
       '${packagingDirectory.path}/usr/share/${makeConfig.appName}/',
     ]);
 
-    ProcessResult processResult = await _shellExecutor.exec('dpkg-deb', [
+    ProcessResult processResult = await $('dpkg-deb', [
       '--build',
       '--root-owner-group',
       packagingDirectory.path,

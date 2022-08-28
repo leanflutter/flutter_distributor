@@ -6,8 +6,6 @@ import 'package:shell_executor/shell_executor.dart';
 
 import 'make_dmg_config.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 class AppPackageMakerDmg extends AppPackageMaker {
   String get name => 'dmg';
   String get platform => 'macos';
@@ -47,17 +45,15 @@ class AppPackageMakerDmg extends AppPackageMaker {
         .map((e) => File(e.path))
         .first;
 
-    await _shellExecutor
-        .exec('cp', ['-RH', appFile.path, packagingDirectory.path]);
+    await $('cp', ['-RH', appFile.path, packagingDirectory.path]);
 
-    await _shellExecutor
-        .exec('cp', ['-RH', 'macos/packaging/dmg/.', packagingDirectory.path]);
+    await $('cp', ['-RH', 'macos/packaging/dmg/.', packagingDirectory.path]);
 
     File makeDmgConfigJsonFile =
         File('${packagingDirectory.path}/make_config.json');
     makeDmgConfigJsonFile.writeAsStringSync(json.encode(makeConfig.toJson()));
 
-    ProcessResult processResult = await _shellExecutor.exec('appdmg', [
+    ProcessResult processResult = await $('appdmg', [
       makeDmgConfigJsonFile.path,
       makeConfig.outputFile.path,
     ]);

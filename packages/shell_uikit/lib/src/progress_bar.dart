@@ -5,7 +5,7 @@ class ProgressBar {
   final String format;
   final String barCompleteChar;
   final String barIncompleteChar;
-  late int barSize;
+  late int barSize = 40;
 
   Timer? timer;
 
@@ -28,13 +28,7 @@ class ProgressBar {
     required this.format,
     this.barCompleteChar = '\u2588',
     this.barIncompleteChar = '\u2591',
-  }) {
-    try {
-      barSize = (stdout.terminalColumns * 0.5).toInt();
-    } catch (_) {
-      barSize = 40;
-    }
-  }
+  });
 
   /// Starts the progress bar and set the total and initial value
   void start(int totalValue, [int? startValue]) {
@@ -62,6 +56,7 @@ class ProgressBar {
   }
 
   void update(int currentValue) {
+    if (value == currentValue) return;
     value = currentValue;
 
     if (currentValue >= total) {

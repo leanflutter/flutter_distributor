@@ -1,6 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+Future<ProcessResult> $(
+  String executable,
+  List<String> arguments, {
+  Map<String, String>? environment,
+}) {
+  return ShellExecutor.global.exec(executable, arguments);
+}
+
 class ShellExecutor {
   static ShellExecutor global = ShellExecutor();
 
@@ -15,17 +23,17 @@ class ShellExecutor {
       environment: environment,
     );
 
-    String stdoutStr = '';
-    String stderrStr = '';
+    String? stdoutStr;
+    String? stderrStr;
 
     process.stdout.listen((event) {
       String msg = utf8.decoder.convert(event);
-      stdoutStr += msg;
+      stdoutStr = '${stdoutStr ?? ''}${msg}';
       stdout.write(msg);
     });
     process.stderr.listen((event) {
       String msg = utf8.decoder.convert(event);
-      stderrStr += msg;
+      stderrStr = '${stderrStr ?? ''}${msg}';
       stdout.write(msg);
     });
     int exitCode = await process.exitCode;

@@ -4,8 +4,6 @@ import 'package:app_package_maker/app_package_maker.dart';
 import 'package:archive/archive_io.dart';
 import 'package:shell_executor/shell_executor.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 class AppPackageMakerZip extends AppPackageMaker {
   late String _platform;
 
@@ -36,7 +34,7 @@ class AppPackageMakerZip extends AppPackageMaker {
       );
     } else {
       String filter = platform == 'macos' ? '*.app' : '*';
-      await _shellExecutor.exec('7z', [
+      await $('7z', [
         'a',
         makeConfig.outputFile.path,
         './${appDirectory.path}/$filter',

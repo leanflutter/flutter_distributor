@@ -5,8 +5,6 @@ import 'package:shell_executor/shell_executor.dart';
 import 'make_appimage_config.dart';
 import 'package:path/path.dart' as path;
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 class AppPackageMakerAppImage extends AppPackageMaker {
   String get name => 'appimage';
   String get platform => 'linux';
@@ -48,7 +46,7 @@ class AppPackageMakerAppImage extends AppPackageMaker {
     // removing already used AppDir & appimage-build directories
     configFile.writeAsStringSync(jsonEncode(makeConfig.toJson()));
 
-    ProcessResult processResult = await _shellExecutor.exec(
+    ProcessResult processResult = await $(
       'appimage-builder',
       ["--recipe", configFile.path],
     );

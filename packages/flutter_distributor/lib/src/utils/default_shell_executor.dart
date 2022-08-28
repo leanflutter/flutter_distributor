@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:colorize/colorize.dart';
+import 'package:ansi_escapes/ansi_escapes.dart';
 import 'package:shell_executor/shell_executor.dart';
 
+import '../extensions/extensions.dart';
 import 'logger.dart';
 
-class ColorizeShellExecutor extends ShellExecutor {
+class DefaultShellExecutor extends ShellExecutor {
   Future<ProcessResult> exec(
     String executable,
     List<String> arguments, {
@@ -19,20 +20,20 @@ class ColorizeShellExecutor extends ShellExecutor {
       runInShell: true,
     );
 
-    logger.info('$executable ${arguments.join(' ')}');
+    logger.info('\$ $executable ${arguments.join(' ')}'.brightBlack());
 
-    String stdoutStr = '';
-    String stderrStr = '';
+    String? stdoutStr;
+    String? stderrStr;
 
     process.stdout.listen((event) {
       String msg = utf8.decoder.convert(event);
-      stdoutStr += msg;
-      stdout.write(Colorize(msg).darkGray());
+      stdoutStr = '${stdoutStr ?? ''}${msg}';
+      stdout.write(msg.brightBlack());
     });
     process.stderr.listen((event) {
       String msg = utf8.decoder.convert(event);
-      stderrStr += msg;
-      stdout.write(Colorize(msg).lightRed());
+      stderrStr = '${stderrStr ?? ''}${msg}';
+      stdout.write(msg.brightRed());
     });
     int exitCode = await process.exitCode;
     return ProcessResult(process.pid, exitCode, stdoutStr, stderrStr);

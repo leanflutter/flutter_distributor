@@ -4,8 +4,6 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:shell_executor/shell_executor.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 class AppBuilder {
   String get platform => throw UnimplementedError();
   bool get isSupportedOnCurrentPlatform => throw UnimplementedError();
@@ -31,10 +29,12 @@ class AppBuilder {
     String? target,
     required Map<String, dynamic> buildArguments,
   }) async {
+    final time = Stopwatch()..start();
+
     List<String> arguments = [];
     for (String key in buildArguments.keys) {
       dynamic value = buildArguments[key];
-      if (value == null) {
+      if (value == null || value is bool) {
         arguments.add('--$key');
       } else if (value is Map) {
         for (String subKey in value.keys) {
@@ -52,7 +52,7 @@ class AppBuilder {
       'FLUTTER_BUILD_NUMBER=$appBuildNumber',
     ]);
 
-    ProcessResult processResult = await _shellExecutor.exec(
+    ProcessResult processResult = await $(
       'flutter',
       ['build', buildSubcommand]..addAll(arguments),
     );
@@ -63,15 +63,18 @@ class AppBuilder {
 
     return BuildResult(
       outputDirectory: outputDirectory,
+      duration: time.elapsed,
     );
   }
 }
 
 class BuildResult {
   final Directory outputDirectory;
+  final Duration duration;
 
   BuildResult({
     required this.outputDirectory,
+    required this.duration,
   });
 }
 

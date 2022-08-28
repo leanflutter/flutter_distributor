@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:app_package_parser/app_package_parser.dart';
 import 'package:shell_executor/shell_executor.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 class AppPackageParserApk extends AppPackageParser {
   @override
   String get name => 'apk';
@@ -21,7 +19,7 @@ class AppPackageParserApk extends AppPackageParser {
         .firstWhere((element) => !element.path.contains(".DS_Store"))
         .path;
 
-    ProcessResult processResult = await _shellExecutor.exec(
+    ProcessResult processResult = await $(
       '$buildToolsDir/aapt',
       ['d', '--values', 'badging', file.path],
     );

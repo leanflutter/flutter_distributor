@@ -8,8 +8,6 @@ import 'app_builder_web.dart';
 import 'app_builder_windows.dart';
 import 'app_builder.dart';
 
-ShellExecutor get _shellExecutor => ShellExecutor.global;
-
 class FlutterAppBuilder {
   final List<AppBuilder> _builders = [
     AppBuilderAndroid.aab(),
@@ -22,7 +20,7 @@ class FlutterAppBuilder {
   ];
 
   Future<void> clean() async {
-    await _shellExecutor.exec('flutter', ['clean']);
+    await $('flutter', ['clean']);
   }
 
   Future<BuildResult> build(
@@ -41,7 +39,8 @@ class FlutterAppBuilder {
 
     if (!builder.isSupportedOnCurrentPlatform) {
       throw UnsupportedError(
-          '${builder.runtimeType} is not supported on the current platform');
+        '${builder.runtimeType} is not supported on the current platform',
+      );
     }
 
     return await builder.build(
