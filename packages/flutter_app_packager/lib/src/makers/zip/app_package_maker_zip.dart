@@ -26,20 +26,25 @@ class AppPackageMakerZip extends AppPackageMaker {
       makeArguments,
     );
 
-    if (platform == 'windows') {
-      final zipFileEncoder = ZipFileEncoder();
-      zipFileEncoder.zipDirectory(
-        appDirectory,
-        filename: makeConfig.outputFile.path,
-      );
-    } else {
-      String filter = platform == 'macos' ? '*.app' : '*';
-      await $('7z', [
-        'a',
-        makeConfig.outputFile.path,
-        './${appDirectory.path}/$filter',
-      ]);
+    Directory packagingDirectory = appDirectory;
+
+    if (platform == 'macos') {
+      packagingDirectory = makeConfig.packagingDirectory;
+      File appFile = appDirectory
+          .listSync()
+          .where((e) => e.path.endsWith('.app'))
+          .map((e) => File(e.path))
+          .first;
+
+      await $('cp', ['-RH', appFile.path, packagingDirectory.path]);
     }
+
+    final zipFileEncoder = ZipFileEncoder();
+    zipFileEncoder.zipDirectory(
+      packagingDirectory,
+      filename: makeConfig.outputFile.path,
+      followLinks: true,
+    );
     return MakeResult(makeConfig);
   }
 }
