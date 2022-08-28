@@ -11,6 +11,11 @@ class AppBuilderLinux extends AppBuilder {
 
   @override
   Directory get outputDirectory {
-    return Directory('build/linux/x64/release/bundle');
+    String arch = 'x64';
+    ProcessResult processResult = Process.runSync('uname', ['-m']);
+    if ('${processResult.stdout}'.trim() == 'aarch64') {
+      arch = 'arm64';
+    }
+    return Directory('build/linux/${arch}/release/bundle');
   }
 }
