@@ -119,9 +119,9 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
       );
       int code = response.data['code'];
       if (code == 1247) {
-        print('应用发布信息获取中，请稍等');
         tryCount++;
-        await getBuildInfo(apiKey, uploadKey);
+        print('应用发布信息获取中，请稍等 $tryCount');
+        return await getBuildInfo(apiKey, uploadKey);
       } else if (code != 0) {
         throw PublishError('getBuildInfo error: ${response.data}');
       }
