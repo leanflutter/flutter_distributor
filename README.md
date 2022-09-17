@@ -32,8 +32,8 @@ The full documentation can be found on [distributor.leanflutter.org](https://dis
 - [dmg](./packages/flutter_app_packager/lib/src/makers/dmg/) - Create a `dmg` package for your app.
 - [exe](./packages/flutter_app_packager/lib/src/makers/exe/) - Create a `exe` package for your app.
 - [ipa](./packages/flutter_app_packager/lib/src/makers/ipa/) - Create a `ipa` package for your app.
-- [zip](./packages/flutter_app_packager/lib/src/makers/zip/) - Create a `msix` package for your app.
-- [msix](./packages/flutter_app_packager/lib/src/makers/msix/) - Create a `zip` package for your app.
+- [zip](./packages/flutter_app_packager/lib/src/makers/zip/) - Create a `zip` package for your app.
+- [msix](./packages/flutter_app_packager/lib/src/makers/msix/) - Create a `msix` package for your app.
 
 ### Publishers
 
