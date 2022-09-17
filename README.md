@@ -24,23 +24,26 @@ The full documentation can be found on [distributor.leanflutter.org](https://dis
 
 ## Features
 
-These are the available packages in this repository.
+### Makers
 
-- [app_package_maker_apk](./packages/app_package_maker_apk/) - Create a `apk` package for your app.
-- [app_package_maker_aab](./packages/app_package_maker_aab/) - Create a `aab` package for your app.
-- [app_package_maker_deb](./packages/app_package_maker_deb/) - Create a `deb` package for your app.
-- [app_package_maker_dmg](./packages/app_package_maker_dmg/) - Create a `dmg` package for your app.
-- [app_package_maker_exe](./packages/app_package_maker_exe/) - Create a `exe` package for your app.
-- [app_package_maker_ipa](./packages/app_package_maker_ipa/) - Create a `ipa` package for your app.
-- [app_package_maker_msix](./packages/app_package_maker_msix/) - Create a `msix` package for your app.
-- [app_package_maker_zip](./packages/app_package_maker_zip/) - Create a `zip` package for your app.
-- [app_package_publisher_appcenter](./packages/app_package_publisher_appcenter/) - Publish your app to `appcenter`.
-- [app_package_publisher_appstore](./packages/app_package_publisher_appstore/) - Publish your app to `appstore`.
-- [app_package_publisher_fir](./packages/app_package_publisher_fir/) - Publish your app to `fir`.
-- [app_package_publisher_firebase](./packages/app_package_publisher_firebase/) - Publish your app to `firebase`.
-- [app_package_publisher_github](./packages/app_package_publisher_github/) - Publish your app to `github` release.
-- [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/) - Publish your app to `pgyer`.
-- [app_package_publisher_qiniu](./packages/app_package_publisher_qiniu/) - Publish your app to `qiniu`.
+- [apk](./packages/flutter_app_packager/lib/src/makers/apk/) - Create a `apk` package for your app.
+- [aab](./packages/flutter_app_packager/lib/src/makers/aab/) - Create a `aab` package for your app.
+- [deb](./packages/flutter_app_packager/lib/src/makers/deb/) - Create a `deb` package for your app.
+- [dmg](./packages/flutter_app_packager/lib/src/makers/dmg/) - Create a `dmg` package for your app.
+- [exe](./packages/flutter_app_packager/lib/src/makers/exe/) - Create a `exe` package for your app.
+- [ipa](./packages/flutter_app_packager/lib/src/makers/ipa/) - Create a `ipa` package for your app.
+- [zip](./packages/flutter_app_packager/lib/src/makers/zip/) - Create a `msix` package for your app.
+- [msix](./packages/flutter_app_packager/lib/src/makers/msix/) - Create a `zip` package for your app.
+
+### Publishers
+
+- [appcenter](./packages/flutter_app_publisher/lib/src/publishers/appcenter/) - Publish your app to `appcenter`.
+- [appstore](./packages/flutter_app_publisher/lib/src/publishers/appstore/) - Publish your app to `appstore`.
+- [fir](./packages/flutter_app_publisher/lib/src/publishers/fir/) - Publish your app to `fir`.
+- [firebase](./packages/flutter_app_publisher/lib/src/publishers/firebase/) - Publish your app to `firebase`.
+- [github](./packages/flutter_app_publisher/lib/src/publishers/github/) - Publish your app to `github` release.
+- [pgyer](./packages/flutter_app_publisher/lib/src/publishers/pgyer/) - Publish your app to `pgyer`.
+- [qiniu](./packages/flutter_app_publisher/lib/src/publishers/qiniu/) - Publish your app to `qiniu`.
 
 ## Getting Started
 

@@ -1,3 +1,8 @@
+## 0.2.5
+
+* Use `shell_executor` to execute commands
+* Support linux arm64
+
 ## 0.2.3
 
 * Downgrade pubspec_parse to 1.1.0

@@ -1,5 +1,11 @@
 ## 0.2.5
+
+* Use `shell_executor` to execute commands
 * Fix an incorrectly worded message
+* Optimize output messages in console
+* Support linux arm64
+* [maker-zip] without using the 7zip command
+* [publisher-pgyer] Upgrade to v2 Api #91 #92
 
 ## 0.2.4
 

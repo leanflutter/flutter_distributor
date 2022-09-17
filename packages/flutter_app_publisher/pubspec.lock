@@ -14,7 +14,7 @@ packages:
       path: "../app_package_publisher"
       relative: true
     source: path
-    version: "0.2.3"
+    version: "0.2.5"
   archive:
     dependency: transitive
     description:

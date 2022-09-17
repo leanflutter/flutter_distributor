@@ -1,3 +1,9 @@
+## 0.2.5
+
+* Use `shell_executor` to execute commands
+* Merge app makers into this package
+* [maker-zip] without using the 7zip command
+
 ## 0.2.4
 
 * [dmg maker] Support `code-sign` configuration item.

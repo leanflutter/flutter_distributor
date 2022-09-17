@@ -1,6 +1,6 @@
 name: app_package_publisher
 description: App package publisher
-version: 0.2.3
+version: 0.2.5
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:

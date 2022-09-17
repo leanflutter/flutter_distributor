@@ -1,3 +1,9 @@
+## 0.2.5
+
+* Use `shell_executor` to execute commands
+* Merge app publishers into this package
+* [publisher-pgyer] Upgrade to v2 Api #91 #92
+
 ## 0.2.3
 
 * Downgrade pubspec_parse to 1.1.0

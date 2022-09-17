@@ -22,25 +22,28 @@
 
 完整的文档可以在 [distributor.leanflutter.org](https://distributor.leanflutter.org/zh) 上找到。
 
-## 项目功能
+## 功能
 
-这些是本代码仓库中可用的包。
+### 制作器
 
-- [app_package_maker_apk](./packages/app_package_maker_apk/) - 为你的应用创建一个 `apk` 包。
-- [app_package_maker_aab](./packages/app_package_maker_aab/) - 为你的应用创建一个 `aab` 包。
-- [app_package_maker_deb](./packages/app_package_maker_deb/) - 为你的应用创建一个 `deb` 包。
-- [app_package_maker_dmg](./packages/app_package_maker_dmg/) - 为你的应用创建一个 `dmg` 包。
-- [app_package_maker_exe](./packages/app_package_maker_exe/) - 为你的应用创建一个 `exe` 包。
-- [app_package_maker_ipa](./packages/app_package_maker_ipa/) - 为你的应用创建一个 `ipa` 包。
-- [app_package_maker_zip](./packages/app_package_maker_zip/) - 为你的应用创建一个 `zip` 包。
-- [app_package_maker_msix](./packages/app_package_maker_msix/) - 为你的应用创建一个 `msix` 包。
-- [app_package_publisher_appcenter](./packages/app_package_publisher_appcenter/) - 把你的应用发布到 `appcenter`.
-- [app_package_publisher_appstore](./packages/app_package_publisher_appstore/) - 把你的应用发布到 `appstore`.
-- [app_package_publisher_fir](./packages/app_package_publisher_fir/) - 把你的应用发布到 `fir`。
-- [app_package_publisher_firebase](./packages/app_package_publisher_firebase/) - 把你的应用发布到 `firebase`。
-- [app_package_publisher_github](./packages/app_package_publisher_github/) - 把你的应用发布到 `github` release。
-- [app_package_publisher_pgyer](./packages/app_package_publisher_pgyer/) - 把你的应用发布到 `pgyer`。
-- [app_package_publisher_qiniu](./packages/app_package_publisher_qiniu/) - 把你的应用发布到 `qiniu`。
+- [apk](./packages/flutter_app_packager/lib/src/makers/apk/) - 为你的应用创建一个 `apk` 包。
+- [aab](./packages/flutter_app_packager/lib/src/makers/aab/) - 为你的应用创建一个 `aab` 包。
+- [deb](./packages/flutter_app_packager/lib/src/makers/deb/) - 为你的应用创建一个 `deb` 包。
+- [dmg](./packages/flutter_app_packager/lib/src/makers/dmg/) - 为你的应用创建一个 `dmg` 包。
+- [exe](./packages/flutter_app_packager/lib/src/makers/exe/) - 为你的应用创建一个 `exe` 包。
+- [ipa](./packages/flutter_app_packager/lib/src/makers/ipa/) - 为你的应用创建一个 `ipa` 包。
+- [zip](./packages/flutter_app_packager/lib/src/makers/zip/) - 为你的应用创建一个 `zip` 包。
+- [msix](./packages/flutter_app_packager/lib/src/makers/msix/) - 为你的应用创建一个 `msix` 包。
+
+### 发布器
+
+- [appcenter](./packages/flutter_app_publisher/lib/src/publishers/appcenter/) - 把你的应用发布到 `appcenter`.
+- [appstore](./packages/flutter_app_publisher/lib/src/publishers/appstore/) - 把你的应用发布到 `appstore`.
+- [fir](./packages/flutter_app_publisher/lib/src/publishers/fir/) - 把你的应用发布到 `fir`。
+- [firebase](./packages/flutter_app_publisher/lib/src/publishers/firebase/) - 把你的应用发布到 `firebase`。
+- [github](./packages/flutter_app_publisher/lib/src/publishers/github/) - 把你的应用发布到 `github` release。
+- [pgyer](./packages/flutter_app_publisher/lib/src/publishers/pgyer/) - 把你的应用发布到 `pgyer`。
+- [qiniu](./packages/flutter_app_publisher/lib/src/publishers/qiniu/) - 把你的应用发布到 `qiniu`。
 
 ## 立即开始
 
