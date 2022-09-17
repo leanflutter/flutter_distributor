@@ -45,6 +45,9 @@ class AppPackageMakerZip extends AppPackageMaker {
       filename: makeConfig.outputFile.path,
       followLinks: true,
     );
+
+    packagingDirectory.deleteSync(recursive: true);
+
     return MakeResult(makeConfig);
   }
 }

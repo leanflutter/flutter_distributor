@@ -32,8 +32,8 @@
 - [dmg](./packages/flutter_app_packager/lib/src/makers/dmg/) - 为你的应用创建一个 `dmg` 包。
 - [exe](./packages/flutter_app_packager/lib/src/makers/exe/) - 为你的应用创建一个 `exe` 包。
 - [ipa](./packages/flutter_app_packager/lib/src/makers/ipa/) - 为你的应用创建一个 `ipa` 包。
-- [zip](./packages/flutter_app_packager/lib/src/makers/zip/) - 为你的应用创建一个 `zip` 包。
 - [msix](./packages/flutter_app_packager/lib/src/makers/msix/) - 为你的应用创建一个 `msix` 包。
+- [zip](./packages/flutter_app_packager/lib/src/makers/zip/) - 为你的应用创建一个 `zip` 包。
 
 ### 发布器
 

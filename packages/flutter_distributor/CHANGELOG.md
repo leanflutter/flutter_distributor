@@ -1,3 +1,7 @@
+## 0.2.6
+
+* [maker-zip] remove packagingDirectory after make
+
 ## 0.2.5
 
 * Use `shell_executor` to execute commands
