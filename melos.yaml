@@ -1,4 +1,22 @@
 name: flutter_distributor
 
 packages:
+  - examples/**
   - packages/**
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+
+scripts:
+  analyze:
+    exec: dart analyze .
+  
+  activate:
+    run: melos exec --scope="flutter_distributor" -- dart pub global activate -s path .
+  
+  build_apk:
+    run: melos exec --scope="hello_world" -- flutter_distributor release --name dev --jobs android-apk --skip-clean
+  
+  build_ipa:
+    run: melos exec --scope="hello_world" -- flutter_distributor release --name dev --jobs ios-ipa --skip-clean
