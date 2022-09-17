@@ -1,0 +1,6 @@
+# melos_managed_dependency_overrides: app_package_parser,shell_executor
+dependency_overrides:
+  app_package_parser:
+    path: ../app_package_parser
+  shell_executor:
+    path: ../shell_executor

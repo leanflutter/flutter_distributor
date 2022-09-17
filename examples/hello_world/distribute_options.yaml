@@ -20,7 +20,6 @@ releases:
             target-platform: android-arm,android-arm64
             dart-define:
               APP_ENV: dev
-        publish_to: pgyer
         # publish:
         #   target: qiniu
         #   args:
@@ -35,7 +34,6 @@ releases:
             export-options-plist: ios/ExportOptions.plist
             dart-define:
               APP_ENV: dev
-        publish_to: pgyer
       - name: linux-appimage
         package:
           platform: linux

@@ -303,7 +303,7 @@ class FlutterDistributor {
         for (ReleaseJob job in filteredJobs) {
           logger.info('');
           logger.info(
-            '${'===>'.blue()} ${'Executing'.white(bold: true)} ${job.name.green(bold: true)}',
+            '${'===>'.blue()} ${'Releasing'.white(bold: true)} $name:${job.name.green(bold: true)}',
           );
 
           List<MakeResult> makeResultList = await package(
