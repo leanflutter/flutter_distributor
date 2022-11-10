@@ -17,9 +17,6 @@ class AppBuilderIos extends AppBuilder {
     String? target,
     required Map<String, dynamic> buildArguments,
   }) {
-    if (!buildArguments.containsKey('export-options-plist')) {
-      throw BuildError('Missing `export-options-plist` build argument.');
-    }
     return super.build(
       target: target,
       buildArguments: buildArguments,
