@@ -1,0 +1,24 @@
+icon: assets/logo.png
+summary: A really cool application
+group: Application/Emulator
+vendor: Kingkor Roy Tirtho
+packager: Kingkor Roy Tirtho
+packagerEmail: krtirtho@gmail.com
+license: GPLv3
+url: https://github.com/leanflutter/flutter_distributor
+
+display_name: Hello World
+
+keywords:
+  - Hello
+  - World
+  - Test
+  - Application
+
+generic_name: Cool Application
+
+categories:
+  - Cool
+  - Awesome
+
+startup_notify: true
