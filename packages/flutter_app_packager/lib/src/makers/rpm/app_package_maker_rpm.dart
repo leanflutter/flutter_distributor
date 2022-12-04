@@ -116,7 +116,7 @@ class AppPackageMakerRPM extends AppPackageMaker {
         "-bb",
         specFile.path,
       ],
-      environment: {"QA_RPATHS": "19"},
+      environment: {"QA_RPATHS": (0x0001 | 0x0002 | 0x0010).toString()},
     );
 
     if (processResult.exitCode != 0) {

@@ -114,8 +114,8 @@ class MakeRPMConfig extends MakeConfig {
               packagerEmail != null ? "$packager <$packagerEmail>" : packager,
           "License": license,
           "URL": url,
-          "Requires": requires?.join(";"),
-          "BuildRequires": buildRequires?.join(";"),
+          "Requires": requires?.join(", "),
+          "BuildRequires": buildRequires?.join(", "),
           "BuildArch": buildArch ?? "x86_64",
         }..removeWhere((key, value) => value == null),
         "body": {
