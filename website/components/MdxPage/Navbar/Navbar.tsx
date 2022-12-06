@@ -27,11 +27,13 @@ const mockdata = [
     links: [
       { label: "aab", link: "/docs/makers/aab" },
       { label: "apk", link: "/docs/makers/apk" },
+      { label: "appimage", link: "/docs/makers/appimage" },
       { label: "deb", link: "/docs/makers/deb" },
       { label: "dmg", link: "/docs/makers/dmg" },
       { label: "exe", link: "/docs/makers/exe" },
       { label: "ipa", link: "/docs/makers/ipa" },
       { label: "msix", link: "/docs/makers/msix" },
+      { label: "rpm", link: "/docs/makers/rpm" },
       { label: "zip", link: "/docs/makers/zip" },
     ],
   },

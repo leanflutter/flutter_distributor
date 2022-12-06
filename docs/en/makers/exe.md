@@ -4,7 +4,7 @@ title: exe
 
 ## Requirements
 
-* [`Inno Setup 6`](https://jrsoftware.org/isinfo.php)``
+* [`Inno Setup 6`](https://jrsoftware.org/isinfo.php)
 
 ## Usage
 
