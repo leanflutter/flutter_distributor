@@ -88,7 +88,12 @@ class AppPackageMakerRPM extends AppPackageMaker {
         ? File(path.join(Directory.current.path, makeConfig.icon!))
         : null;
 
-    iconFile?.copy(path.join(buildPath, "${makeConfig.appName}.png"));
+    iconFile?.copy(
+      path.join(
+        buildPath,
+        makeConfig.appName + path.extension(iconFile.path),
+      ),
+    );
 
     if (makeConfig.icon != null) {
       final iconFile = File(makeConfig.icon!);

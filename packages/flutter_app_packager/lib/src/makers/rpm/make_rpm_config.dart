@@ -1,5 +1,4 @@
 import 'package:app_package_maker/app_package_maker.dart';
-import 'package:path/path.dart' as path;
 
 class MakeRPMConfig extends MakeConfig {
   String displayName;
@@ -149,7 +148,7 @@ class MakeRPMConfig extends MakeConfig {
         "Version": appVersion.toString(),
         "Name": displayName,
         "GenericName": genericName,
-        "Icon": icon != null ? path.basenameWithoutExtension(icon!) : null,
+        "Icon": appName,
         "Exec": "$appName %U",
         "Actions": actions != null && actions!.isNotEmpty
             ? actions!.join(";") + ";"
