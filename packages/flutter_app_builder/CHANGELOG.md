@@ -1,3 +1,7 @@
+## 0.2.7
+
+* iOS builder adds export build argument check
+
 ## 0.2.5
 
 * Use `shell_executor` to execute commands

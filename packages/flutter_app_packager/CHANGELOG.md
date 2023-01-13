@@ -1,3 +1,7 @@
+## 0.2.7
+
+* Feat: Linux RPM packaging support (#101)
+
 ## 0.2.6
 
 * [maker-zip] remove packagingDirectory after make

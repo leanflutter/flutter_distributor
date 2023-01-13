@@ -84,14 +84,14 @@ packages:
       path: "../flutter_app_builder"
       relative: true
     source: path
-    version: "0.2.5"
+    version: "0.2.7"
   flutter_app_packager:
     dependency: "direct main"
     description:
       path: "../flutter_app_packager"
       relative: true
     source: path
-    version: "0.2.6"
+    version: "0.2.7"
   flutter_app_publisher:
     dependency: "direct main"
     description:
