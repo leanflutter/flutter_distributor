@@ -11,7 +11,7 @@ import 'command_upgrade.dart';
 
 Future<void> main(List<String> args) async {
   FlutterDistributor distributor = FlutterDistributor();
-  await distributor.checkVersion();
+  // await distributor.checkVersion();
 
   final runner = CommandRunner('flutter_distributor', '');
   runner.argParser.addFlag(

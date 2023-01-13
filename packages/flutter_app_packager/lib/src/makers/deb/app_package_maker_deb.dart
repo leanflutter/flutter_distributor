@@ -71,10 +71,18 @@ class AppPackageMakerDeb extends AppPackageMaker {
       if (!iconFile.existsSync())
         throw MakeError("provided icon ${makeConfig.icon} path wasn't found");
 
-      await iconFile
-          .copy(path.join(icon128Dir, path.basename(makeConfig.icon!)));
-      await iconFile
-          .copy(path.join(icon256Dir, path.basename(makeConfig.icon!)));
+      await iconFile.copy(
+        path.join(
+          icon128Dir,
+          makeConfig.appName + path.extension(makeConfig.icon!),
+        ),
+      );
+      await iconFile.copy(
+        path.join(
+          icon256Dir,
+          makeConfig.appName + path.extension(makeConfig.icon!),
+        ),
+      );
     }
 
     // create & write the files got from makeConfig

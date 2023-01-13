@@ -292,7 +292,7 @@ class MakeDebConfig extends MakeConfig {
         "Version": appVersion.toString(),
         "Name": displayName,
         "GenericName": genericName,
-        "Icon": icon != null ? path.basenameWithoutExtension(icon!) : null,
+        "Icon": appName,
         "Exec": "$appName %U",
         "Actions": actions != null && actions!.isNotEmpty
             ? actions!.join(";") + ";"

@@ -6,7 +6,8 @@ Future<ProcessResult> $(
   List<String> arguments, {
   Map<String, String>? environment,
 }) {
-  return ShellExecutor.global.exec(executable, arguments);
+  return ShellExecutor.global
+      .exec(executable, arguments, environment: environment);
 }
 
 class ShellExecutor {

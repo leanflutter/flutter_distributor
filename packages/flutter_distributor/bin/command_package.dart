@@ -10,6 +10,7 @@ class CommandPackage extends Command {
     argParser.addOption('channel', valueHelp: '');
     argParser.addOption('artifact-name', valueHelp: '');
     argParser.addFlag('skip-clean');
+    argParser.addOption('flutter-build-args', valueHelp: 'verbose,obfuscate');
     argParser.addOption('build-target', valueHelp: 'path');
     argParser.addOption('build-flavor', valueHelp: '');
     argParser.addOption('build-target-platform', valueHelp: '');
@@ -29,6 +30,7 @@ class CommandPackage extends Command {
     List<String> targets = '${argResults?['targets']}'.split(',');
     String? channel = argResults?['channel'];
     String? artifactName = argResults?['artifact-name'];
+    String? flutterBuildArgs = argResults?['flutter-build-args'];
     bool isSkipClean = argResults?.wasParsed('skip-clean') ?? false;
     Map<String, dynamic> buildArguments = {};
 
@@ -49,6 +51,22 @@ class CommandPackage extends Command {
           option.replaceAll('build-', ''),
           () => value,
         );
+      }
+
+      for (var arg in flutterBuildArgs?.split(",") ?? <String>[]) {
+        if (arg.split("=").length == 2) {
+          buildArguments.putIfAbsent(
+            arg.split("=").first,
+            () => arg.split("=").last,
+          );
+        } else if (arg.split("=").length == 1) {
+          buildArguments.putIfAbsent(
+            arg.split("=")[0],
+            () => true,
+          );
+        } else {
+          buildArguments.putIfAbsent(arg, () => true);
+        }
       }
     }
 
