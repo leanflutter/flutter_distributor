@@ -1,5 +1,4 @@
 import 'package:app_package_maker/app_package_maker.dart';
-import 'package:path/path.dart' as path;
 
 // format of make_config for deb
 /*

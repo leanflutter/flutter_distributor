@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:ansi_escapes/ansi_escapes.dart';
 import 'package:shell_executor/shell_executor.dart';
 
 import '../extensions/extensions.dart';
