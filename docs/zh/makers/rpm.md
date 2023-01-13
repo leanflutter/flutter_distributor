@@ -2,11 +2,12 @@
 title: RPM
 ---
 
-## 要求
+## 必要条件
 
 - [rpmbuild](https://rpm-packaging-guide.github.io/#prerequisites)
 
 安装 `rpmbuild`:
+
 - Debian/Ubuntu: `apt install rpm`
 - Fedora: `dnf install gcc rpm-build rpm-devel rpmlint make python bash coreutils diffutils patch rpmdevtools`
 - Arch: `yay -S rpmdevtools` or `pamac install rpmdevtools`
@@ -42,13 +43,13 @@ categories:
 startup_notify: true
 ```
 
-跑:
+运行：
 
 ```
-flutter_distributor package --platform linux --targets deb
+flutter_distributor package --platform linux --targets rpm
 ```
 
 ## 相关链接
 
-* [构建和发布 Linux 应用程序](https://docs.flutter.dev/deployment/linux)
-* [RPM 打包，它是如何工作的](https://rpm-packaging-guide.github.io/)
+- [构建和发布 Linux 应用程序](https://docs.flutter.dev/deployment/linux)
+- [RPM 打包，它是如何工作的](https://rpm-packaging-guide.github.io/)

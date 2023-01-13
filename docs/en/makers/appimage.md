@@ -3,6 +3,7 @@ title: AppImage
 ---
 
 ## Requirements
+
 - [AppImage Builder](https://github.com/AppImageCrafters/appimage-builder)
 
 To install Appimage Builder, run:
@@ -12,6 +13,7 @@ wget -O appimage-builder https://github.com/AppImageCrafters/appimage-builder/re
 chmod +x appimage-builder
 mv appimage-builder /usr/local/bin/
 ```
+
 > Last command may require `sudo` privileges
 
 ## Usage
@@ -37,7 +39,6 @@ files:
   default_excludes: true
 ```
 
-
 Run:
 
 ```bash
@@ -46,5 +47,5 @@ flutter_distributor package --platform linux --targets appimage
 
 ## Related Links
 
-* [Build and release an Linux app](https://docs.flutter.dev/deployment/linux)
-* [Introduction to AppImage package format](https://docs.appimage.org/)
+- [Build and release an Linux app](https://docs.flutter.dev/deployment/linux)
+- [Introduction to AppImage package format](https://docs.appimage.org/)

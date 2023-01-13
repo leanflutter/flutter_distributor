@@ -24,7 +24,6 @@ postinstall_scripts:
 postuninstall_scripts:
   - echo `Surprised Pickachu face`
 
-
 keywords:
   - Hello
   - World
@@ -32,8 +31,6 @@ keywords:
   - Application
 
 generic_name: Music Application
-
-
 
 categories:
   - Music
@@ -48,6 +45,5 @@ Run:
 flutter_distributor package --platform linux --targets deb
 ```
 
-
-* [Build and release an Linux app](https://docs.flutter.dev/deployment/linux)
-* [Packaging Debian packages, how it works](https://www.debian.org/doc/manuals/packaging-tutorial/packaging-tutorial.en.pdf)
+- [Build and release an Linux app](https://docs.flutter.dev/deployment/linux)
+- [Packaging Debian packages, how it works](https://www.debian.org/doc/manuals/packaging-tutorial/packaging-tutorial.en.pdf)

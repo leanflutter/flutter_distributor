@@ -12,4 +12,4 @@ flutter_distributor package --platform ios --targets ipa --build-export-options-
 
 ## 相关链接
 
-* [Build and release an iOS app](https://docs.flutter.dev/deployment/ios)
+- [Build and release an iOS app](https://docs.flutter.dev/deployment/ios)

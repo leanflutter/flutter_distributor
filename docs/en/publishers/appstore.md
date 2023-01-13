@@ -11,6 +11,7 @@ requires some environment variables set up to run correctly,Choose one of the fo
 - Username and password
 
 Get an app-specific password：[https://support.apple.com/HT204397](https://support.apple.com/HT204397)
+
 ```
 export APPSTORE_USERNAME="Login Username"
 export APPSTORE_PASSWORD="App-specific password"
@@ -39,8 +40,8 @@ flutter_distributor publish \
 
 ```yaml
 env:
-  APPSTORE_USERNAME: "xxx" 
-  APPSTORE_PASSWORD: "xxx" 
+  APPSTORE_USERNAME: "xxx"
+  APPSTORE_PASSWORD: "xxx"
   # or
   # APPSTORE_APIKEY: "xxx"
   # APPSTORE_APIISSUER: "xxx"
@@ -71,4 +72,3 @@ flutter_distributor release --name dev
 - [Use an app-specific password](https://support.apple.com/HT204397)
 - [App Store Connect api](https://developer.apple.com/documentation/appstoreconnectapi)
 - [altool guide](https://help.apple.com/asc/appsaltool/)
-

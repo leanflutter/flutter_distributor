@@ -76,4 +76,3 @@ flutter_distributor release --name dev
 - [Use the CLI with CI systems](https://firebase.google.com/docs/cli?authuser=0#cli-ci-systems)
 - [Use Firebase CLI - iOS](https://firebase.google.com/docs/app-distribution/ios/distribute-cli?authuser=0)
 - [Use Firebase CLI - Android](https://firebase.google.com/docs/app-distribution/android/distribute-cli?authuser=0)
-

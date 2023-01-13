@@ -25,7 +25,7 @@ Let's take `pgyer` as an example, after logging in, click the user avatar on the
 
 ```yaml
 env:
-  PGYER_API_KEY: 'your api key'
+  PGYER_API_KEY: "your api key"
 ```
 
 Check out the [Publishers](configuration/publishers/) documentation for all possible publishers and how to configure them.
@@ -68,7 +68,7 @@ releases:
 
 ```yaml
 env:
-  PGYER_API_KEY: 'your api key'
+  PGYER_API_KEY: "your api key"
 output: dist/
 releases:
   - name: dev

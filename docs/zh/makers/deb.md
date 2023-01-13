@@ -39,12 +39,11 @@ categories:
 startup_notify: true
 ```
 
-跑:
+运行：
 
 ```
 flutter_distributor package --platform linux --targets deb
 ```
 
-
-* [构建和发布 Linux 应用程序](https://docs.flutter.dev/deployment/linux)
-* [打包 Debian 软件包，它是如何工作的](https://www.debian.org/doc/manuals/packaging-tutorial/packaging-tutorial.en.pdf)
+- [构建和发布 Linux 应用程序](https://docs.flutter.dev/deployment/linux)
+- [打包 Debian 软件包，它是如何工作的](https://www.debian.org/doc/manuals/packaging-tutorial/packaging-tutorial.en.pdf)

@@ -12,4 +12,4 @@ flutter_distributor package --platform android --targets apk
 
 ## 相关链接
 
-* [Build and release an Android app](https://docs.flutter.dev/deployment/android)
+- [Build and release an Android app](https://docs.flutter.dev/deployment/android)

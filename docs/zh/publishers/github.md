@@ -2,7 +2,7 @@
 title: github
 ---
 
-The github target publishes your package artifacts to the [github](https://github.com/leanflutter/flutter\_distributor/releases) release.
+The github target publishes your package artifacts to the [github](https://github.com/leanflutter/flutter_distributor/releases) release.
 
 ## 设置环境变量
 
@@ -57,4 +57,4 @@ flutter_distributor release --name dev
 
 ## 相关链接
 
-* [创建个人 Token](https://docs.github.com/cn/enterprise-server@3.2/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+- [创建个人 Token](https://docs.github.com/cn/enterprise-server@3.2/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)

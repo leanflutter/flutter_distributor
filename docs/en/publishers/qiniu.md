@@ -47,7 +47,6 @@ releases:
             bucket: your bucket
             bucket-domain: https://dl.example.com
             savekey-prefix: myapp/
-
 ```
 
 Run:

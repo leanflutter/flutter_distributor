@@ -2,7 +2,8 @@
 title: AppImage
 ---
 
-## 要求
+## 必要条件
+
 - [AppImage Builder](https://github.com/AppImageCrafters/appimage-builder)
 
 要安装 Appimage Builder，请运行：
@@ -12,6 +13,7 @@ wget -O appimage-builder https://github.com/AppImageCrafters/appimage-builder/re
 chmod +x appimage-builder
 mv appimage-builder /usr/local/bin/
 ```
+
 > Last command may require `sudo` privileges
 
 ## 用法
@@ -27,18 +29,17 @@ script:
 
 include: []
 exclude: []
-# 默认为真
+# 默认为 true
 default_excludes: true
 
 files:
   include: []
   exclude: []
-  # 默认为真
+  # 默认为 true
   default_excludes: true
 ```
 
-
-跑:
+运行:
 
 ```bash
 flutter_distributor package --platform linux --targets appimage
@@ -46,5 +47,5 @@ flutter_distributor package --platform linux --targets appimage
 
 ## 相关链接
 
-* [构建和发布 Linux 应用程序](https://docs.flutter.dev/deployment/linux)
-* [AppImage包格式介绍](https://docs.appimage.org/)
+- [构建和发布 Linux 应用程序](https://docs.flutter.dev/deployment/linux)
+- [AppImage 包格式介绍](https://docs.appimage.org/)

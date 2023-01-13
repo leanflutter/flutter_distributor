@@ -23,7 +23,7 @@ output: dist/
 
 ```yaml
 env:
-  PGYER_API_KEY: 'your api key'
+  PGYER_API_KEY: "your api key"
 ```
 
 Check out the [Publishers](configuration/publishers/) documentation for all possible publishers and how to configure them.
@@ -44,6 +44,7 @@ releases:
           platform: android
           target: apk
           build_args:
+            flavor: dev
             target-platform: android-arm,android-arm64
             dart-define:
               APP_ENV: dev
@@ -54,7 +55,8 @@ releases:
           platform: ios
           target: ipa
           build_args:
-            export-options-plist: ios/ExportOptions.plist
+            flavor: dev
+            export-options-plist: ios/dev_ExportOptions.plist
             dart-define:
               APP_ENV: dev
         publish_to: pgyer
@@ -64,7 +66,7 @@ releases:
 
 ```yaml
 env:
-  PGYER_API_KEY: 'your api key'
+  PGYER_API_KEY: "your api key"
 output: dist/
 releases:
   - name: dev
@@ -75,6 +77,7 @@ releases:
           platform: android
           target: apk
           build_args:
+            flavor: dev
             target-platform: android-arm,android-arm64
             dart-define:
               APP_ENV: dev
@@ -85,7 +88,8 @@ releases:
           platform: ios
           target: ipa
           build_args:
-            export-options-plist: ios/ExportOptions.plist
+            flavor: dev
+            export-options-plist: ios/dev_ExportOptions.plist
             dart-define:
               APP_ENV: dev
         publish_to: pgyer

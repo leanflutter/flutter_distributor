@@ -6,7 +6,7 @@ title: Distribute Options
 
 ```yaml
 env:
-  PGYER_API_KEY: 'your api key'
+  PGYER_API_KEY: "your api key"
 output: dist/
 releases:
   - name: dev
@@ -42,4 +42,3 @@ releases:
 | `env`      | `map`    | environment variables. |
 | `output`   | `string` | e.g. `dist/`           |
 | `releases` | -        | -                      |
-

@@ -4,7 +4,7 @@ title: exe
 
 ## 必要条件
 
-* [`Inno Setup 6`](https://jrsoftware.org/isinfo.php)``
+- [`Inno Setup 6`](https://jrsoftware.org/isinfo.php)``
 
 ## 用法
 

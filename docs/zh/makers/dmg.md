@@ -6,7 +6,7 @@ title: dmg
 
 ## 必要条件
 
-* `appdmg`
+- `appdmg`
 
 运行以下命令
 
@@ -39,5 +39,5 @@ flutter_distributor package --platform macos --targets dmg
 
 ## 相关链接
 
-* [https://github.com/LinusU/node-appdmg](https://github.com/LinusU/node-appdmg)
-* [Build and release a macOS app](https://docs.flutter.dev/deployment/macos)
+- [https://github.com/LinusU/node-appdmg](https://github.com/LinusU/node-appdmg)
+- [Build and release a macOS app](https://docs.flutter.dev/deployment/macos)
