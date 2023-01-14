@@ -1,3 +1,7 @@
+## 0.2.8
+
+* fix iOS builder adds export build argument check error
+
 ## 0.2.7
 
 * iOS builder adds export build argument check

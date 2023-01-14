@@ -1,3 +1,7 @@
+## 0.2.8
+
+* fix iOS builder adds export build argument check error
+
 ## 0.2.7
 
 * Feat: Linux RPM packaging support (#101)

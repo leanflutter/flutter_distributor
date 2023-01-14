@@ -32,6 +32,7 @@ releases:
           target: ipa
           build_args:
             export-options-plist: ios/ExportOptions.plist
+            # export-method: ad-hoc
             dart-define:
               APP_ENV: dev
       - name: linux-appimage

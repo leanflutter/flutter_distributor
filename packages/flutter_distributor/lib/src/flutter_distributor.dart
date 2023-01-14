@@ -164,6 +164,8 @@ class FlutterDistributor {
           } on UnsupportedError catch (error) {
             logger.warning('Warning: ${error.message}'.yellow());
             continue;
+          } catch (error) {
+            rethrow;
           }
         }
 
@@ -187,9 +189,12 @@ class FlutterDistributor {
           makeResultList.add(makeResult);
         }
       }
-    } on Error catch (error) {
+    } catch (error) {
       logger.severe(error.toString().red());
-      logger.severe(error.stackTrace.toString().red());
+      if (error is Error) {
+        logger.severe(error.stackTrace.toString().red());
+      }
+      rethrow;
     }
 
     return makeResultList;
