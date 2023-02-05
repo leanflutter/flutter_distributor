@@ -15,3 +15,6 @@ dependencies:
 
 executables:
   parse_app_package: main
+
+dev_dependencies:
+  dependency_validator: ^3.0.0

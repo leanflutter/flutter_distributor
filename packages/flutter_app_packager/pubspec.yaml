@@ -9,9 +9,10 @@ environment:
 dependencies:
   app_package_maker: ^0.2.5
   archive: ^3.1.5
-  args: ^2.2.0
   io: ^1.0.3
   liquid_engine: ^0.2.2
   path: ^1.8.1
   shell_executor: ^0.1.0
-  yaml: ^3.1.0
+
+dev_dependencies:
+  dependency_validator: ^3.0.0

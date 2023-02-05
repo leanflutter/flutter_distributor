@@ -8,4 +8,6 @@ environment:
 
 dependencies:
   pubspec_parse: ^1.1.0
-  yaml: ^3.1.0
+
+dev_dependencies:
+  dependency_validator: ^3.0.0

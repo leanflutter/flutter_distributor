@@ -8,9 +8,10 @@ environment:
 
 dependencies:
   app_package_publisher: ^0.2.5
-  args: ^2.2.0
   dio: ^4.0.4
   parse_app_package: ^0.2.3
   qiniu_sdk_base: ^0.3.2
   shell_executor: ^0.1.0
-  yaml: ^3.1.0
+
+dev_dependencies:
+  dependency_validator: ^3.0.0

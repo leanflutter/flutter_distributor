@@ -1,4 +1,5 @@
 name: flutter_distributor
+repository: https://github.com/leanflutter/flutter_distributor
 
 packages:
   - examples/**
@@ -6,17 +7,24 @@ packages:
 
 command:
   bootstrap:
+    # Uses the pubspec_overrides.yaml instead of having Melos modifying the lock file.
     usePubspecOverrides: true
 
 scripts:
   analyze:
     exec: dart analyze .
-  
+
+  dependency_validator:
+    exec: flutter pub run dependency_validator
+    select-package:
+      depends-on:
+        - dependency_validator
+
   activate:
     run: melos exec --scope="flutter_distributor" -- dart pub global activate -s path .
-  
+
   build_apk:
     run: melos exec --scope="hello_world" -- flutter_distributor release --name dev --jobs android-apk --skip-clean
-  
+
   build_ipa:
     run: melos exec --scope="hello_world" -- flutter_distributor release --name dev --jobs ios-ipa --skip-clean

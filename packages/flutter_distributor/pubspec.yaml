@@ -12,7 +12,6 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  ansi_escapes: ^1.0.0
   ansicolor: ^2.0.1
   app_package_maker: ^0.2.5
   app_package_publisher: ^0.2.5
@@ -23,11 +22,13 @@ dependencies:
   flutter_app_publisher: ^0.2.5
   logging: ^1.0.2
   path: ^1.8.1
-  pub_semver: ^2.1.0
   pubspec_parse: ^1.1.0
   shell_executor: ^0.1.0
   shell_uikit: ^0.1.0
   yaml: ^3.1.0
+
+dev_dependencies:
+  dependency_validator: ^3.0.0
 
 executables:
   flutter_distributor: main
