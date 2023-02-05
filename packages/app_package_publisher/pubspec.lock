@@ -162,7 +162,7 @@ packages:
     source: hosted
     version: "1.2.0"
   yaml:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: yaml
       sha256: "3cee79b1715110341012d27756d9bae38e650588acd38d3f3c610822e1337ace"

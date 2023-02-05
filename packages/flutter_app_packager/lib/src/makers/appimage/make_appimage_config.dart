@@ -43,14 +43,14 @@ const defaultScript = [
   "mkdir -p AppDir/usr/share/icons/hicolor/64x64/apps/",
 ];
 
-const defaultExclude = const [
+const defaultExclude = [
   "libx11-6",
   "libgtk-3-0",
   "libglib2.0-0",
   "libc6",
 ];
 
-const defaultExcludeFiles = const [
+const defaultExcludeFiles = [
   "usr/share/man",
   "usr/share/doc/*/README.*",
   "usr/share/doc/*/changelog.*",

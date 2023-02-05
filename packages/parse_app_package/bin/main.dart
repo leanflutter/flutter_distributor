@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:parse_app_package/parse_app_package.dart';
 
-JsonEncoder _encoder = new JsonEncoder.withIndent('  ');
+JsonEncoder _encoder = JsonEncoder.withIndent('  ');
 
 Future<void> main(List<String> args) async {
   ArgParser argParser = ArgParser();

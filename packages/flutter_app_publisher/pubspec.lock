@@ -24,7 +24,7 @@ packages:
     source: hosted
     version: "3.3.1"
   args:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: args
       sha256: "0bd9a99b6eb96f07af141f0eb53eace8983e8e5aa5de59777aca31684680ef22"
@@ -254,7 +254,7 @@ packages:
     source: hosted
     version: "5.3.1"
   yaml:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: yaml
       sha256: "3cee79b1715110341012d27756d9bae38e650588acd38d3f3c610822e1337ace"
