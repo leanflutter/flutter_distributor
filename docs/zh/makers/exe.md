@@ -30,6 +30,18 @@ locales:
 flutter_distributor package --platform windows --targets exe
 ```
 
+## 高级用法
+
+### 自定义 Inno Setup 模板
+
+默认情况下，`flutter_distributor` 会在构建时基于内部模板生成一个 Inno Setup 配置（`.iss`），并将其填充到 `make_config.yaml` 中提供的值。如果你需要对 Inno Setup 配置进行更多控制，你可以使用 `script_template` 选项提供一个自定义模板。
+
+例如：
+
+1. 添加 `script_template: inno_setup.iss` 到你的 `make_config.yaml`
+2. 在同一目录中创建 `inno_setup.iss` 
+3. 从源代码中复制 [原始模板](https://github.com/leanflutter/flutter_distributor/blob/main/packages/flutter_app_packager/lib/src/makers/exe/inno_setup/inno_setup_script.dart) 并进行调整。
+
 ## 相关链接
 
 [https://jrsoftware.org/isinfo.php](https://jrsoftware.org/isinfo.php)
