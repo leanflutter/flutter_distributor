@@ -9,6 +9,8 @@ environment:
 dependencies:
   app_package_publisher: ^0.2.5
   dio: ^4.0.4
+  googleapis: ^8.1.0
+  googleapis_auth: ^1.3.0
   parse_app_package: ^0.2.3
   qiniu_sdk_base: ^0.3.2
   shell_executor: ^0.1.0

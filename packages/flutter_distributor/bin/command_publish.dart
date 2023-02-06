@@ -28,6 +28,9 @@ class CommandPublish extends Command {
     argParser.addOption('github-repo-owner', valueHelp: '');
     argParser.addOption('github-repo-name', valueHelp: '');
     argParser.addOption('github-release-title', valueHelp: '');
+    // PlayStore
+    argParser.addSeparator('playstore');
+    argParser.addOption('playstore-package-name', valueHelp: '');
     // Qiniu
     argParser.addSeparator('qiniu');
     argParser.addOption('qiniu-bucket', valueHelp: '');
@@ -60,6 +63,7 @@ class CommandPublish extends Command {
       'github-repo-owner': argResults?['github-repo-owner'],
       'github-repo-name': argResults?['github-repo-name'],
       'github-release-title': argResults?['github-release-title'],
+      'playstore-package-name': argResults?['playstore-package-name'],
       'qiniu-bucket': argResults?['qiniu-bucket'],
       'qiniu-bucket-domain': argResults?['qiniu-bucket-domain'],
       'qiniu-savekey-prefix': argResults?['qiniu-savekey-prefix'],
