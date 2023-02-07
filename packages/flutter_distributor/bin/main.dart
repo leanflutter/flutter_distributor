@@ -36,5 +36,5 @@ Future<void> main(List<String> args) async {
     }
   }
 
-  await runner.runCommand(argResults);
+  return runner.runCommand(argResults);
 }
