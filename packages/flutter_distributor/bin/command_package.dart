@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:flutter_distributor/flutter_distributor.dart';
+import 'package:flutter_distributor/src/extensions/extensions.dart';
 
 /// Package an application bundle for a specific platform and target
 ///
@@ -118,12 +119,12 @@ class CommandPackage extends Command {
 
     // At least `platform` and one `targets` is required for flutter build
     if (platform == null) {
-      print('\nThe \'platform\' options is mandatory! Aborting.');
+      print('\nThe \'platform\' options is mandatory!'.red(bold: true));
       exit(1);
     }
 
     if (targets.isEmpty) {
-      print('\nAt least one \'target\' must be specified! Aborting.');
+      print('\nAt least one \'target\' must be specified!'.red(bold: true));
       exit(1);
     }
 

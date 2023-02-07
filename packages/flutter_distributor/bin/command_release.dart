@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:flutter_distributor/flutter_distributor.dart';
+import 'package:flutter_distributor/src/extensions/extensions.dart';
 
 /// Release (package and publish) an application based on the config
 ///
@@ -61,7 +62,7 @@ class CommandRelease extends Command {
 
     // At least `name` must be passed to select a release
     if (name == null) {
-      print('\nThe \'name\' options is mandatory! Aborting.');
+      print('\nThe \'name\' options is mandatory!'.red(bold: true));
       exit(1);
     }
 

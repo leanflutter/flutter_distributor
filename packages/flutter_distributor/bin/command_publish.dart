@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:flutter_distributor/flutter_distributor.dart';
+import 'package:flutter_distributor/src/extensions/extensions.dart';
 
 /// Publish an application to a third party provider
 ///
@@ -154,19 +155,20 @@ class CommandPublish extends Command {
   @override
   Future run() async {
     String? path = argResults?['path'];
-    List<String> targets = '${argResults?['targets']}'
+    List<String> targets = '${argResults?['targets'] ?? ''}'
         .split(',')
         .where((t) => t.isNotEmpty)
         .toList();
 
     // At least `path` and one `targets` is required for flutter build
     if (path == null) {
-      print('\nThe \'path\' options is mandatory! Aborting.');
+      print('\nThe \'path\' options is mandatory!'.red(bold: true));
       exit(1);
     }
 
+    print(targets);
     if (targets.isEmpty) {
-      print('\nAt least one \'target\' must be specified! Aborting.');
+      print('\nAt least one \'target\' must be specified!'.red(bold: true));
       exit(1);
     }
 
