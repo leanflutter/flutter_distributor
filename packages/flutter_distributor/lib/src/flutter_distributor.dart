@@ -339,13 +339,14 @@ class FlutterDistributor {
       logger.info(
         'RELEASE SUCCESSFUL in ${time.elapsed.inSeconds}s'.green(bold: true),
       );
-    } catch (error) {
+    } catch (error, stacktrace) {
       time.stop();
       logger.info('');
       logger.severe(
         [
           'RELEASE FAILED in ${time.elapsed.inSeconds}s'.red(bold: true),
           error.toString().red(),
+          stacktrace,
         ].join('\n'),
       );
     }
