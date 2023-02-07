@@ -343,7 +343,10 @@ class FlutterDistributor {
       time.stop();
       logger.info('');
       logger.severe(
-        'RELEASE FAILED in ${time.elapsed.inSeconds}s'.red(bold: true),
+        [
+          'RELEASE FAILED in ${time.elapsed.inSeconds}s'.red(bold: true),
+          error.toString().red(),
+        ].join('\n'),
       );
     }
     return Future.value();
