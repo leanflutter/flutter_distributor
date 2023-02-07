@@ -10,9 +10,12 @@ import 'command_upgrade.dart';
 
 Future<void> main(List<String> args) async {
   FlutterDistributor distributor = FlutterDistributor();
-  // await distributor.checkVersion();
+
+  // Check version of flutter_distributor on every run
+  await distributor.checkVersion();
 
   final runner = CommandRunner('flutter_distributor', '');
+
   runner.argParser.addFlag(
     'version',
     negatable: false,
