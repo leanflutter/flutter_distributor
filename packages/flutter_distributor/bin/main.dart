@@ -3,7 +3,6 @@ import 'package:args/command_runner.dart';
 import 'package:flutter_distributor/flutter_distributor.dart';
 import 'package:flutter_distributor/src/utils/logger.dart';
 
-// import 'command_doctor.dart';
 import 'command_package.dart';
 import 'command_publish.dart';
 import 'command_release.dart';
@@ -20,7 +19,6 @@ Future<void> main(List<String> args) async {
     help: 'Reports the version of this tool.',
   );
 
-  // runner.addCommand(CommandDoctor());
   runner.addCommand(CommandPackage(distributor));
   runner.addCommand(CommandPublish(distributor));
   runner.addCommand(CommandRelease(distributor));
