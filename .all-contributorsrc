@@ -1,0 +1,98 @@
+{
+  "projectName": "flutter_distributor",
+  "projectOwner": "leanflutter",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md",
+    "README-ZH.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "lijy91",
+      "name": "LiJianying",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3889523?v=4",
+      "profile": "https://github.com/lijy91",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "yy1300326388",
+      "name": "Zero",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8764899?v=4",
+      "profile": "https://juejin.cn/user/764915820276439",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "KRTirtho",
+      "name": "Kingkor Roy Tirtho",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61944859?v=4",
+      "profile": "https://github.com/KRTirtho",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "laiiihz",
+      "name": "LAIIIHZ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35956195?v=4",
+      "profile": "https://github.com/laiiihz",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ueki-tomohiro",
+      "name": "Tomohiro Ueki",
+      "avatar_url": "https://avatars.githubusercontent.com/u/27331430?v=4",
+      "profile": "https://github.com/ueki-tomohiro",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "cybrox",
+      "name": "Sven Gehring",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2383736?v=4",
+      "profile": "https://cybrox.eu/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "GargantuaX",
+      "name": "GargantuaX",
+      "avatar_url": "https://avatars.githubusercontent.com/u/14013111?v=4",
+      "profile": "https://github.com/GargantuaX",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "hiperioncn",
+      "name": "Hiperion",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6045710?v=4",
+      "profile": "https://github.com/hiperioncn",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "GroovinChip",
+      "name": "Reuben Turner",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4250470?v=4",
+      "profile": "https://github.com/GroovinChip",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "linkToUsage": true
+}
