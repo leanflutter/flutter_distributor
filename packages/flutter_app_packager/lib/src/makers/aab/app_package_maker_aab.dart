@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
+import 'package:glob/glob.dart';
+import 'package:glob/list_local_fs.dart';
 
 class AppPackageMakerAab extends AppPackageMaker {
   String get name => 'aab';
@@ -18,19 +20,21 @@ class AppPackageMakerAab extends AppPackageMaker {
       makeArguments,
     );
 
-    Directory aabDirectory = Directory('${appDirectory.path}/release');
-    if ((makeConfig.flavor ?? '').isNotEmpty) {
-      aabDirectory = Directory(
-        '${appDirectory.path}/${makeConfig.flavor}Release',
-      );
+    final String pattern = [
+      '${appDirectory.path}/',
+      makeConfig.flavor != null
+          ? '${makeConfig.flavor}${makeConfig.buildMode}/'
+          : '',
+      '**-${makeConfig.buildMode}.$packageFormat',
+    ].join();
+    List<FileSystemEntity> entities = Glob(pattern).listSync();
+    if (entities.isEmpty) {
+      throw MakeError('No matching package found!');
     }
-
-    File aabFile = aabDirectory
-        .listSync()
-        .where((e) => e.path.endsWith('-release.$packageFormat'))
-        .map((e) => File(e.path))
-        .first;
-
+    if (entities.length > 1) {
+      throw MakeError('Multiple matching packages found');
+    }
+    File aabFile = File(entities.first.path);
     aabFile.copySync(makeConfig.outputFile.path);
 
     return MakeResult(makeConfig);

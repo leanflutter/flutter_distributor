@@ -1,6 +1,6 @@
 name: app_package_maker
 description: App package maker
-version: 0.2.5
+version: 0.2.9
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:

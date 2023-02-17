@@ -170,7 +170,10 @@ class FlutterDistributor {
         }
 
         if (buildResult != null) {
+          String buildMode =
+              buildArguments.containsKey('profile') ? 'profile' : 'release';
           Map<String, dynamic>? makeArguments = {
+            'build_mode': buildMode,
             'flavor': buildArguments['flavor'],
             'channel': channel,
             'artifact_name': artifactName,

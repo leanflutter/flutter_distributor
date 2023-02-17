@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
+import 'package:glob/glob.dart';
+import 'package:glob/list_local_fs.dart';
 
 class AppPackageMakerApk extends AppPackageMaker {
   String get name => 'apk';
@@ -18,19 +20,20 @@ class AppPackageMakerApk extends AppPackageMaker {
       makeArguments,
     );
 
-    File apkFile = appDirectory
-        .listSync()
-        .where((e) {
-          if (makeConfig.flavor != null) {
-            return e.path.endsWith(
-              '${makeConfig.flavor}-release.$packageFormat',
-            );
-          }
-          return e.path.endsWith('-release.$packageFormat');
-        })
-        .map((e) => File(e.path))
-        .first;
+    final String pattern = [
+      '${appDirectory.path}/**',
+      makeConfig.flavor != null ? '-${makeConfig.flavor}' : '',
+      '-${makeConfig.buildMode}.$packageFormat',
+    ].join();
 
+    List<FileSystemEntity> entities = Glob(pattern).listSync();
+    if (entities.isEmpty) {
+      throw MakeError('No matching package found!');
+    }
+    if (entities.length > 1) {
+      throw MakeError('Multiple matching packages found');
+    }
+    File apkFile = File(entities.first.path);
     apkFile.copySync(makeConfig.outputFile.path);
 
     return MakeResult(makeConfig);

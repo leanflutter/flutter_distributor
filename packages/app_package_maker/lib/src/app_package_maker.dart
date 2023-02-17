@@ -7,9 +7,9 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 const _kArtifactName =
-    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{build_name}}+{{build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
+    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{build_name}}+{{build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
 const _kArtifactNameWithChannel =
-    '{{name}}-{{channel}}-{{build_name}}+{{build_number}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
+    '{{name}}-{{channel}}-{{build_name}}+{{build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
 
 Map<String, dynamic> loadMakeConfigYaml(String path) {
   final yamlDoc = loadYaml(File(path).readAsStringSync());
@@ -29,6 +29,7 @@ abstract class AppPackageMaker {
   ) async {
     return MakeConfig()
       ..platform = platform
+      ..buildMode = makeArguments?['build_mode']
       ..flavor = makeArguments?['flavor']
       ..channel = makeArguments?['channel']
       ..artifactName = makeArguments?['artifact_name']
@@ -45,6 +46,7 @@ abstract class AppPackageMaker {
 
 class MakeConfig {
   late bool isInstaller = false;
+  late String buildMode;
   late String platform;
   String? flavor;
   String? channel;
@@ -63,6 +65,7 @@ class MakeConfig {
   Directory? _packagingDirectory;
 
   MakeConfig copyWith(MakeConfig makeConfig) {
+    buildMode = makeConfig.buildMode;
     platform = makeConfig.platform;
     flavor = makeConfig.flavor;
     channel = makeConfig.channel;
@@ -79,10 +82,12 @@ class MakeConfig {
 
     Map<String, dynamic> variables = {
       'is_installer': isInstaller,
+      'is_profile': buildMode == 'profile',
       'name': appName,
       'version': appVersion.toString(),
       'build_name': appBuildName,
       'build_number': appBuildNumber,
+      'build_mode': buildMode,
       'platform': platform,
       'flavor': flavor,
       'channel': channel,
