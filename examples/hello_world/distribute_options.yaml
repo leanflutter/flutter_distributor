@@ -9,6 +9,7 @@ releases:
           platform: android
           target: aab
           build_args:
+            profile: true
             target-platform: android-arm,android-arm64
             dart-define:
               APP_ENV: dev
@@ -17,6 +18,7 @@ releases:
           platform: android
           target: apk
           build_args:
+            # profile: true
             target-platform: android-arm,android-arm64
             dart-define:
               APP_ENV: dev
