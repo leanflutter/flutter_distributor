@@ -28,8 +28,7 @@ class AppPackageMakerExe extends AppPackageMaker {
       ..isInstaller = true;
   }
 
-  @override
-  Future<MakeResult> make(
+  Future<MakeResult> _make(
     Directory appDirectory, {
     required Directory outputDirectory,
     Map<String, dynamic>? makeArguments,

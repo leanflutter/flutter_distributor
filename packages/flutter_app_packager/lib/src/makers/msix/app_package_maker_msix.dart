@@ -26,8 +26,7 @@ class AppPackageMakerMsix extends AppPackageMaker {
     return MakeMsixConfig.fromJson(map).copyWith(baseMakeConfig);
   }
 
-  @override
-  Future<MakeResult> make(
+  Future<MakeResult> _make(
     Directory appDirectory, {
     required Directory outputDirectory,
     Map<String, dynamic>? makeArguments,

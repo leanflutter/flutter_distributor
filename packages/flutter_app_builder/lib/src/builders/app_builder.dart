@@ -28,24 +28,31 @@ abstract class AppBuilder {
     return _pubspec!;
   }
 
-  Future<BuildResult> build(BuildConfig config) async {
+  bool match(String platform, [String? target]) {
+    return this.platform == platform;
+  }
+
+  Future<BuildResult> build({
+    required Map<String, dynamic> arguments,
+  }) async {
     final time = Stopwatch()..start();
 
-    List<String> arguments = [];
+    BuildConfig config = BuildConfig(arguments: arguments);
+    List<String> buildArguments = [];
     for (String key in config.arguments.keys) {
       dynamic value = config.arguments[key];
       if (value == null || value is bool) {
-        arguments.add('--$key');
+        buildArguments.add('--$key');
       } else if (value is Map) {
         for (String subKey in value.keys) {
-          arguments.addAll(['--$key', '$subKey=${value[subKey]}']);
+          buildArguments.addAll(['--$key', '$subKey=${value[subKey]}']);
         }
       } else {
-        arguments.addAll(['--$key', value]);
+        buildArguments.addAll(['--$key', value]);
       }
     }
 
-    arguments.addAll([
+    buildArguments.addAll([
       '--dart-define',
       'FLUTTER_BUILD_NAME=$appBuildName',
       '--dart-define',
@@ -54,16 +61,13 @@ abstract class AppBuilder {
 
     ProcessResult processResult = await $(
       'flutter',
-      ['build', buildSubcommand]..addAll(arguments),
+      ['build', buildSubcommand]..addAll(buildArguments),
     );
 
     if (processResult.exitCode != 0) {
       throw BuildError();
     }
 
-    return resultResolver.resolve(
-      config,
-      duration: time.elapsed,
-    );
+    return resultResolver.resolve(config)..duration = time.elapsed;
   }
 }

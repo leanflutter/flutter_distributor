@@ -11,14 +11,18 @@ class AppBuilderAndroid extends AppBuilder {
   bool get isSupportedOnCurrentPlatform => true;
 
   @override
-  String get buildSubcommand => target == 'aab' ? 'appbundle' : 'apk';
+  BuildResultResolver get resultResolver => BuildAndroidResultResolver(target);
 
   @override
-  BuildResultResolver get resultResolver => BuildAndroidResultResolver(target);
+  String get buildSubcommand => target == 'aab' ? 'appbundle' : 'apk';
 
   final String target;
 
   AppBuilderAndroid(this.target);
+
+  bool match(String platform, [String? target]) {
+    return this.platform == platform && this.target == target;
+  }
 
   factory AppBuilderAndroid.aab() {
     return AppBuilderAndroid('aab');

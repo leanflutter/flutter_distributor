@@ -19,12 +19,16 @@ scripts:
     description: Run `flutter analyze` for all packages.
 
   format:
-    run: melos exec dart format . --fix
+    exec: dart format . --fix
     description: Run `dart format` for all packages.
 
   format-check:
-    run: melos exec dart format . --fix --set-exit-if-changed
+    exec: dart format . --fix --set-exit-if-changed
     description: Run `dart format` checks for all packages.
+
+  fix:
+    exec: dart fix . --apply
+    description: Run `dart fix` for all packages.
 
   dependency_validator:
     exec: flutter pub run dependency_validator

@@ -16,20 +16,12 @@ class AppPackageMakerZip extends AppPackageMaker {
   String get packageFormat => 'zip';
 
   @override
-  Future<MakeResult> make(
-    Directory appDirectory, {
-    required Directory outputDirectory,
-    Map<String, dynamic>? makeArguments,
-  }) async {
-    MakeConfig makeConfig = await loadMakeConfig(
-      outputDirectory,
-      makeArguments,
-    );
-
+  Future<MakeResult> make(MakeConfig config) async {
+    Directory appDirectory = config.buildOutputDirectory;
     Directory packagingDirectory = appDirectory;
 
     if (platform == 'macos') {
-      packagingDirectory = makeConfig.packagingDirectory;
+      packagingDirectory = config.packagingDirectory;
       File appFile = appDirectory
           .listSync()
           .where((e) => e.path.endsWith('.app'))
@@ -42,12 +34,11 @@ class AppPackageMakerZip extends AppPackageMaker {
     final zipFileEncoder = ZipFileEncoder();
     zipFileEncoder.zipDirectory(
       packagingDirectory,
-      filename: makeConfig.outputFile.path,
+      filename: config.outputFile.path,
       followLinks: true,
     );
-
     packagingDirectory.deleteSync(recursive: true);
 
-    return MakeResult(makeConfig);
+    return resultResolver.resolve(config);
   }
 }

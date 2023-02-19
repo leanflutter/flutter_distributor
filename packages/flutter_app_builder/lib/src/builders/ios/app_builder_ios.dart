@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter_app_builder/src/build_error.dart';
 import 'package:flutter_app_builder/src/builders/app_builder.dart';
-import 'package:flutter_app_builder/src/build_config.dart';
-import 'package:flutter_app_builder/src/build_result.dart';
 import 'package:flutter_app_builder/src/builders/ios/build_ios_result.dart';
+import 'package:flutter_app_builder/src/build_error.dart';
+import 'package:flutter_app_builder/src/build_result.dart';
 
 class AppBuilderIos extends AppBuilder {
   @override
@@ -20,13 +19,15 @@ class AppBuilderIos extends AppBuilder {
   String get buildSubcommand => 'ipa';
 
   @override
-  Future<BuildResult> build(BuildConfig config) {
-    if (!config.arguments.containsKey('export-options-plist') &&
-        !config.arguments.containsKey('export-method')) {
+  Future<BuildResult> build({
+    required Map<String, dynamic> arguments,
+  }) {
+    if (!arguments.containsKey('export-options-plist') &&
+        !arguments.containsKey('export-method')) {
       throw BuildError(
         'Missing `export-options-plist` or `export-method` build argument.',
       );
     }
-    return super.build(config);
+    return super.build(arguments: arguments);
   }
 }

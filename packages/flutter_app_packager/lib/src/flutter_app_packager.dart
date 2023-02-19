@@ -20,19 +20,20 @@ class FlutterAppPackager {
   ];
 
   Future<MakeResult> package(
-    Directory appDirectory, {
-    required Directory outputDirectory,
-    required String platform,
-    required String target,
-    Map<String, dynamic>? makeArguments,
-  }) async {
-    AppPackageMaker maker = _makers.firstWhere(
-      (e) => e.platform == platform && e.name == target,
+    String platform,
+    String target,
+    Map<String, dynamic>? arguments,
+    Directory outputDirectory, {
+    required Directory buildOutputDirectory,
+    required List<File> buildOutputFiles,
+  }) {
+    final maker = _makers.firstWhere((e) => e.match(platform, target));
+    final config = maker.configLoader.load(
+      arguments,
+      outputDirectory,
+      buildOutputDirectory: buildOutputDirectory,
+      buildOutputFiles: buildOutputFiles,
     );
-    return await maker.make(
-      appDirectory,
-      outputDirectory: outputDirectory,
-      makeArguments: makeArguments,
-    );
+    return maker.make(config);
   }
 }

@@ -25,8 +25,7 @@ class AppPackageMakerAppImage extends AppPackageMaker {
     return MakeAppImageConfig.fromJson(map).copyWith(baseMakeConfig);
   }
 
-  @override
-  Future<MakeResult> make(
+  Future<MakeResult> _make(
     Directory appDirectory, {
     required Directory outputDirectory,
     Map<String, dynamic>? makeArguments,

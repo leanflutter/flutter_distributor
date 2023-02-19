@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter_app_builder/src/build_artifact.dart';
 import 'package:flutter_app_builder/src/build_config.dart';
 import 'package:flutter_app_builder/src/build_result.dart';
 import 'package:glob/glob.dart';
@@ -27,8 +26,8 @@ class BuildAndroidResultResolver extends BuildResultResolver {
   }
 
   @override
-  BuildResult resolve(BuildConfig config, {Duration? duration}) {
-    return _actualResultResolver.resolve(config, duration: duration);
+  BuildResult resolve(BuildConfig config) {
+    return _actualResultResolver.resolve(config);
   }
 }
 
@@ -60,19 +59,14 @@ class BuildAndroidResult extends BuildResult {
 
 class _BuildAndroidAabResultResolver extends BuildResultResolver {
   @override
-  BuildResult resolve(BuildConfig config, {Duration? duration}) {
-    final r = _BuildAndroidAabResult(config)..duration = duration;
+  BuildResult resolve(BuildConfig config) {
+    final r = _BuildAndroidAabResult(config);
     final String pattern = [
       '${r.outputDirectory.path}/**',
       config.flavor != null ? '-${config.flavor}' : '',
       '-${config.mode.name}.aab',
     ].join();
-    print(pattern);
-    List<FileSystemEntity> entities = Glob(pattern).listSync();
-    print(entities);
-    // r.artifacts = [];
-    r.artifacts = entities.map((e) => BuildArtifact.file(e.path)).toList();
-    print(r.toJson());
+    r.outputFiles = Glob(pattern).listSync().map((e) => File(e.path)).toList();
     return r;
   }
 }
@@ -101,9 +95,7 @@ class _BuildAndroidApkResultResolver extends BuildResultResolver {
       config.flavor != null ? '-${config.flavor}' : '',
       '-${config.mode.name}.apk',
     ].join();
-    List<FileSystemEntity> entities = Glob(pattern).listSync();
-    print(entities);
-    r.artifacts = entities.map((e) => BuildArtifact.file(e.path)).toList();
+    r.outputFiles = Glob(pattern).listSync().map((e) => File(e.path)).toList();
     return r;
   }
 }

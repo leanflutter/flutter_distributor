@@ -154,9 +154,10 @@ class FlutterDistributor {
           try {
             buildResult = await _builder.build(
               platform,
-              target,
-              buildArguments: buildArguments,
+              target: target,
+              arguments: buildArguments,
             );
+            print(JsonEncoder.withIndent('  ').convert(buildResult.toJson()));
             logger.info(
               'Successfully built ${buildResult.outputDirectory} in ${buildResult.duration!.inSeconds}s'
                   .brightGreen(),
@@ -172,20 +173,21 @@ class FlutterDistributor {
         if (buildResult != null) {
           String buildMode =
               buildArguments.containsKey('profile') ? 'profile' : 'release';
-          Map<String, dynamic>? makeArguments = {
+          Map<String, dynamic>? arguments = {
             'build_mode': buildMode,
             'flavor': buildArguments['flavor'],
             'channel': channel,
             'artifact_name': artifactName,
           };
           MakeResult makeResult = await _packager.package(
-            buildResult.outputDirectory,
-            outputDirectory: outputDirectory,
-            platform: platform,
-            target: target,
-            makeArguments: makeArguments,
+            platform,
+            target,
+            arguments,
+            outputDirectory,
+            buildOutputDirectory: buildResult.outputDirectory,
+            buildOutputFiles: buildResult.outputFiles,
           );
-
+          print(JsonEncoder.withIndent('  ').convert(makeResult.toJson()));
           logger.info(
             'Successfully packaged ${makeResult.outputFile.path}'.brightGreen(),
           );

@@ -9,61 +9,48 @@ import 'make_dmg_config.dart';
 class AppPackageMakerDmg extends AppPackageMaker {
   String get name => 'dmg';
   String get platform => 'macos';
+  bool get isSupportedOnCurrentPlatform => Platform.isMacOS;
   String get packageFormat => 'dmg';
 
-  bool get isSupportedOnCurrentPlatform => Platform.isMacOS;
-
-  @override
-  Future<MakeConfig> loadMakeConfig(
-    Directory outputDirectory,
-    Map<String, dynamic>? makeArguments,
-  ) async {
-    MakeConfig baseMakeConfig = await super.loadMakeConfig(
-      outputDirectory,
-      makeArguments,
-    );
-    final map = loadMakeConfigYaml('macos/packaging/dmg/make_config.yaml');
-    return MakeDmgConfig.fromJson(map).copyWith(baseMakeConfig);
+  MakeConfigLoader get configLoader {
+    return MakeDmgConfigLoader()
+      ..platform = platform
+      ..packageFormat = packageFormat;
   }
 
-  @override
-  Future<MakeResult> make(
-    Directory appDirectory, {
-    required Directory outputDirectory,
-    Map<String, dynamic>? makeArguments,
-  }) async {
-    MakeDmgConfig makeConfig = await loadMakeConfig(
-      outputDirectory,
-      makeArguments,
-    ) as MakeDmgConfig;
+  Future<MakeResult> make(MakeConfig config) async {
+    Directory packagingDirectory = config.packagingDirectory;
 
-    Directory packagingDirectory = makeConfig.packagingDirectory;
-
-    File appFile = appDirectory
+    File appFile = config.buildOutputDirectory
         .listSync()
         .where((e) => e.path.endsWith('.app'))
         .map((e) => File(e.path))
         .first;
 
-    await $('cp', ['-RH', appFile.path, packagingDirectory.path]);
+    try {
+      await $('cp', ['-RH', appFile.path, packagingDirectory.path]);
 
-    await $('cp', ['-RH', 'macos/packaging/dmg/.', packagingDirectory.path]);
+      await $('cp', ['-RH', 'macos/packaging/dmg/.', packagingDirectory.path]);
 
-    File makeDmgConfigJsonFile =
-        File('${packagingDirectory.path}/make_config.json');
-    makeDmgConfigJsonFile.writeAsStringSync(json.encode(makeConfig.toJson()));
+      File makeDmgConfigJsonFile = File(
+        '${packagingDirectory.path}/make_config.json',
+      );
+      makeDmgConfigJsonFile.writeAsStringSync(json.encode(config.toJson()));
 
-    ProcessResult processResult = await $('appdmg', [
-      makeDmgConfigJsonFile.path,
-      makeConfig.outputFile.path,
-    ]);
+      ProcessResult processResult = await $('appdmg', [
+        makeDmgConfigJsonFile.path,
+        config.outputFile.path,
+      ]);
 
-    if (processResult.exitCode != 0) {
-      throw MakeError();
+      if (processResult.exitCode != 0) {
+        throw MakeError();
+      }
+    } catch (error) {
+      rethrow;
+    } finally {
+      packagingDirectory.deleteSync(recursive: true);
     }
 
-    packagingDirectory.deleteSync(recursive: true);
-
-    return MakeResult(makeConfig);
+    return resultResolver.resolve(config);
   }
 }

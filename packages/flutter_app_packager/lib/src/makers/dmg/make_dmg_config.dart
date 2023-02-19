@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_package_maker/app_package_maker.dart';
 
 class DmgWindowPosition {
@@ -172,6 +174,7 @@ class MakeDmgConfig extends MakeConfig {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'title': title,
@@ -183,5 +186,26 @@ class MakeDmgConfig extends MakeConfig {
       'contents': contents.map((e) => e.toJson()).toList(),
       'code-sign': codeSign?.toJson(),
     }..removeWhere((key, value) => value == null);
+  }
+}
+
+class MakeDmgConfigLoader extends DefaultMakeConfigLoader {
+  @override
+  MakeConfig load(
+    Map<String, dynamic>? arguments,
+    Directory outputDirectory, {
+    required Directory buildOutputDirectory,
+    required List<File> buildOutputFiles,
+  }) {
+    final baseMakeConfig = super.load(
+      arguments,
+      outputDirectory,
+      buildOutputDirectory: buildOutputDirectory,
+      buildOutputFiles: buildOutputFiles,
+    );
+    final map = loadMakeConfigYaml(
+      '$platform/packaging/$packageFormat/make_config.yaml',
+    );
+    return MakeDmgConfig.fromJson(map).copyWith(baseMakeConfig);
   }
 }
