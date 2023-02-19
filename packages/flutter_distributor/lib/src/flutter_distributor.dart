@@ -158,7 +158,7 @@ class FlutterDistributor {
               buildArguments: buildArguments,
             );
             logger.info(
-              'Successfully built ${buildResult.outputDirectory} in ${buildResult.duration.inSeconds}s'
+              'Successfully built ${buildResult.outputDirectory} in ${buildResult.duration!.inSeconds}s'
                   .brightGreen(),
             );
           } on UnsupportedError catch (error) {

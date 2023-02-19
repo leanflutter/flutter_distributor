@@ -2,6 +2,7 @@ name: flutter_distributor
 repository: https://github.com/leanflutter/flutter_distributor
 
 packages:
+  - apps/**
   - examples/**
   - packages/**
 
