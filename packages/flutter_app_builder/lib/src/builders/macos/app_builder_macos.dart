@@ -1,6 +1,9 @@
 import 'dart:io';
 
-import 'app_builder.dart';
+import 'package:flutter_app_builder/src/build_result.dart';
+
+import '../app_builder.dart';
+import 'build_macos_result.dart';
 
 class AppBuilderMacOs extends AppBuilder {
   @override
@@ -10,7 +13,5 @@ class AppBuilderMacOs extends AppBuilder {
   bool get isSupportedOnCurrentPlatform => Platform.isMacOS;
 
   @override
-  Directory get outputDirectory {
-    return Directory('build/macos/Build/Products/Release');
-  }
+  BuildResultResolver get resultResolver => BuildMacOsResultResolver();
 }

@@ -10,6 +10,9 @@ dependencies:
   pub_semver: ^2.1.0
   pubspec_parse: ^1.1.0
   shell_executor: ^0.1.0
+  recase: ^4.1.0
+  glob: ^2.1.1
 
 dev_dependencies:
   dependency_validator: ^3.0.0
+  test: ^1.23.1

@@ -1,6 +1,9 @@
 import 'dart:io';
 
-import 'app_builder.dart';
+import 'package:flutter_app_builder/src/build_result.dart';
+
+import '../app_builder.dart';
+import 'build_windows_result.dart';
 
 class AppBuilderWindows extends AppBuilder {
   @override
@@ -10,7 +13,5 @@ class AppBuilderWindows extends AppBuilder {
   bool get isSupportedOnCurrentPlatform => Platform.isWindows;
 
   @override
-  Directory get outputDirectory {
-    return Directory('build/windows/runner/Release');
-  }
+  BuildResultResolver get resultResolver => BuildWindowsResultResolver();
 }

@@ -1,12 +1,9 @@
-import 'package:shell_executor/shell_executor.dart';
+import 'dart:convert';
 
-import 'app_builder_android.dart';
-import 'app_builder_ios.dart';
-import 'app_builder_linux.dart';
-import 'app_builder_macos.dart';
-import 'app_builder_web.dart';
-import 'app_builder_windows.dart';
-import 'app_builder.dart';
+import 'package:flutter_app_builder/src/build_config.dart';
+import 'package:flutter_app_builder/src/build_result.dart';
+import 'package:flutter_app_builder/src/builders/builders.dart';
+import 'package:shell_executor/shell_executor.dart';
 
 class FlutterAppBuilder {
   final List<AppBuilder> _builders = [
@@ -43,9 +40,12 @@ class FlutterAppBuilder {
       );
     }
 
-    return await builder.build(
-      target: target,
-      buildArguments: buildArguments,
+    BuildConfig config = BuildConfig(
+      arguments: buildArguments,
     );
+    JsonEncoder _encoder = JsonEncoder.withIndent('  ');
+    BuildResult result = await builder.build(config);
+    print(_encoder.convert(result.toJson()));
+    return result;
   }
 }
