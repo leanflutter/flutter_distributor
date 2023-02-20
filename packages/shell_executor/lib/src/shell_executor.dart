@@ -1,13 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 
+import './shell_customizer.dart';
+
 Future<ProcessResult> $(
   String executable,
   List<String> arguments, {
   Map<String, String>? environment,
 }) {
-  return ShellExecutor.global
-      .exec(executable, arguments, environment: environment);
+    final command = ShellCustomizer.customizeCommand(executable, arguments);
+
+    return ShellExecutor.global.exec(
+      command.executable,
+      command.arguments,
+      environment: environment,
+    ); 
 }
 
 class ShellExecutor {
