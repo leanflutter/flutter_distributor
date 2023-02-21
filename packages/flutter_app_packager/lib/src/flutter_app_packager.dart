@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'makers/makers.dart';
+import 'package:flutter_app_packager/src/makers/makers.dart';
 
 class FlutterAppPackager {
   final List<AppPackageMaker> _makers = [

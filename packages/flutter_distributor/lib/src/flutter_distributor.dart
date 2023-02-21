@@ -6,17 +6,16 @@ import 'package:app_package_publisher/app_package_publisher.dart';
 import 'package:flutter_app_builder/flutter_app_builder.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
 import 'package:flutter_app_publisher/flutter_app_publisher.dart';
+import 'package:flutter_distributor/src/distribute_options.dart';
+import 'package:flutter_distributor/src/extensions/extensions.dart';
+import 'package:flutter_distributor/src/release.dart';
+import 'package:flutter_distributor/src/release_job.dart';
+import 'package:flutter_distributor/src/utils/utils.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:shell_executor/shell_executor.dart';
 import 'package:shell_uikit/shell_uikit.dart';
 import 'package:yaml/yaml.dart';
-
-import 'distribute_options.dart';
-import 'release.dart';
-import 'release_job.dart';
-import 'extensions/extensions.dart';
-import 'utils/utils.dart';
 
 class FlutterDistributor {
   FlutterDistributor() {

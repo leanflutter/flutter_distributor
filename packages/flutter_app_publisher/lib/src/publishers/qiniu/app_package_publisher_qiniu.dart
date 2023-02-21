@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:app_package_publisher/app_package_publisher.dart';
+import 'package:flutter_app_publisher/src/publishers/qiniu/publish_qiniu_config.dart';
 // import 'package:parse_app_package/parse_app_package.dart';
 import 'package:qiniu_sdk_base/qiniu_sdk_base.dart';
-
-import 'publish_qiniu_config.dart';
 
 class AppPackagePublisherQiniu extends AppPackagePublisher {
   @override

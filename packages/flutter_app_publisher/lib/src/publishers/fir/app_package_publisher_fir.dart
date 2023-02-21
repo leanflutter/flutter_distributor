@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:app_package_publisher/app_package_publisher.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_app_publisher/src/publishers/fir/publish_fir_config.dart';
 import 'package:parse_app_package/parse_app_package.dart';
-
-import 'publish_fir_config.dart';
 
 const kEnvFirApiToken = 'FIR_API_TOKEN';
 

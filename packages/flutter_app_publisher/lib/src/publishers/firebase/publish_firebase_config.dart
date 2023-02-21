@@ -5,15 +5,6 @@ import 'package:app_package_publisher/app_package_publisher.dart';
 const kEnvFirebaseToken = 'FIREBASE_TOKEN';
 
 class PublishFirebaseConfig extends PublishConfig {
-  final String app;
-  final String? token;
-  final String? releaseNotes;
-  final String? releaseNotesFile;
-  final String? testers;
-  final String? testersFile;
-  final String? groups;
-  final String? groupsFile;
-
   PublishFirebaseConfig({
     required this.app,
     this.token,
@@ -50,6 +41,15 @@ class PublishFirebaseConfig extends PublishConfig {
       groupsFile: publishArguments?['groups-file'],
     );
   }
+
+  final String app;
+  final String? token;
+  final String? releaseNotes;
+  final String? releaseNotesFile;
+  final String? testers;
+  final String? testersFile;
+  final String? groups;
+  final String? groupsFile;
 
   List<String> toFirebaseCliDistributeArgs() {
     Map<String, String?> cmdData = {

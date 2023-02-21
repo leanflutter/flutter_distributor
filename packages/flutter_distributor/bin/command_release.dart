@@ -14,8 +14,6 @@ import 'package:flutter_distributor/src/extensions/extensions.dart';
 /// Each release job will package and optionally also publish the application
 /// based on the configuration on `distribute_options.yaml`.
 class CommandRelease extends Command {
-  final FlutterDistributor distributor;
-
   CommandRelease(this.distributor) {
     argParser.addOption(
       'name',
@@ -40,6 +38,8 @@ class CommandRelease extends Command {
       help: 'Whether or not to skip \'flutter clean\' before packaging.',
     );
   }
+
+  final FlutterDistributor distributor;
 
   @override
   String get name => 'release';

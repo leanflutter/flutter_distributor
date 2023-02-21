@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
 import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/makers/rpm/make_rpm_config.dart';
+import 'package:path/path.dart' as path;
 import 'package:shell_executor/shell_executor.dart';
-
-import 'make_rpm_config.dart';
 
 class AppPackageMakerRPM extends AppPackageMaker {
   String get name => 'rpm';
@@ -13,26 +12,26 @@ class AppPackageMakerRPM extends AppPackageMaker {
 
   bool get isSupportedOnCurrentPlatform => Platform.isLinux;
 
+  MakeConfigLoader get configLoader {
+    return MakeRpmConfigLoader()
+      ..platform = platform
+      ..packageFormat = packageFormat;
+  }
+
   @override
-  Future<MakeConfig> loadMakeConfig(
-      Directory outputDirectory, Map<String, dynamic>? makeArguments) async {
-    final makeConfig =
-        await super.loadMakeConfig(outputDirectory, makeArguments);
-    return MakeRPMConfig.fromJson(
-            loadMakeConfigYaml("linux/packaging/rpm/make_config.yaml"))
-        .copyWith(makeConfig);
+  Future<MakeResult> make(MakeConfig config) {
+    return _make(
+      config.buildOutputDirectory,
+      outputDirectory: config.outputDirectory,
+      makeConfig: config as MakeRPMConfig,
+    );
   }
 
   Future<MakeResult> _make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    Map<String, dynamic>? makeArguments,
+    required MakeRPMConfig makeConfig,
   }) async {
-    MakeRPMConfig makeConfig = await loadMakeConfig(
-      outputDirectory,
-      makeArguments,
-    ) as MakeRPMConfig;
-
     final files = makeConfig.toFilesString();
 
     Directory packagingDirectory = makeConfig.packagingDirectory;
@@ -40,16 +39,16 @@ class AppPackageMakerRPM extends AppPackageMaker {
     // making rpm setup directory
 
     final rpmbuild = [
-      "BUILD",
-      "BUILDROOT",
-      "RPMS",
-      "SOURCES",
-      "SPECS",
-      "SRPMS",
+      'BUILD',
+      'BUILDROOT',
+      'RPMS',
+      'SOURCES',
+      'SPECS',
+      'SRPMS',
     ];
 
     final rpmbuildDirPath =
-        path.join(packagingDirectory.absolute.path, "rpmbuild");
+        path.join(packagingDirectory.absolute.path, 'rpmbuild');
 
     for (final dir in rpmbuild) {
       final dirPath = path.join(rpmbuildDirPath, dir);
@@ -60,11 +59,11 @@ class AppPackageMakerRPM extends AppPackageMaker {
     }
 
     // making rpmbuild/BUILD/[appName] directory
-    final buildPath = path.join(rpmbuildDirPath, "BUILD");
+    final buildPath = path.join(rpmbuildDirPath, 'BUILD');
     final buildRoot = path.join(buildPath, makeConfig.appName);
-    final specsPath = path.join(rpmbuildDirPath, "SPECS");
+    final specsPath = path.join(rpmbuildDirPath, 'SPECS');
     final rpmPath =
-        path.join(rpmbuildDirPath, "RPMS", makeConfig.buildArch ?? "x86_64");
+        path.join(rpmbuildDirPath, 'RPMS', makeConfig.buildArch ?? 'x86_64');
     final buildWivesDirFile = Directory(buildRoot);
     if (!buildWivesDirFile.existsSync()) {
       buildWivesDirFile.createSync(recursive: true);
@@ -74,9 +73,9 @@ class AppPackageMakerRPM extends AppPackageMaker {
     final bundleFiles = appDirectory.listSync();
     for (final file in bundleFiles) {
       await $(
-        "cp",
+        'cp',
         [
-          "-r",
+          '-r',
           file.path,
           buildRoot,
         ],
@@ -101,26 +100,26 @@ class AppPackageMakerRPM extends AppPackageMaker {
     }
 
     // create & write the files got from makeConfig
-    final specFile = File(path.join(specsPath, "${makeConfig.appName}.spec"));
+    final specFile = File(path.join(specsPath, '${makeConfig.appName}.spec'));
     final desktopEntryFile =
-        File(path.join(buildPath, "${makeConfig.appName}.desktop"));
+        File(path.join(buildPath, '${makeConfig.appName}.desktop'));
 
     if (!specFile.existsSync()) specFile.createSync();
     if (!desktopEntryFile.existsSync()) desktopEntryFile.createSync();
 
-    await specFile.writeAsString(files["SPEC"]!);
-    await desktopEntryFile.writeAsString(files["DESKTOP"]!);
+    await specFile.writeAsString(files['SPEC']!);
+    await desktopEntryFile.writeAsString(files['DESKTOP']!);
 
     // make the rpm
     final processResult = await $(
-      "rpmbuild",
+      'rpmbuild',
       [
-        "--define",
-        "_topdir ${rpmbuildDirPath}",
-        "-bb",
+        '--define',
+        '_topdir ${rpmbuildDirPath}',
+        '-bb',
         specFile.path,
       ],
-      environment: {"QA_RPATHS": (0x0001 | 0x0002 | 0x0010).toString()},
+      environment: {'QA_RPATHS': (0x0001 | 0x0002 | 0x0010).toString()},
     );
 
     if (processResult.exitCode != 0) {
@@ -131,7 +130,7 @@ class AppPackageMakerRPM extends AppPackageMaker {
     for (var rpm in rpms) {
       if (rpm is! File) continue;
       await $(
-        "cp",
+        'cp',
         [
           rpm.path,
           makeConfig.outputFile.path,

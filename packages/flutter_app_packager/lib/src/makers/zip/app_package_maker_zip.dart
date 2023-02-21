@@ -5,11 +5,11 @@ import 'package:archive/archive_io.dart';
 import 'package:shell_executor/shell_executor.dart';
 
 class AppPackageMakerZip extends AppPackageMaker {
-  late String _platform;
-
   AppPackageMakerZip(String platform) {
     this._platform = platform;
   }
+
+  late String _platform;
 
   String get name => 'zip';
   String get platform => _platform;

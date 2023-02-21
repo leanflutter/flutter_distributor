@@ -10,8 +10,6 @@ import 'package:flutter_distributor/src/extensions/extensions.dart';
 /// so that they may be passed to `flutter_distributor`. The distributor will
 /// then build an application bundle using `flutter_app_packager`.
 class CommandPackage extends Command {
-  final FlutterDistributor distributor;
-
   CommandPackage(this.distributor) {
     argParser.addOption(
       'platform',
@@ -92,6 +90,8 @@ class CommandPackage extends Command {
     );
   }
 
+  final FlutterDistributor distributor;
+
   @override
   String get name => 'package';
 
@@ -161,15 +161,15 @@ class CommandPackage extends Command {
       );
     }
 
-    for (var arg in flutterBuildArgs?.split(",") ?? <String>[]) {
-      if (arg.split("=").length == 2) {
+    for (var arg in flutterBuildArgs?.split(',') ?? <String>[]) {
+      if (arg.split('=').length == 2) {
         buildArguments.putIfAbsent(
-          arg.split("=").first,
-          () => arg.split("=").last,
+          arg.split('=').first,
+          () => arg.split('=').last,
         );
-      } else if (arg.split("=").length == 1) {
+      } else if (arg.split('=').length == 1) {
         buildArguments.putIfAbsent(
-          arg.split("=")[0],
+          arg.split('=')[0],
           () => true,
         );
       } else {

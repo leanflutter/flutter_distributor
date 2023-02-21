@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
+import 'package:flutter_app_packager/src/makers/exe/make_exe_config.dart';
 import 'package:liquid_engine/liquid_engine.dart';
-
-import '../make_exe_config.dart';
+import 'package:path/path.dart' as path;
 
 const String _template = """
 [Setup]
@@ -72,8 +71,6 @@ Filename: "{app}\\{{EXECUTABLE_NAME}}"; Description: "{cm:LaunchProgram,{{DISPLA
 """;
 
 class InnoSetupScript {
-  final MakeExeConfig makeConfig;
-
   InnoSetupScript({
     required this.makeConfig,
   });
@@ -83,6 +80,8 @@ class InnoSetupScript {
       makeConfig: makeConfig,
     );
   }
+
+  final MakeExeConfig makeConfig;
 
   Future<File> createFile() async {
     Map<String, dynamic> variables = {
@@ -101,8 +100,8 @@ class InnoSetupScript {
       'SOURCE_DIR': makeConfig.sourceDir,
       'OUTPUT_BASE_FILENAME': makeConfig.outputBaseFileName,
       'LOCALES': makeConfig.locales,
-      'SETUP_ICON_FILE': makeConfig.setupIconFile ?? "",
-      'PRIVILEGES_REQUIRED': makeConfig.privilegesRequired ?? "none"
+      'SETUP_ICON_FILE': makeConfig.setupIconFile ?? '',
+      'PRIVILEGES_REQUIRED': makeConfig.privilegesRequired ?? 'none'
     }..removeWhere((key, value) => value == null);
 
     Context context = Context.create();

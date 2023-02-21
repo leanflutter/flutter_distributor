@@ -5,14 +5,12 @@ import 'package:app_package_publisher/app_package_publisher.dart';
 const kEnvGithubToken = 'GITHUB_TOKEN';
 
 class PublishGithubConfig extends PublishConfig {
-  // Personal access tokens
-  final String token;
-  // Repository Owner
-  String repoOwner;
-  // Repository Name
-  String repoName;
-  // Release title
-  String? releaseTitle;
+  PublishGithubConfig({
+    required this.token,
+    required this.repoOwner,
+    required this.repoName,
+    this.releaseTitle,
+  });
 
   factory PublishGithubConfig.parse(
     Map<String, String>? environment,
@@ -55,10 +53,12 @@ class PublishGithubConfig extends PublishConfig {
     return publishConfig;
   }
 
-  PublishGithubConfig({
-    required this.token,
-    required this.repoOwner,
-    required this.repoName,
-    this.releaseTitle,
-  });
+  // Personal access tokens
+  final String token;
+  // Repository Owner
+  String repoOwner;
+  // Repository Name
+  String repoName;
+  // Release title
+  String? releaseTitle;
 }

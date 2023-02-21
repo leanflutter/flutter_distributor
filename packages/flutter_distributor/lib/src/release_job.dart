@@ -1,9 +1,4 @@
 class ReleaseJobPackage {
-  final String platform;
-  final String target;
-  final String? channel;
-  final Map<String, dynamic>? buildArgs;
-
   ReleaseJobPackage({
     required this.platform,
     required this.target,
@@ -19,6 +14,10 @@ class ReleaseJobPackage {
       buildArgs: json['build_args'],
     );
   }
+  final String platform;
+  final String target;
+  final String? channel;
+  final Map<String, dynamic>? buildArgs;
 
   Map<String, dynamic> toJson() {
     return {
@@ -31,9 +30,6 @@ class ReleaseJobPackage {
 }
 
 class ReleaseJobPublish {
-  final String target;
-  final Map<String, dynamic>? args;
-
   ReleaseJobPublish({
     required this.target,
     this.args,
@@ -45,6 +41,8 @@ class ReleaseJobPublish {
       args: json['args'],
     );
   }
+  final String target;
+  final Map<String, dynamic>? args;
 
   Map<String, dynamic> toJson() {
     return {
@@ -55,11 +53,6 @@ class ReleaseJobPublish {
 }
 
 class ReleaseJob {
-  final String name;
-  final ReleaseJobPackage package;
-  final ReleaseJobPublish? publish;
-  final String? publishTo;
-
   ReleaseJob({
     required this.name,
     required this.package,
@@ -77,6 +70,11 @@ class ReleaseJob {
       publishTo: json['publish_to'],
     );
   }
+
+  final String name;
+  final ReleaseJobPackage package;
+  final ReleaseJobPublish? publish;
+  final String? publishTo;
 
   Map<String, dynamic> toJson() {
     return {

@@ -2,6 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 class ProgressBar {
+  ProgressBar({
+    required this.format,
+    this.barCompleteChar = '\u2588',
+    this.barIncompleteChar = '\u2591',
+  });
+
   final String format;
   final String barCompleteChar;
   final String barIncompleteChar;
@@ -23,12 +29,6 @@ class ProgressBar {
 
   // progress bar active ?
   bool isActive = false;
-
-  ProgressBar({
-    required this.format,
-    this.barCompleteChar = '\u2588',
-    this.barIncompleteChar = '\u2591',
-  });
 
   /// Starts the progress bar and set the total and initial value
   void start(int totalValue, [int? startValue]) {
@@ -93,7 +93,7 @@ class ProgressBar {
         '${barCompleteChar * barCompleteSize}${barIncompleteChar * (barSize - barCompleteSize)}';
     String percentage = '${(value * 100 / total).toStringAsFixed(1)}';
 
-    stdout.write("\r");
+    stdout.write('\r');
     stdout.write(format
         .replaceAll('{bar}', bar)
         .replaceAll('{percentage}', percentage)

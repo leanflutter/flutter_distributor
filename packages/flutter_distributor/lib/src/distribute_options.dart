@@ -1,15 +1,8 @@
 import 'dart:io';
 
-import 'release.dart';
+import 'package:flutter_distributor/src/release.dart';
 
 class DistributeOptions {
-  final Map<String, String>? env;
-  final String output;
-  final String? artifactName;
-  final List<Release> releases;
-
-  Directory get outputDirectory => Directory(output);
-
   DistributeOptions({
     this.env,
     required this.output,
@@ -32,6 +25,13 @@ class DistributeOptions {
       releases: releases,
     );
   }
+
+  final Map<String, String>? env;
+  final String output;
+  final String? artifactName;
+  final List<Release> releases;
+
+  Directory get outputDirectory => Directory(output);
 
   Map<String, dynamic> toJson() {
     return {

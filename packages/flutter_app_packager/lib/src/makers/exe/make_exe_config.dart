@@ -1,37 +1,9 @@
 import 'dart:io';
-import 'package:path/path.dart' as p;
 
 import 'package:app_package_maker/app_package_maker.dart';
+import 'package:path/path.dart' as p;
 
 class MakeExeConfig extends MakeConfig {
-  String? scriptTemplate;
-  final String appId;
-  String? executableName;
-  String? displayName;
-  String? publisherName;
-  String? publisherUrl;
-  bool? createDesktopIcon;
-  bool? launchAtStartup;
-  String? installDirName;
-  String? setupIconFile;
-  String? privilegesRequired;
-  List<String>? locales;
-
-  String get defaultExecutableName {
-    File executableFile = packagingDirectory
-        .listSync()
-        .where((e) => e.path.endsWith('.exe'))
-        .map((e) => File(e.path))
-        .first;
-    return p.basename(executableFile.path);
-  }
-
-  String get defaultInstallDirName => '{autopf64}\\${appName}';
-
-  String get sourceDir => p.basename(packagingDirectory.path);
-  String get outputBaseFileName =>
-      p.basename(outputFile.path).replaceAll('.exe', '');
-
   MakeExeConfig({
     this.scriptTemplate,
     required this.appId,
@@ -69,6 +41,34 @@ class MakeExeConfig extends MakeConfig {
     return makeExeConfig;
   }
 
+  String? scriptTemplate;
+  final String appId;
+  String? executableName;
+  String? displayName;
+  String? publisherName;
+  String? publisherUrl;
+  bool? createDesktopIcon;
+  bool? launchAtStartup;
+  String? installDirName;
+  String? setupIconFile;
+  String? privilegesRequired;
+  List<String>? locales;
+
+  String get defaultExecutableName {
+    File executableFile = packagingDirectory
+        .listSync()
+        .where((e) => e.path.endsWith('.exe'))
+        .map((e) => File(e.path))
+        .first;
+    return p.basename(executableFile.path);
+  }
+
+  String get defaultInstallDirName => '{autopf64}\\${appName}';
+
+  String get sourceDir => p.basename(packagingDirectory.path);
+  String get outputBaseFileName =>
+      p.basename(outputFile.path).replaceAll('.exe', '');
+
   Map<String, dynamic> toJson() {
     return {
       'script_template': scriptTemplate,
@@ -86,5 +86,26 @@ class MakeExeConfig extends MakeConfig {
       'privileges_required': privilegesRequired,
       'locales': locales,
     }..removeWhere((key, value) => value == null);
+  }
+}
+
+class MakeExeConfigLoader extends DefaultMakeConfigLoader {
+  @override
+  MakeConfig load(
+    Map<String, dynamic>? arguments,
+    Directory outputDirectory, {
+    required Directory buildOutputDirectory,
+    required List<File> buildOutputFiles,
+  }) {
+    final baseMakeConfig = super.load(
+      arguments,
+      outputDirectory,
+      buildOutputDirectory: buildOutputDirectory,
+      buildOutputFiles: buildOutputFiles,
+    );
+    final map = loadMakeConfigYaml(
+      '$platform/packaging/$packageFormat/make_config.yaml',
+    );
+    return MakeExeConfig.fromJson(map).copyWith(baseMakeConfig);
   }
 }

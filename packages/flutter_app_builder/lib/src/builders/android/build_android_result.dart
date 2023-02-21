@@ -7,23 +7,23 @@ import 'package:glob/list_local_fs.dart';
 import 'package:recase/recase.dart';
 
 class BuildAndroidResultResolver extends BuildResultResolver {
-  final String target;
-
   BuildAndroidResultResolver(
     this.target,
   ) : _actualResultResolver = target == 'aab'
             ? _BuildAndroidAabResultResolver()
             : _BuildAndroidApkResultResolver();
 
-  late BuildResultResolver _actualResultResolver;
+  factory BuildAndroidResultResolver.apk() {
+    return BuildAndroidResultResolver('apk');
+  }
 
   factory BuildAndroidResultResolver.aab() {
     return BuildAndroidResultResolver('aab');
   }
 
-  factory BuildAndroidResultResolver.apk() {
-    return BuildAndroidResultResolver('apk');
-  }
+  final String target;
+
+  late BuildResultResolver _actualResultResolver;
 
   @override
   BuildResult resolve(BuildConfig config) {
@@ -32,13 +32,15 @@ class BuildAndroidResultResolver extends BuildResultResolver {
 }
 
 class BuildAndroidResult extends BuildResult {
-  final String target;
-
   BuildAndroidResult(this.target, BuildConfig config)
       : _actualResult = target == 'aab'
             ? _BuildAndroidAabResult(config)
             : _BuildAndroidApkResult(config),
         super(config);
+
+  factory BuildAndroidResult.apk(BuildConfig config) {
+    return BuildAndroidResult('apk', config);
+  }
 
   factory BuildAndroidResult.aab(BuildConfig config) {
     return BuildAndroidResult(
@@ -46,10 +48,7 @@ class BuildAndroidResult extends BuildResult {
       config,
     );
   }
-
-  factory BuildAndroidResult.apk(BuildConfig config) {
-    return BuildAndroidResult('apk', config);
-  }
+  final String target;
 
   late BuildResult _actualResult;
 

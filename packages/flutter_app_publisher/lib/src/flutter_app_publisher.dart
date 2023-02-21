@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_app_publisher/src/publishers/playstore/app_package_publisher_playstore.dart';
-
-import 'publishers/publishers.dart';
+import 'package:flutter_app_publisher/src/publishers/publishers.dart';
 
 class FlutterAppPublisher {
   final List<AppPackagePublisher> _publishers = [

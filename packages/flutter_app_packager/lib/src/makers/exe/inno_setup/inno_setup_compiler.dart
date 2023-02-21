@@ -1,8 +1,8 @@
 import 'dart:io';
+
+import 'package:flutter_app_packager/src/makers/exe/inno_setup/inno_setup_script.dart';
 import 'package:path/path.dart' as p;
 import 'package:shell_executor/shell_executor.dart';
-
-import './inno_setup_script.dart';
 
 class InnoSetupCompiler {
   Future<bool> compile(InnoSetupScript script) async {

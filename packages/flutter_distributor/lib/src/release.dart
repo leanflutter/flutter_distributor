@@ -1,9 +1,6 @@
-import 'release_job.dart';
+import 'package:flutter_distributor/src/release_job.dart';
 
 class Release {
-  final String name;
-  final List<ReleaseJob> jobs;
-
   Release({
     required this.name,
     required this.jobs,
@@ -18,6 +15,9 @@ class Release {
       jobs: jobs,
     );
   }
+
+  final String name;
+  final List<ReleaseJob> jobs;
 
   Map<String, dynamic> toJson() {
     return {

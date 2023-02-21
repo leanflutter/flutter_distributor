@@ -1,6 +1,63 @@
+import 'dart:io';
+
 import 'package:app_package_maker/app_package_maker.dart';
 
 class MakeMsixConfig extends MakeConfig {
+  MakeMsixConfig({
+    this.display_name,
+    this.publisher_display_name,
+    this.identity_name,
+    this.msix_version,
+    this.logo_path,
+    this.trim_logo,
+    this.capabilities,
+    this.languages,
+    this.file_extension,
+    this.protocol_activation,
+    this.add_execution_alias,
+    this.enable_at_startup,
+    this.store,
+    this.debug,
+    this.output_path,
+    this.output_name,
+    this.architecture,
+    this.build_windows,
+    this.certificate_path,
+    this.certificate_password,
+    this.publisher,
+    this.signtool_options,
+    this.sign_msix,
+    this.install_certificate,
+  });
+
+  factory MakeMsixConfig.fromJson(Map<String, dynamic> json) {
+    return MakeMsixConfig(
+      display_name: json['display_name'],
+      publisher_display_name: json['publisher_display_name'],
+      identity_name: json['identity_name'],
+      msix_version: json['msix_version'],
+      logo_path: json['logo_path'],
+      trim_logo: json['trim_logo'],
+      capabilities: json['capabilities'],
+      languages: json['languages'],
+      file_extension: json['file_extension'],
+      protocol_activation: json['protocol_activation'],
+      add_execution_alias: json['add_execution_alias'],
+      enable_at_startup: json['enable_at_startup'],
+      store: json['store'],
+      debug: json['debug'],
+      output_path: json['output_path'],
+      output_name: json['output_name'],
+      architecture: json['architecture'],
+      build_windows: json['build_windows'],
+      certificate_path: json['certificate_path'],
+      certificate_password: json['certificate_password'],
+      publisher: json['publisher'],
+      signtool_options: json['signtool_options'],
+      sign_msix: json['sign_msix'],
+      install_certificate: json['install_certificate'],
+    );
+  }
   // MSIX configuration
 
   /// A friendly app name that can be displayed to users.
@@ -77,62 +134,6 @@ class MakeMsixConfig extends MakeConfig {
   /// If `false`, don't try to install the certificate, default is `true`.                                                                                         | `true`                                                                                          |
   String? install_certificate;
 
-  MakeMsixConfig({
-    this.display_name,
-    this.publisher_display_name,
-    this.identity_name,
-    this.msix_version,
-    this.logo_path,
-    this.trim_logo,
-    this.capabilities,
-    this.languages,
-    this.file_extension,
-    this.protocol_activation,
-    this.add_execution_alias,
-    this.enable_at_startup,
-    this.store,
-    this.debug,
-    this.output_path,
-    this.output_name,
-    this.architecture,
-    this.build_windows,
-    this.certificate_path,
-    this.certificate_password,
-    this.publisher,
-    this.signtool_options,
-    this.sign_msix,
-    this.install_certificate,
-  });
-
-  factory MakeMsixConfig.fromJson(Map<String, dynamic> json) {
-    return MakeMsixConfig(
-      display_name: json['display_name'],
-      publisher_display_name: json['publisher_display_name'],
-      identity_name: json['identity_name'],
-      msix_version: json['msix_version'],
-      logo_path: json['logo_path'],
-      trim_logo: json['trim_logo'],
-      capabilities: json['capabilities'],
-      languages: json['languages'],
-      file_extension: json['file_extension'],
-      protocol_activation: json['protocol_activation'],
-      add_execution_alias: json['add_execution_alias'],
-      enable_at_startup: json['enable_at_startup'],
-      store: json['store'],
-      debug: json['debug'],
-      output_path: json['output_path'],
-      output_name: json['output_name'],
-      architecture: json['architecture'],
-      build_windows: json['build_windows'],
-      certificate_path: json['certificate_path'],
-      certificate_password: json['certificate_password'],
-      publisher: json['publisher'],
-      signtool_options: json['signtool_options'],
-      sign_msix: json['sign_msix'],
-      install_certificate: json['install_certificate'],
-    );
-  }
-
   Map<String, dynamic> toJson() {
     return {
       'display_name': display_name,
@@ -160,5 +161,26 @@ class MakeMsixConfig extends MakeConfig {
       'sign_msix': sign_msix,
       'install_certificate': install_certificate,
     }..removeWhere((key, value) => value == null);
+  }
+}
+
+class MakeMsixConfigLoader extends DefaultMakeConfigLoader {
+  @override
+  MakeConfig load(
+    Map<String, dynamic>? arguments,
+    Directory outputDirectory, {
+    required Directory buildOutputDirectory,
+    required List<File> buildOutputFiles,
+  }) {
+    final baseMakeConfig = super.load(
+      arguments,
+      outputDirectory,
+      buildOutputDirectory: buildOutputDirectory,
+      buildOutputFiles: buildOutputFiles,
+    );
+    final map = loadMakeConfigYaml(
+      '$platform/packaging/$packageFormat/make_config.yaml',
+    );
+    return MakeMsixConfig.fromJson(map).copyWith(baseMakeConfig);
   }
 }

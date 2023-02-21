@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_package_maker/app_package_maker.dart';
 
 // format of make_config for deb
@@ -118,46 +120,6 @@ startup_notify: true
 */
 
 class MakeDebConfig extends MakeConfig {
-  String displayName;
-  String packageName;
-  String maintainer;
-  String priority;
-  String section;
-  int installedSize;
-  bool? essential;
-  String? icon;
-  String? genericName;
-  bool? startupNotify;
-  List<String>? coAuthors;
-  List<String>? dependencies;
-  List<String>? buildDependenciesIndep;
-  List<String>? buildDependencies;
-  List<String>? recommendedDependencies;
-  List<String>? suggestedDependencies;
-  List<String>? enhances;
-  List<String>? preDependencies;
-  List<String>? breaks;
-  List<String>? conflicts;
-  List<String>? provides;
-  List<String>? replaces;
-  List<String> _postinstallScripts;
-  List<String> _postuninstallScripts;
-  List<String>? keywords;
-  List<String>? supportedMimeType;
-  List<String>? actions;
-  List<String>? categories;
-
-  List<String> get postinstallScripts => [
-        "ln -s /usr/share/$appName/$appName /usr/bin/$appName",
-        "chmod +x /usr/bin/$appName",
-        ..._postinstallScripts,
-      ];
-
-  List<String> get postuninstallScripts => [
-        "rm /usr/bin/$appName",
-        ..._postuninstallScripts,
-      ];
-
   MakeDebConfig({
     required this.displayName,
     required this.packageName,
@@ -167,8 +129,8 @@ class MakeDebConfig extends MakeConfig {
     this.essential = false,
     List<String>? postinstallScripts,
     List<String>? postuninstallScripts,
-    this.priority = "optional",
-    this.section = "x11",
+    this.priority = 'optional',
+    this.section = 'x11',
     this.actions,
     this.breaks,
     this.buildDependencies,
@@ -259,91 +221,152 @@ class MakeDebConfig extends MakeConfig {
         icon: map['icon']);
   }
 
+  String displayName;
+  String packageName;
+  String maintainer;
+  String priority;
+  String section;
+  int installedSize;
+  bool? essential;
+  String? icon;
+  String? genericName;
+  bool? startupNotify;
+  List<String>? coAuthors;
+  List<String>? dependencies;
+  List<String>? buildDependenciesIndep;
+  List<String>? buildDependencies;
+  List<String>? recommendedDependencies;
+  List<String>? suggestedDependencies;
+  List<String>? enhances;
+  List<String>? preDependencies;
+  List<String>? breaks;
+  List<String>? conflicts;
+  List<String>? provides;
+  List<String>? replaces;
+  List<String> _postinstallScripts;
+  List<String> _postuninstallScripts;
+  List<String>? keywords;
+  List<String>? supportedMimeType;
+  List<String>? actions;
+  List<String>? categories;
+
+  List<String> get postinstallScripts => [
+        'ln -s /usr/share/$appName/$appName /usr/bin/$appName',
+        'chmod +x /usr/bin/$appName',
+        ..._postinstallScripts,
+      ];
+
+  List<String> get postuninstallScripts => [
+        'rm /usr/bin/$appName',
+        ..._postuninstallScripts,
+      ];
+
   Map<String, dynamic> toJson() {
     return {
-      "CONTROL": {
-        "Maintainer": maintainer,
-        "Package": packageName,
-        "Version": appVersion.toString(),
-        "Section": section,
-        "Priority": priority,
-        "Architecture": "amd64",
-        "Essential":
-            essential != null ? (essential == true ? "yes" : "no") : null,
-        "Installed-Size": installedSize,
-        "Description": pubspec.description,
-        "Homepage": pubspec.homepage,
-        "Depends": dependencies?.join(", "),
-        "Build-Depends-Indep": buildDependenciesIndep?.join(", "),
-        "Build-Depends": buildDependencies?.join(", "),
-        "Pre-Depends": preDependencies?.join(", "),
-        "Recommends": recommendedDependencies?.join(", "),
-        "Suggests": suggestedDependencies?.join(", "),
-        "Enhances": enhances?.join(", "),
-        "Breaks": breaks?.join(", "),
-        "Conflicts": conflicts?.join(", "),
-        "Provides": provides?.join(", "),
-        "Replaces": replaces?.join(", "),
-        "Uploaders": coAuthors?.join(", "),
+      'CONTROL': {
+        'Maintainer': maintainer,
+        'Package': packageName,
+        'Version': appVersion.toString(),
+        'Section': section,
+        'Priority': priority,
+        'Architecture': 'amd64',
+        'Essential':
+            essential != null ? (essential == true ? 'yes' : 'no') : null,
+        'Installed-Size': installedSize,
+        'Description': pubspec.description,
+        'Homepage': pubspec.homepage,
+        'Depends': dependencies?.join(', '),
+        'Build-Depends-Indep': buildDependenciesIndep?.join(', '),
+        'Build-Depends': buildDependencies?.join(', '),
+        'Pre-Depends': preDependencies?.join(', '),
+        'Recommends': recommendedDependencies?.join(', '),
+        'Suggests': suggestedDependencies?.join(', '),
+        'Enhances': enhances?.join(', '),
+        'Breaks': breaks?.join(', '),
+        'Conflicts': conflicts?.join(', '),
+        'Provides': provides?.join(', '),
+        'Replaces': replaces?.join(', '),
+        'Uploaders': coAuthors?.join(', '),
       }..removeWhere((key, value) => value == null),
-      "DESKTOP": {
-        "Type": "Application",
-        "Version": appVersion.toString(),
-        "Name": displayName,
-        "GenericName": genericName,
-        "Icon": appName,
-        "Exec": "$appName %U",
-        "Actions": actions != null && actions!.isNotEmpty
-            ? actions!.join(";") + ";"
+      'DESKTOP': {
+        'Type': 'Application',
+        'Version': appVersion.toString(),
+        'Name': displayName,
+        'GenericName': genericName,
+        'Icon': appName,
+        'Exec': '$appName %U',
+        'Actions': actions != null && actions!.isNotEmpty
+            ? actions!.join(';') + ';'
             : null,
-        "MimeType": supportedMimeType != null && supportedMimeType!.isNotEmpty
-            ? supportedMimeType!.join(";") + ";"
+        'MimeType': supportedMimeType != null && supportedMimeType!.isNotEmpty
+            ? supportedMimeType!.join(';') + ';'
             : null,
-        "Categories": categories != null && categories!.isNotEmpty
-            ? categories!.join(";") + ";"
+        'Categories': categories != null && categories!.isNotEmpty
+            ? categories!.join(';') + ';'
             : null,
-        "Keywords": keywords != null && keywords!.isNotEmpty
-            ? keywords!.join(";") + ";"
+        'Keywords': keywords != null && keywords!.isNotEmpty
+            ? keywords!.join(';') + ';'
             : null,
-        "StartupNotify": startupNotify
+        'StartupNotify': startupNotify
       }..removeWhere((key, value) => value == null),
     };
   }
 
   Map<String, String> toFilesString() {
     final json = toJson();
-    final controlFile = (json["CONTROL"] as Map<String, dynamic>)
+    final controlFile = (json['CONTROL'] as Map<String, dynamic>)
             .entries
             .map(
-              (e) => "${e.key}: ${e.value}",
+              (e) => '${e.key}: ${e.value}',
             )
-            .join("\n") +
-        "\n";
+            .join('\n') +
+        '\n';
 
     final desktopFile = [
-      "[Desktop Entry]",
-      ...(json["DESKTOP"] as Map<String, dynamic>).entries.map(
-            (e) => "${e.key}=${e.value}",
+      '[Desktop Entry]',
+      ...(json['DESKTOP'] as Map<String, dynamic>).entries.map(
+            (e) => '${e.key}=${e.value}',
           ),
-    ].join("\n");
+    ].join('\n');
     final map = {
-      "CONTROL": controlFile,
-      "DESKTOP": desktopFile,
-      "postinst": postinstallScripts.isNotEmpty
+      'CONTROL': controlFile,
+      'DESKTOP': desktopFile,
+      'postinst': postinstallScripts.isNotEmpty
           ? [
-              "#!/usr/bin/env sh",
+              '#!/usr/bin/env sh',
               ...postinstallScripts,
-              "exit 0",
-            ].join("\n")
+              'exit 0',
+            ].join('\n')
           : null,
-      "postrm": postuninstallScripts.isNotEmpty
+      'postrm': postuninstallScripts.isNotEmpty
           ? [
-              "#!/usr/bin/env sh",
+              '#!/usr/bin/env sh',
               ...postuninstallScripts,
-              "exit 0",
-            ].join("\n")
+              'exit 0',
+            ].join('\n')
           : null
     }..removeWhere((key, value) => value == null);
     return Map.castFrom<String, String?, String, String>(map);
+  }
+}
+
+class MakeDebConfigLoader extends DefaultMakeConfigLoader {
+  @override
+  MakeConfig load(
+    Map<String, dynamic>? arguments,
+    Directory outputDirectory, {
+    required Directory buildOutputDirectory,
+    required List<File> buildOutputFiles,
+  }) {
+    final baseMakeConfig = super.load(
+      arguments,
+      outputDirectory,
+      buildOutputDirectory: buildOutputDirectory,
+      buildOutputFiles: buildOutputFiles,
+    );
+    final map = loadMakeConfigYaml(
+      '$platform/packaging/$packageFormat/make_config.yaml',
+    );
+    return MakeDebConfig.fromJson(map).copyWith(baseMakeConfig);
   }
 }

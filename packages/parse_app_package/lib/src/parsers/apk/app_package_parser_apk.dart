@@ -16,7 +16,7 @@ class AppPackageParserApk extends AppPackageParser {
 
     String buildToolsDir = Directory('$androidHome/build-tools')
         .listSync()
-        .firstWhere((element) => !element.path.contains(".DS_Store"))
+        .firstWhere((element) => !element.path.contains('.DS_Store'))
         .path;
 
     ProcessResult processResult = await $(

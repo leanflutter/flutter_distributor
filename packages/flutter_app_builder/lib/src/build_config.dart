@@ -1,15 +1,15 @@
 enum BuildMode { profile, release }
 
 class BuildConfig {
-  final BuildMode mode;
-  final String? flavor;
-  final Map<String, dynamic> arguments;
-
   BuildConfig({
     this.mode = BuildMode.release,
     this.flavor,
     this.arguments = const {},
   });
+
+  final BuildMode mode;
+  final String? flavor;
+  final Map<String, dynamic> arguments;
 
   Map<String, dynamic> toJson() {
     return {

@@ -1,38 +1,36 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
 import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/makers/deb/make_deb_config.dart';
+import 'package:path/path.dart' as path;
 import 'package:shell_executor/shell_executor.dart';
-
-import 'make_deb_config.dart';
 
 class AppPackageMakerDeb extends AppPackageMaker {
   String get name => 'deb';
   String get platform => 'linux';
+  bool get isSupportedOnCurrentPlatform => Platform.isLinux;
   String get packageFormat => 'deb';
 
-  bool get isSupportedOnCurrentPlatform => Platform.isLinux;
+  MakeConfigLoader get configLoader {
+    return MakeDebConfigLoader()
+      ..platform = platform
+      ..packageFormat = packageFormat;
+  }
 
   @override
-  Future<MakeConfig> loadMakeConfig(
-      Directory outputDirectory, Map<String, dynamic>? makeArguments) async {
-    final makeConfig =
-        await super.loadMakeConfig(outputDirectory, makeArguments);
-    return MakeDebConfig.fromJson(
-            loadMakeConfigYaml("linux/packaging/deb/make_config.yaml"))
-        .copyWith(makeConfig);
+  Future<MakeResult> make(MakeConfig config) {
+    return _make(
+      config.buildOutputDirectory,
+      outputDirectory: config.outputDirectory,
+      makeConfig: config as MakeDebConfig,
+    );
   }
 
   Future<MakeResult> _make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    Map<String, dynamic>? makeArguments,
+    required MakeDebConfig makeConfig,
   }) async {
-    MakeDebConfig makeConfig = await loadMakeConfig(
-      outputDirectory,
-      makeArguments,
-    ) as MakeDebConfig;
-
     final files = makeConfig.toFilesString();
 
     Directory packagingDirectory = makeConfig.packagingDirectory;
@@ -44,21 +42,21 @@ class AppPackageMakerDeb extends AppPackageMaker {
     /// /usr/share/icons/hicolor/128x128/apps
     /// /usr/share/icons/hicolor/256x256/apps
 
-    final debianDir = path.join(packagingDirectory.path, "DEBIAN");
+    final debianDir = path.join(packagingDirectory.path, 'DEBIAN');
     final applicationsDir =
-        path.join(packagingDirectory.path, "usr/share/applications");
+        path.join(packagingDirectory.path, 'usr/share/applications');
     final icon128Dir = path.join(
       packagingDirectory.path,
-      "usr/share/icons/hicolor/128x128/apps",
+      'usr/share/icons/hicolor/128x128/apps',
     );
     final icon256Dir = path.join(
       packagingDirectory.path,
-      "usr/share/icons/hicolor/256x256/apps",
+      'usr/share/icons/hicolor/256x256/apps',
     );
-    final mkdirProcessResult = await $("mkdir", [
-      "-p",
+    final mkdirProcessResult = await $('mkdir', [
+      '-p',
       debianDir,
-      path.join(packagingDirectory.path, "usr/share", makeConfig.appName),
+      path.join(packagingDirectory.path, 'usr/share', makeConfig.appName),
       applicationsDir,
       if (makeConfig.icon != null) ...[icon128Dir, icon256Dir],
     ]);
@@ -85,24 +83,24 @@ class AppPackageMakerDeb extends AppPackageMaker {
     }
 
     // create & write the files got from makeConfig
-    final controlFile = File(path.join(debianDir, "control"));
-    final postinstFile = File(path.join(debianDir, "postinst"));
-    final postrmFile = File(path.join(debianDir, "postrm"));
+    final controlFile = File(path.join(debianDir, 'control'));
+    final postinstFile = File(path.join(debianDir, 'postinst'));
+    final postrmFile = File(path.join(debianDir, 'postrm'));
     final desktopEntryFile =
-        File(path.join(applicationsDir, "${makeConfig.appName}.desktop"));
+        File(path.join(applicationsDir, '${makeConfig.appName}.desktop'));
 
     if (!controlFile.existsSync()) controlFile.createSync();
     if (!postinstFile.existsSync()) postinstFile.createSync();
     if (!postrmFile.existsSync()) postrmFile.createSync();
     if (!desktopEntryFile.existsSync()) desktopEntryFile.createSync();
 
-    await controlFile.writeAsString(files["CONTROL"]!);
-    await desktopEntryFile.writeAsString(files["DESKTOP"]!);
-    await postinstFile.writeAsString(files["postinst"]!);
-    await postrmFile.writeAsString(files["postrm"]!);
+    await controlFile.writeAsString(files['CONTROL']!);
+    await desktopEntryFile.writeAsString(files['DESKTOP']!);
+    await postinstFile.writeAsString(files['postinst']!);
+    await postrmFile.writeAsString(files['postrm']!);
 
     // give execution permission to shell scripts
-    await $('chmod', ["+x", postinstFile.path, postrmFile.path]);
+    await $('chmod', ['+x', postinstFile.path, postrmFile.path]);
 
     // copy the application binary to /usr/share/$appName
     await $('cp', [

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'parsers/parsers.dart';
+import 'package:parse_app_package/src/parsers/parsers.dart';
 
 final List<AppPackageParser> _parsers = [
   AppPackageParserApk(),

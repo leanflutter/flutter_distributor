@@ -29,20 +29,19 @@ class PublishConfig {
 }
 
 class PublishResult {
-  final String? url;
-
   PublishResult({
     this.url,
   });
+
+  final String? url;
 }
 
 class PublishError extends Error {
-  final String? message;
-
   PublishError([this.message]);
+  final String? message;
 
   String toString() {
     var message = this.message;
-    return (message != null) ? "PublishError: $message" : "PublishError";
+    return (message != null) ? 'PublishError: $message' : 'PublishError';
   }
 }

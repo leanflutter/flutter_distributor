@@ -3,9 +3,6 @@ import 'dart:io';
 import 'package:app_package_maker/app_package_maker.dart';
 
 class DmgWindowPosition {
-  final num x;
-  final num y;
-
   DmgWindowPosition({
     required this.x,
     required this.y,
@@ -18,6 +15,9 @@ class DmgWindowPosition {
     );
   }
 
+  final num x;
+  final num y;
+
   Map<String, dynamic> toJson() {
     return {
       'x': x,
@@ -27,9 +27,6 @@ class DmgWindowPosition {
 }
 
 class DmgWindowSize {
-  final num width;
-  final num height;
-
   DmgWindowSize({
     required this.width,
     required this.height,
@@ -41,6 +38,8 @@ class DmgWindowSize {
       height: json['height'],
     );
   }
+  final num width;
+  final num height;
 
   Map<String, dynamic> toJson() {
     return {
@@ -51,9 +50,6 @@ class DmgWindowSize {
 }
 
 class DmgWindow {
-  final DmgWindowPosition? position;
-  final DmgWindowSize? size;
-
   DmgWindow({
     this.position,
     this.size,
@@ -65,6 +61,8 @@ class DmgWindow {
       size: DmgWindowSize.fromJson(json['size']),
     );
   }
+  final DmgWindowPosition? position;
+  final DmgWindowSize? size;
 
   Map<String, dynamic> toJson() {
     return {
@@ -75,9 +73,6 @@ class DmgWindow {
 }
 
 class DmgCodeSign {
-  final String signingIdentity;
-  final String? identifier;
-
   DmgCodeSign({
     required this.signingIdentity,
     this.identifier,
@@ -89,6 +84,8 @@ class DmgCodeSign {
       identifier: json['identifier'],
     );
   }
+  final String signingIdentity;
+  final String? identifier;
 
   Map<String, dynamic> toJson() {
     return {
@@ -99,12 +96,6 @@ class DmgCodeSign {
 }
 
 class DmgContent {
-  final num x;
-  final num y;
-  final String type;
-  final String path;
-  final String? name;
-
   DmgContent({
     required this.x,
     required this.y,
@@ -122,6 +113,11 @@ class DmgContent {
       name: json['name'],
     );
   }
+  final num x;
+  final num y;
+  final String type;
+  final String path;
+  final String? name;
 
   Map<String, dynamic> toJson() {
     return {
@@ -135,15 +131,6 @@ class DmgContent {
 }
 
 class MakeDmgConfig extends MakeConfig {
-  final String title;
-  final String? icon;
-  final String? background;
-  final String? backgroundColor;
-  final int? iconSize;
-  final String? format;
-  final List<DmgContent> contents;
-  final DmgCodeSign? codeSign;
-
   MakeDmgConfig({
     required this.title,
     this.icon,
@@ -173,6 +160,14 @@ class MakeDmgConfig extends MakeConfig {
           : null,
     );
   }
+  final String title;
+  final String? icon;
+  final String? background;
+  final String? backgroundColor;
+  final int? iconSize;
+  final String? format;
+  final List<DmgContent> contents;
+  final DmgCodeSign? codeSign;
 
   @override
   Map<String, dynamic> toJson() {

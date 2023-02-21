@@ -5,8 +5,10 @@ import 'package:app_package_publisher/app_package_publisher.dart';
 const kEnvPlayStoreCredentialsFile = 'GOOGLE_APPLICATION_CREDENTIALS';
 
 class PublishPlayStoreConfig extends PublishConfig {
-  final String credentialsFile;
-  final String packageName;
+  PublishPlayStoreConfig({
+    required this.credentialsFile,
+    required this.packageName,
+  });
 
   factory PublishPlayStoreConfig.parse(
     Map<String, String>? environment,
@@ -25,9 +27,6 @@ class PublishPlayStoreConfig extends PublishConfig {
     );
     return publishConfig;
   }
-
-  PublishPlayStoreConfig({
-    required this.credentialsFile,
-    required this.packageName,
-  });
+  final String credentialsFile;
+  final String packageName;
 }

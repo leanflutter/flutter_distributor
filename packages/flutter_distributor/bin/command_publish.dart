@@ -10,8 +10,6 @@ import 'package:flutter_distributor/src/extensions/extensions.dart';
 /// so that they may be passed to `flutter_distributor`. The distributor will
 /// then publish an application bundle using `flutter_app_publisher`.
 class CommandPublish extends Command {
-  final FlutterDistributor distributor;
-
   CommandPublish(this.distributor) {
     argParser.addOption(
       'path',
@@ -145,6 +143,8 @@ class CommandPublish extends Command {
     argParser.addOption('qiniu-bucket-domain', valueHelp: '');
     argParser.addOption('qiniu-savekey-prefix', valueHelp: '');
   }
+
+  final FlutterDistributor distributor;
 
   @override
   String get name => 'publish';

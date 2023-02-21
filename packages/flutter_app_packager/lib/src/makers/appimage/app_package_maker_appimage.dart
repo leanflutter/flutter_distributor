@@ -1,45 +1,42 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:app_package_maker/app_package_maker.dart';
-import 'package:shell_executor/shell_executor.dart';
-import 'make_appimage_config.dart';
+import 'package:flutter_app_packager/src/makers/appimage/make_appimage_config.dart';
 import 'package:path/path.dart' as path;
+import 'package:shell_executor/shell_executor.dart';
 
 class AppPackageMakerAppImage extends AppPackageMaker {
   String get name => 'appimage';
   String get platform => 'linux';
+  bool get isSupportedOnCurrentPlatform => Platform.isLinux;
   String get packageFormat => 'appimage';
 
-  bool get isSupportedOnCurrentPlatform => Platform.isLinux;
+  MakeConfigLoader get configLoader {
+    return MakeAppImageConfigLoader()
+      ..platform = platform
+      ..packageFormat = packageFormat;
+  }
 
   @override
-  Future<MakeConfig> loadMakeConfig(
-    Directory outputDirectory,
-    Map<String, dynamic>? makeArguments,
-  ) async {
-    MakeConfig baseMakeConfig = await super.loadMakeConfig(
-      outputDirectory,
-      makeArguments,
+  Future<MakeResult> make(MakeConfig config) {
+    return _make(
+      config.buildOutputDirectory,
+      outputDirectory: config.outputDirectory,
+      makeConfig: config as MakeAppImageConfig,
     );
-    final map = loadMakeConfigYaml('linux/packaging/appimage/make_config.yaml');
-    return MakeAppImageConfig.fromJson(map).copyWith(baseMakeConfig);
   }
 
   Future<MakeResult> _make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    Map<String, dynamic>? makeArguments,
+    required MakeAppImageConfig makeConfig,
   }) async {
-    MakeAppImageConfig makeConfig = await loadMakeConfig(
-      outputDirectory,
-      makeArguments,
-    ) as MakeAppImageConfig;
-
-    final configFile = File("AppImageBuilder.yml");
+    final configFile = File('AppImageBuilder.yml');
     final outputFile =
-        File("${makeConfig.appName}-${makeConfig.appVersion}-x86_64.AppImage");
-    final appDir = Directory("AppDir");
-    final buildDir = Directory("appimage-build");
+        File('${makeConfig.appName}-${makeConfig.appVersion}-x86_64.AppImage');
+    final appDir = Directory('AppDir');
+    final buildDir = Directory('appimage-build');
 
     if (!configFile.existsSync()) configFile.createSync();
     // removing already used AppDir & appimage-build directories
@@ -47,7 +44,7 @@ class AppPackageMakerAppImage extends AppPackageMaker {
 
     ProcessResult processResult = await $(
       'appimage-builder',
-      ["--recipe", configFile.path],
+      ['--recipe', configFile.path],
     );
 
     if (processResult.exitCode != 0) {
@@ -71,7 +68,7 @@ class AppPackageMakerAppImage extends AppPackageMaker {
       path.join(
         outputDirectory.path,
         makeConfig.appVersion.toString(),
-        "${makeConfig.appName}-${makeConfig.appVersion}-$platform.AppImage",
+        '${makeConfig.appName}-${makeConfig.appVersion}-$platform.AppImage',
       ),
     );
 

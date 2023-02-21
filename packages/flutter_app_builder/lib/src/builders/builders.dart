@@ -1,6 +1,6 @@
-export 'app_builder.dart';
 export 'android/app_builder_android.dart';
 export 'android/build_android_result.dart';
+export 'app_builder.dart';
 export 'ios/app_builder_ios.dart';
 export 'ios/build_ios_result.dart';
 export 'linux/app_builder_linux.dart';

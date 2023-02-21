@@ -8,11 +8,6 @@ const kEnvAppStoreApiKey = 'APPSTORE_APIKEY';
 const kEnvAppStoreApiIssuer = 'APPSTORE_APIISSUER';
 
 class PublishAppStoreConfig extends PublishConfig {
-  final String? username;
-  final String? password;
-  final String? apiKey;
-  final String? apiIssuer;
-
   PublishAppStoreConfig({
     this.username,
     this.password,
@@ -56,6 +51,11 @@ class PublishAppStoreConfig extends PublishConfig {
       apiIssuer: apiIssuer,
     );
   }
+
+  final String? username;
+  final String? password;
+  final String? apiKey;
+  final String? apiIssuer;
 
   List<String> toAppStoreCliDistributeArgs() {
     Map<String, String?> cmdData = {

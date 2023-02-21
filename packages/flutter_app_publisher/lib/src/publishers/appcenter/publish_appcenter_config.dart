@@ -5,10 +5,12 @@ import 'package:app_package_publisher/app_package_publisher.dart';
 const kEnvAppCenterApiToken = 'APPCENTER_API_TOKEN';
 
 class PublishAppCenterConfig extends PublishConfig {
-  final String apiToken;
-  String ownerName;
-  String appName;
-  String? distributionGroup;
+  PublishAppCenterConfig({
+    required this.apiToken,
+    required this.ownerName,
+    required this.appName,
+    this.distributionGroup,
+  });
 
   factory PublishAppCenterConfig.parse(
     Map<String, String>? environment,
@@ -40,10 +42,8 @@ class PublishAppCenterConfig extends PublishConfig {
     return publishConfig;
   }
 
-  PublishAppCenterConfig({
-    required this.apiToken,
-    required this.ownerName,
-    required this.appName,
-    this.distributionGroup,
-  });
+  final String apiToken;
+  String ownerName;
+  String appName;
+  String? distributionGroup;
 }

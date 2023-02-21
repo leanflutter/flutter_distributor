@@ -3,16 +3,16 @@ import 'dart:io';
 import 'package:flutter_app_builder/src/build_config.dart';
 
 abstract class BuildResult {
-  final BuildConfig config;
-  Duration? duration;
-  Directory get outputDirectory;
-  List<File> outputFiles;
-
   BuildResult(
     this.config, {
     this.duration,
     this.outputFiles = const [],
   });
+
+  final BuildConfig config;
+  Duration? duration;
+  Directory get outputDirectory;
+  List<File> outputFiles;
 
   Map<String, dynamic> toJson() {
     return {

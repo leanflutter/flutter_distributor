@@ -1,43 +1,37 @@
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/makers/exe/inno_setup/inno_setup_compiler.dart';
+import 'package:flutter_app_packager/src/makers/exe/inno_setup/inno_setup_script.dart';
+import 'package:flutter_app_packager/src/makers/exe/make_exe_config.dart';
 import 'package:io/io.dart';
-
-import 'inno_setup/inno_setup_compiler.dart';
-import 'inno_setup/inno_setup_script.dart';
-import 'make_exe_config.dart';
 
 class AppPackageMakerExe extends AppPackageMaker {
   String get name => 'exe';
   String get platform => 'windows';
+  bool get isSupportedOnCurrentPlatform => Platform.isWindows;
   String get packageFormat => 'exe';
 
-  bool get isSupportedOnCurrentPlatform => Platform.isWindows;
+  MakeConfigLoader get configLoader {
+    return MakeExeConfigLoader()
+      ..platform = platform
+      ..packageFormat = packageFormat;
+  }
 
   @override
-  Future<MakeConfig> loadMakeConfig(
-    Directory outputDirectory,
-    Map<String, dynamic>? makeArguments,
-  ) async {
-    MakeConfig baseMakeConfig = await super.loadMakeConfig(
-      outputDirectory,
-      makeArguments,
+  Future<MakeResult> make(MakeConfig config) {
+    return _make(
+      config.buildOutputDirectory,
+      outputDirectory: config.outputDirectory,
+      makeConfig: config as MakeExeConfig,
     );
-    final map = loadMakeConfigYaml('windows/packaging/exe/make_config.yaml');
-    return MakeExeConfig.fromJson(map).copyWith(baseMakeConfig)
-      ..isInstaller = true;
   }
 
   Future<MakeResult> _make(
     Directory appDirectory, {
     required Directory outputDirectory,
-    Map<String, dynamic>? makeArguments,
+    required MakeExeConfig makeConfig,
   }) async {
-    MakeExeConfig makeConfig = await loadMakeConfig(
-      outputDirectory,
-      makeArguments,
-    ) as MakeExeConfig;
-
     Directory packagingDirectory = makeConfig.packagingDirectory;
     copyPathSync(appDirectory.path, packagingDirectory.path);
 

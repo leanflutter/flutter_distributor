@@ -4,15 +4,15 @@ import 'package:app_package_maker/src/make_config.dart';
 import 'package:app_package_maker/src/make_error.dart';
 
 class MakeResult {
-  final MakeConfig config;
-  final Duration? duration;
-
-  File get outputFile => config.outputFile;
-
   MakeResult(
     this.config, {
     this.duration,
   });
+
+  final MakeConfig config;
+  final Duration? duration;
+
+  File get outputFile => config.outputFile;
 
   Map<String, dynamic> toJson() {
     return {

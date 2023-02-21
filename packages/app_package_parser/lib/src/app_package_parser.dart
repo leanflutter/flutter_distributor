@@ -9,12 +9,6 @@ abstract class AppPackageParser {
 }
 
 class AppPackage {
-  final String platform;
-  final String identifier;
-  final String name;
-  final String version;
-  final int buildNumber;
-
   AppPackage({
     required this.platform,
     required this.identifier,
@@ -22,6 +16,12 @@ class AppPackage {
     required this.version,
     required this.buildNumber,
   });
+
+  final String platform;
+  final String identifier;
+  final String name;
+  final String version;
+  final int buildNumber;
 
   Map<String, dynamic> toJson() {
     return {

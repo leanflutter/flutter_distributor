@@ -3,11 +3,10 @@ import 'dart:typed_data';
 
 import 'package:app_package_publisher/app_package_publisher.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_app_publisher/src/publishers/appcenter/publish_appcenter_config.dart';
 import 'package:shell_executor/shell_executor.dart';
 
-import 'publish_appcenter_config.dart';
-
-const _kUploadDomain = "https://file.appcenter.ms/upload";
+const _kUploadDomain = 'https://file.appcenter.ms/upload';
 
 class AppPackagePublisherAppCenter extends AppPackagePublisher {
   final Dio _dio = Dio();
@@ -59,7 +58,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
 
       // Creating metadata (2/7)
       String fileName = file.path.split('/').last;
-      String contentType = "application/octet-stream";
+      String contentType = 'application/octet-stream';
       if (fileName.endsWith('.apk')) {
         contentType = 'application/vnd.android.package-archive';
       }
@@ -139,7 +138,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
     required String contentType,
   }) async {
     final response = await _dio.post(
-        "$_kUploadDomain/set_metadata/$packageAssetId?file_name=$fileName&file_size=$fileSize&token=$urlEncodedToken&content_type=$contentType");
+        '$_kUploadDomain/set_metadata/$packageAssetId?file_name=$fileName&file_size=$fileSize&token=$urlEncodedToken&content_type=$contentType');
     return Map<String, dynamic>.from(response.data);
   }
 
@@ -203,8 +202,8 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
     final response = await _dio.patch(
       '/apps/${ownerName}/${appName}/uploads/releases/$releasesId',
       data: {
-        "upload_status": "uploadFinished",
-        "id": releasesId,
+        'upload_status': 'uploadFinished',
+        'id': releasesId,
       },
     );
 
@@ -234,7 +233,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
     }
 
     if (releaseDistinctId == null) {
-      throw PublishError("Failed to find release from appcenter");
+      throw PublishError('Failed to find release from appcenter');
     }
     return releaseDistinctId;
   }
@@ -248,7 +247,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
     final response = await _dio.patch(
       '/apps/${ownerName}/${appName}/releases/$releaseDistinctId',
       data: {
-        "destinations": [
+        'destinations': [
           {'name': distributionGroup}
         ],
       },

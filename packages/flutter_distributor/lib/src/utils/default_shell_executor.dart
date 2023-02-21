@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_distributor/src/extensions/string.dart';
+import 'package:flutter_distributor/src/utils/logger.dart';
 import 'package:shell_executor/shell_executor.dart';
-
-import '../extensions/extensions.dart';
-import 'logger.dart';
 
 class DefaultShellExecutor extends ShellExecutor {
   Future<ProcessResult> exec(

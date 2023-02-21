@@ -1,9 +1,18 @@
 import 'package:flutter_app_builder/src/build_result.dart';
-
-import '../app_builder.dart';
-import 'build_android_result.dart';
+import 'package:flutter_app_builder/src/builders/android/build_android_result.dart';
+import 'package:flutter_app_builder/src/builders/app_builder.dart';
 
 class AppBuilderAndroid extends AppBuilder {
+  AppBuilderAndroid(this.target);
+
+  factory AppBuilderAndroid.apk() {
+    return AppBuilderAndroid('apk');
+  }
+
+  factory AppBuilderAndroid.aab() {
+    return AppBuilderAndroid('aab');
+  }
+
   @override
   String get platform => 'android';
 
@@ -18,17 +27,7 @@ class AppBuilderAndroid extends AppBuilder {
 
   final String target;
 
-  AppBuilderAndroid(this.target);
-
   bool match(String platform, [String? target]) {
     return this.platform == platform && this.target == target;
-  }
-
-  factory AppBuilderAndroid.aab() {
-    return AppBuilderAndroid('aab');
-  }
-
-  factory AppBuilderAndroid.apk() {
-    return AppBuilderAndroid('apk');
   }
 }

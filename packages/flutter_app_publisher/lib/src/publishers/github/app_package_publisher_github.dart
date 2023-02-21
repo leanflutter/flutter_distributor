@@ -3,8 +3,7 @@ import 'dart:typed_data';
 
 import 'package:app_package_publisher/app_package_publisher.dart';
 import 'package:dio/dio.dart';
-
-import 'publish_github_config.dart';
+import 'package:flutter_app_publisher/src/publishers/github/publish_github_config.dart';
 
 class AppPackagePublisherGithub extends AppPackagePublisher {
   final Dio _dio = Dio();
@@ -77,9 +76,9 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
     Response resp = await _dio.post(
       'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases',
       data: {
-        "tag_name": publishConfig.releaseTitle,
-        "name": publishConfig.releaseTitle,
-        "draft": true
+        'tag_name': publishConfig.releaseTitle,
+        'name': publishConfig.releaseTitle,
+        'draft': true
       },
     );
     return resp.data?['upload_url'];
