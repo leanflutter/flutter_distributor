@@ -11,16 +11,19 @@ import 'command_upgrade.dart';
 Future<void> main(List<String> args) async {
   FlutterDistributor distributor = FlutterDistributor();
 
-  // Check version of flutter_distributor on every run
-  await distributor.checkVersion();
-
   final runner = CommandRunner('flutter_distributor', '');
-
-  runner.argParser.addFlag(
-    'version',
-    negatable: false,
-    help: 'Reports the version of this tool.',
-  );
+  runner.argParser
+    ..addFlag(
+      'version',
+      help: 'Reports the version of this tool.',
+      negatable: false,
+    )
+    ..addFlag(
+      'version-check',
+      help: 'Check for updates when this command runs.',
+      defaultsTo: true,
+      negatable: true,
+    );
 
   runner.addCommand(CommandPackage(distributor));
   runner.addCommand(CommandPublish(distributor));
@@ -34,6 +37,11 @@ Future<void> main(List<String> args) async {
       logger.info(currentVersion);
       return;
     }
+  }
+
+  if (argResults['version-check']) {
+    // Check version of flutter_distributor on every run
+    await distributor.checkVersion();
   }
 
   return runner.runCommand(argResults);

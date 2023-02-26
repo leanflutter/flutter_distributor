@@ -4,8 +4,9 @@ import 'package:dio/dio.dart';
 
 class PubDevApi {
   static Future<String?> getLatestVersionFromPackage(String package) async {
-    final pubSite = Platform.localeName.startsWith('zh')
-        ? 'https://pub.flutter-io.cn/api/packages/$package'
+    String pubHostedUrl = Platform.environment['PUB_HOSTED_URL'] ?? '';
+    final pubSite = pubHostedUrl.isNotEmpty
+        ? '$pubHostedUrl/api/packages/$package'
         : 'https://pub.dev/api/packages/$package';
     final uri = Uri.parse(pubSite);
     try {
