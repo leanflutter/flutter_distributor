@@ -6,7 +6,9 @@ void main() {
   group('macos result', () {
     test('profile mode', () {
       final r = BuildMacOsResult(
-        BuildConfig(mode: BuildMode.profile),
+        BuildConfig(
+          arguments: {'profile': true},
+        ),
       );
       expect(r.outputDirectory.path, 'build/macos/Build/Products/Profile');
     });

@@ -6,7 +6,9 @@ void main() {
   group('ios result', () {
     test('profile mode', () {
       final r = BuildIosResult(
-        BuildConfig(mode: BuildMode.profile),
+        BuildConfig(
+          arguments: {'profile': true},
+        ),
       );
       expect(r.outputDirectory.path, 'build/ios/ipa');
     });

@@ -6,7 +6,9 @@ void main() {
   group('linux result', () {
     test('profile mode', () {
       final r = BuildLinuxResult(
-        BuildConfig(mode: BuildMode.profile),
+        BuildConfig(
+          arguments: {'profile': true},
+        ),
       );
       expect(r.outputDirectory.path, 'build/linux/x64/profile/bundle');
       r.arch = 'arm64';

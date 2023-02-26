@@ -2,14 +2,20 @@ enum BuildMode { profile, release }
 
 class BuildConfig {
   BuildConfig({
-    this.mode = BuildMode.release,
-    this.flavor,
     this.arguments = const {},
   });
 
-  final BuildMode mode;
-  final String? flavor;
   final Map<String, dynamic> arguments;
+
+  BuildMode get mode {
+    return arguments.containsKey('profile')
+        ? BuildMode.profile
+        : BuildMode.release;
+  }
+
+  String? get flavor {
+    return arguments['flavor'];
+  }
 
   Map<String, dynamic> toJson() {
     return {

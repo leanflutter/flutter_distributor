@@ -6,13 +6,17 @@ void main() {
   group('android aab result', () {
     test('profile mode', () {
       final r = BuildAndroidResult.aab(
-        BuildConfig(mode: BuildMode.profile),
+        BuildConfig(
+          arguments: {'profile': true},
+        ),
       );
       expect(r.outputDirectory.path, 'build/app/outputs/bundle/profile');
     });
     test('profile mode + flavor', () {
       final r = BuildAndroidResult.aab(
-        BuildConfig(mode: BuildMode.profile, flavor: 'dev'),
+        BuildConfig(
+          arguments: {'profile': true, 'flavor': 'dev'},
+        ),
       );
       expect(r.outputDirectory.path, 'build/app/outputs/bundle/devProfile');
     });
@@ -24,7 +28,9 @@ void main() {
     });
     test('release mode + flavor', () {
       final r = BuildAndroidResult.aab(
-        BuildConfig(flavor: 'dev'),
+        BuildConfig(
+          arguments: {'flavor': 'dev'},
+        ),
       );
       expect(r.outputDirectory.path, 'build/app/outputs/bundle/devRelease');
     });
@@ -32,13 +38,17 @@ void main() {
   group('android apk result', () {
     test('profile mode', () {
       final r = BuildAndroidResult.apk(
-        BuildConfig(mode: BuildMode.profile),
+        BuildConfig(
+          arguments: {'profile': true},
+        ),
       );
       expect(r.outputDirectory.path, 'build/app/outputs/apk/profile');
     });
     test('profile mode + flavor', () {
       final r = BuildAndroidResult.apk(
-        BuildConfig(mode: BuildMode.profile, flavor: 'dev'),
+        BuildConfig(
+          arguments: {'profile': true, 'flavor': 'dev'},
+        ),
       );
       expect(r.outputDirectory.path, 'build/app/outputs/apk/dev/profile');
     });
@@ -51,7 +61,9 @@ void main() {
 
     test('release mode + flavor', () {
       final r = BuildAndroidResult.apk(
-        BuildConfig(flavor: 'dev'),
+        BuildConfig(
+          arguments: {'flavor': 'dev'},
+        ),
       );
       String dirPath = r.outputDirectory.path;
       expect(dirPath, 'build/app/outputs/apk/dev/release');

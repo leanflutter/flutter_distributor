@@ -6,7 +6,9 @@ void main() {
   group('windows result', () {
     test('profile mode', () {
       final r = BuildWindowsResult(
-        BuildConfig(mode: BuildMode.profile),
+        BuildConfig(
+          arguments: {'profile': true},
+        ),
       );
       expect(r.outputDirectory.path, 'build/windows/runner/Profile');
     });
