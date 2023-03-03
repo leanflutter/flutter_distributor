@@ -1,17 +1,39 @@
-appId: org.leanflutter.examples.hello_world
-# relative path to the application's icon
+display_name: Hello World
+
 icon: assets/logo.png
 
-script:
-  - echo 'Running a Script'
+keywords:
+  - Hello
+  - World
+  - Test
+  - Application
 
+generic_name: Cool Application
+
+actions:
+  - name: Say Hi
+    label: say-hi
+    arguments:
+      - --say
+      - hi
+  - name: Say Bye
+    label: say-bye
+    arguments:
+      - --say
+      - bye
+
+categories:
+  - Music
+
+startup_notify: true
+
+# You can specify the shared libraries that you want to bundle with your app
+#
+# flutter_distribute automatically detects the shared libraries that your app
+# depends on, but you can also specify them manually here.
+# 
+# The following example shows how to bundle the libcurl library with your app.
+#
+# include:
+#   - libcurl.so.4
 include: []
-exclude: []
-# its true by default
-default_excludes: true
-
-files:
-  include: []
-  exclude: []
-  # its true by default
-  default_excludes: true
