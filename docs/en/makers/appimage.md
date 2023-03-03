@@ -4,14 +4,20 @@ title: AppImage
 
 ## Requirements
 
-- [AppImage Builder](https://github.com/AppImageCrafters/appimage-builder)
+- `locate`
+
+  On Ubuntu/Debian based linux, run:
+  ```bash
+  $ sudo apt install locate
+  ```
+- [AppImageTool](https://github.com/AppImage/AppImageKit)
 
 To install Appimage Builder, run:
 
 ```bash
-wget -O appimage-builder https://github.com/AppImageCrafters/appimage-builder/releases/download/v1.1.0/appimage-builder-1.1.0-x86_64.AppImage
-chmod +x appimage-builder
-mv appimage-builder /usr/local/bin/
+wget -O appimagetool "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+chmod +x appimagetool
+mv appimagetool /usr/local/bin/
 ```
 
 > Last command may require `sudo` privileges
@@ -21,22 +27,45 @@ mv appimage-builder /usr/local/bin/
 Add `make_config.yaml` to your project `linux/packaging/appimage` directory.
 
 ```yaml
-appId: org.leanflutter.examples.hello_world
+display_name: Hello World
+
 icon: assets/logo.png
 
-script:
-  - echo 'Running a Script'
+keywords:
+  - Hello
+  - World
+  - Test
+  - Application
 
+generic_name: Cool Application
+
+actions:
+  - name: Say Hi
+    label: say-hi
+    arguments:
+      - --say
+      - hi
+  - name: Say Bye
+    label: say-bye
+    arguments:
+      - --say
+      - bye
+
+categories:
+  - Music
+
+startup_notify: true
+
+# You can specify the shared libraries that you want to bundle with your app
+#
+# flutter_distributor automatically detects the shared libraries that your app
+# depends on, but you can also specify them manually here.
+# 
+# The following example shows how to bundle the libcurl library with your app.
+#
+# include:
+#   - libcurl.so.4
 include: []
-exclude: []
-# its true by default
-default_excludes: true
-
-files:
-  include: []
-  exclude: []
-  # its true by default
-  default_excludes: true
 ```
 
 Run:
@@ -49,3 +78,4 @@ flutter_distributor package --platform linux --targets appimage
 
 - [Build and release an Linux app](https://docs.flutter.dev/deployment/linux)
 - [Introduction to AppImage package format](https://docs.appimage.org/)
+- [Desktop Entry Specification](https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html)
