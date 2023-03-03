@@ -45,11 +45,11 @@ class MakeAppImageConfig extends MakeConfig {
     return MakeAppImageConfig(
       displayName: map['display_name'] as String,
       icon: map['icon'] as String,
-      include: (map['include'] as List<dynamic>).cast<String>(),
-      keywords: (map['keywords'] as List<dynamic>).cast<String>(),
-      categories: (map['categories'] as List<dynamic>).cast<String>(),
-      startupNotify: map['startup_notify'] as bool,
-      genericName: map['generic_name'] as String,
+      include: (map['include'] as List<dynamic>? ?? []).cast<String>(),
+      keywords: (map['keywords'] as List<dynamic>? ?? []).cast<String>(),
+      categories: (map['categories'] as List<dynamic>? ?? []).cast<String>(),
+      startupNotify: map['startup_notify'] as bool? ?? false,
+      genericName: map['generic_name'] as String? ?? 'A Flutter Application',
       actions: (map['actions'] as List? ?? [])
           .map((e) => AppImageAction.fromJson(
               (Map.castFrom<dynamic, dynamic, String, dynamic>(e))))
