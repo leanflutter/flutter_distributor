@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
@@ -18,6 +17,32 @@ class AppPackageMakerAppImage extends AppPackageMaker {
       ..packageFormat = packageFormat;
   }
 
+  Future<Set<String>> _getSharedDependencies(String so) {
+    return $('ldd', ['-d', so]).then((value) {
+      if (value.exitCode != 0) {
+        throw MakeError(value.stderr as String);
+      }
+      return value.stdout as String;
+    }).then(
+      (lines) {
+        final soDeps = lines
+            .split('\n')
+            .where(
+                (line) => line.contains('=>') && line.trim().startsWith('lib'))
+
+            /// converts this:
+            ///  libkeybinder-3.0.so.0 => /lib64/libkeybinder-3.0.so.0 (0x00007f6513811000)
+            /// to this:
+            ///  /lib64/libkeybinder-3.0.so.0
+            .map((line) => line.split(' => ')[1].trim().split(' ').first.trim())
+            .toList()
+          ..sort();
+
+        return soDeps.toSet();
+      },
+    );
+  }
+
   @override
   Future<MakeResult> make(MakeConfig config) {
     return _make(
@@ -32,46 +57,193 @@ class AppPackageMakerAppImage extends AppPackageMaker {
     required Directory outputDirectory,
     required MakeAppImageConfig makeConfig,
   }) async {
-    final configFile = File('AppImageBuilder.yml');
-    final outputFile =
-        File('${makeConfig.appName}-${makeConfig.appVersion}-x86_64.AppImage');
-    final appDir = Directory('AppDir');
-    final buildDir = Directory('appimage-build');
+    try {
+      await $('cp', [
+        '-r',
+        appDirectory.path,
+        path.join(
+          makeConfig.packagingDirectory.path,
+          '${makeConfig.appName}.AppDir',
+        )
+      ]).then((value) {
+        if (value.exitCode != 0) {
+          throw MakeError(value.stderr as String);
+        }
+      });
 
-    if (!configFile.existsSync()) configFile.createSync();
-    // removing already used AppDir & appimage-build directories
-    configFile.writeAsStringSync(jsonEncode(makeConfig.toJson()));
+      final desktopFile = File(path.join(
+        makeConfig.packagingDirectory.path,
+        '${makeConfig.appName}.AppDir',
+        '${makeConfig.appName}.desktop',
+      ))
+        ..createSync(recursive: true);
 
-    ProcessResult processResult = await $(
-      'appimage-builder',
-      ['--recipe', configFile.path],
-    );
+      await desktopFile.writeAsString(makeConfig.desktopFileContent);
 
-    if (processResult.exitCode != 0) {
-      throw MakeError();
+      final appRunFile = File(path.join(
+        makeConfig.packagingDirectory.path,
+        '${makeConfig.appName}.AppDir',
+        'AppRun',
+      ))
+        ..createSync(recursive: true);
+
+      await appRunFile.writeAsString(makeConfig.appRunContent);
+
+      await $('chmod', ['+x', appRunFile.path]).then((value) {
+        if (value.exitCode != 0) {
+          throw MakeError(value.stderr as String);
+        }
+      });
+
+      final iconFile = File(makeConfig.icon);
+      if (!iconFile.existsSync())
+        throw MakeError("icon ${makeConfig.icon} path doesn't exist");
+
+      await iconFile.copy(path.join(
+        makeConfig.packagingDirectory.path,
+        '${makeConfig.appName}.AppDir',
+        '${makeConfig.appName}${path.extension(makeConfig.icon)}',
+      ));
+
+      final icon256x256 = path.join(
+        makeConfig.packagingDirectory.path,
+        '${makeConfig.appName}.AppDir/usr/share/icons/hicolor/256x256/apps',
+      );
+      final icon128x128 = path.join(
+        makeConfig.packagingDirectory.path,
+        '${makeConfig.appName}.AppDir/usr/share/icons/hicolor/128x128/apps',
+      );
+
+      await $('mkdir', [
+        '-p',
+        icon128x128,
+        icon256x256,
+      ]).then((value) {
+        if (value.exitCode != 0) {
+          throw MakeError(value.stderr as String);
+        }
+      });
+
+      await iconFile.copy(path.join(
+        icon128x128,
+        '${makeConfig.appName}${path.extension(makeConfig.icon)}',
+      ));
+
+      await iconFile.copy(path.join(
+        icon256x256,
+        '${makeConfig.appName}${path.extension(makeConfig.icon)}',
+      ));
+
+      final defaultSharedObjects = [
+        'libapp.so',
+        'libflutter_linux_gtk.so',
+        'libgtk-3.so.0',
+      ];
+
+      final appSOLibs = Directory(path.join(
+        makeConfig.packagingDirectory.path,
+        '${makeConfig.appName}.AppDir/lib',
+      ))
+          .listSync()
+          .where((e) => !defaultSharedObjects.contains(path.basename(e.path)));
+
+      await $('mkdir', [
+        '-p',
+        path.join(
+          makeConfig.packagingDirectory.path,
+          '${makeConfig.appName}.AppDir/usr/lib',
+        ),
+      ]).then((value) {
+        if (value.exitCode != 0) {
+          throw MakeError(value.stderr as String);
+        }
+      });
+
+      final libFlutterGtkDeps = await _getSharedDependencies(
+        path.join(
+          makeConfig.packagingDirectory.path,
+          '${makeConfig.appName}.AppDir/lib/libflutter_linux_gtk.so',
+        ),
+      );
+
+      await Future.wait(
+        appSOLibs.map((so) async {
+          final referencedSharedLibs = await _getSharedDependencies(so.path)
+              .then((d) => d.difference(libFlutterGtkDeps)
+                ..removeWhere(
+                  (lib) => lib.contains('libflutter_linux_gtk.so'),
+                ));
+
+          if (referencedSharedLibs.isEmpty) return;
+
+          await $(
+            'cp',
+            [
+              ...referencedSharedLibs,
+              path.join(
+                makeConfig.packagingDirectory.path,
+                '${makeConfig.appName}.AppDir/usr/lib',
+              )
+            ],
+          ).then((value) {
+            if (value.exitCode != 0) {
+              throw MakeError(value.stderr as String);
+            }
+          });
+        }),
+      );
+
+      await Future.wait(
+        makeConfig.include.map((so) async {
+          final file = await $('locate', [so]).then((value) {
+            if (value.exitCode != 0) {
+              throw MakeError(value.stderr as String);
+            }
+            return value.stdout as String;
+          }).then((out) {
+            final paths = out
+                .split('\n')
+                .where((p) => p.isNotEmpty && !p.contains('/Trash'))
+                .toList();
+            if (paths.isEmpty) {
+              throw MakeError("Can't find specified shared object $so");
+            }
+            return File(paths.first.trim());
+          });
+
+          await file.copy(
+            path.join(
+              makeConfig.packagingDirectory.path,
+              '${makeConfig.appName}.AppDir/usr/lib/',
+              '${path.basename(file.path)}',
+            ),
+          );
+        }),
+      );
+
+      await $(
+        'appimagetool',
+        [
+          path.join(
+            makeConfig.packagingDirectory.path,
+            '${makeConfig.appName}.AppDir',
+          ),
+          makeConfig.outputFile.path.replaceAll('.appimage', '.AppImage'),
+        ],
+        environment: {
+          'ARCH': 'x86_64',
+        },
+      ).then((value) {
+        if (value.exitCode != 0) {
+          throw MakeError(value.stderr as String);
+        }
+      });
+
+      makeConfig.packagingDirectory.deleteSync(recursive: true);
+      return MakeResult(makeConfig);
+    } catch (e) {
+      if (e is MakeError) rethrow;
+      throw MakeError(e.toString());
     }
-
-    // delete the config file & cleaning stuff
-    await configFile.delete();
-    await appDir.delete(recursive: true);
-    await buildDir.delete(recursive: true);
-
-    final outputVersionedDir = Directory(
-      path.join(outputDirectory.path, makeConfig.appVersion.toString()),
-    );
-
-    if (!outputVersionedDir.existsSync())
-      outputVersionedDir.createSync(recursive: true);
-
-    // move the output file to outputDirectory
-    await outputFile.rename(
-      path.join(
-        outputDirectory.path,
-        makeConfig.appVersion.toString(),
-        '${makeConfig.appName}-${makeConfig.appVersion}-$platform.AppImage',
-      ),
-    );
-
-    return MakeResult(makeConfig);
   }
 }
