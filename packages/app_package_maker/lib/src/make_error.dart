@@ -3,6 +3,7 @@ class MakeError extends Error {
 
   final String? message;
 
+  @override
   String toString() {
     var message = this.message;
     return (message != null) ? 'MakeError: $message' : 'MakeError';

@@ -76,7 +76,7 @@ class _BuildAndroidAabResult extends BuildResult {
   @override
   Directory get outputDirectory {
     String buildMode = config.mode.name;
-    String path = 'build/app/outputs/bundle/${buildMode}';
+    String path = 'build/app/outputs/bundle/$buildMode';
     if (config.flavor != null) {
       buildMode = ReCase(buildMode).sentenceCase;
       path = 'build/app/outputs/bundle/${config.flavor}$buildMode';
@@ -105,7 +105,7 @@ class _BuildAndroidApkResult extends BuildResult {
   @override
   Directory get outputDirectory {
     String buildMode = config.mode.name;
-    String path = 'build/app/outputs/apk/${buildMode}';
+    String path = 'build/app/outputs/apk/$buildMode';
     if (config.flavor != null) {
       path = 'build/app/outputs/apk/${config.flavor}/$buildMode';
     }

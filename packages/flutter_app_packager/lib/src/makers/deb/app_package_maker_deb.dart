@@ -6,11 +6,16 @@ import 'package:path/path.dart' as path;
 import 'package:shell_executor/shell_executor.dart';
 
 class AppPackageMakerDeb extends AppPackageMaker {
+  @override
   String get name => 'deb';
+  @override
   String get platform => 'linux';
+  @override
   bool get isSupportedOnCurrentPlatform => Platform.isLinux;
+  @override
   String get packageFormat => 'deb';
 
+  @override
   MakeConfigLoader get configLoader {
     return MakeDebConfigLoader()
       ..platform = platform
@@ -65,8 +70,9 @@ class AppPackageMakerDeb extends AppPackageMaker {
 
     if (makeConfig.icon != null) {
       final iconFile = File(makeConfig.icon!);
-      if (!iconFile.existsSync())
+      if (!iconFile.existsSync()) {
         throw MakeError("provided icon ${makeConfig.icon} path wasn't found");
+      }
 
       await iconFile.copy(
         path.join(

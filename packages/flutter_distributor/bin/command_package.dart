@@ -148,6 +148,7 @@ class CommandPackage extends Command {
       dynamic value = argResults?[option];
 
       if (value is List) {
+        // ignore: prefer_for_elements_to_map_fromiterable
         value = Map.fromIterable(
           value,
           key: (e) => e.split('=')[0],

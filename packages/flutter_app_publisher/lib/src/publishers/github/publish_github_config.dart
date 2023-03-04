@@ -43,7 +43,7 @@ class PublishGithubConfig extends PublishConfig {
         publishConfig.pubspec.version.toString().split('+').last;
 
     if ((publishConfig.releaseTitle ?? '').trim().isEmpty) {
-      publishConfig.releaseTitle = 'v${appVersion}';
+      publishConfig.releaseTitle = 'v$appVersion';
     } else {
       publishConfig.releaseTitle = publishConfig.releaseTitle
           ?.replaceAll('{appVersion}', appVersion)

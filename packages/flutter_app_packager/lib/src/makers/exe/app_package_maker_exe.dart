@@ -7,11 +7,16 @@ import 'package:flutter_app_packager/src/makers/exe/make_exe_config.dart';
 import 'package:io/io.dart';
 
 class AppPackageMakerExe extends AppPackageMaker {
+  @override
   String get name => 'exe';
+  @override
   String get platform => 'windows';
+  @override
   bool get isSupportedOnCurrentPlatform => Platform.isWindows;
+  @override
   String get packageFormat => 'exe';
 
+  @override
   MakeConfigLoader get configLoader {
     return MakeExeConfigLoader()
       ..platform = platform

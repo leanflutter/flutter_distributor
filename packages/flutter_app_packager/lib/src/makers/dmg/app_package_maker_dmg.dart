@@ -2,21 +2,31 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/makers/dmg/commands/appdmg.dart';
 import 'package:flutter_app_packager/src/makers/dmg/make_dmg_config.dart';
 import 'package:shell_executor/shell_executor.dart';
 
 class AppPackageMakerDmg extends AppPackageMaker {
+  @override
+  List<Command> get requirements => [appdmg];
+
+  @override
   String get name => 'dmg';
+  @override
   String get platform => 'macos';
+  @override
   bool get isSupportedOnCurrentPlatform => Platform.isMacOS;
+  @override
   String get packageFormat => 'dmg';
 
+  @override
   MakeConfigLoader get configLoader {
     return MakeDmgConfigLoader()
       ..platform = platform
       ..packageFormat = packageFormat;
   }
 
+  @override
   Future<MakeResult> make(MakeConfig config) async {
     Directory packagingDirectory = config.packagingDirectory;
 
@@ -36,7 +46,7 @@ class AppPackageMakerDmg extends AppPackageMaker {
       );
       makeDmgConfigJsonFile.writeAsStringSync(json.encode(config.toJson()));
 
-      ProcessResult processResult = await $('appdmg', [
+      ProcessResult processResult = await appdmg.exec([
         makeDmgConfigJsonFile.path,
         config.outputFile.path,
       ]);

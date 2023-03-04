@@ -8,7 +8,7 @@ extension StringExt on String {
   String _applyColor(int color, {bool bg = false, bool bold = false}) {
     String appliedColor = (_ansiPen..xterm(color, bg: bg))(this);
     if (bold) {
-      return '${ansiEscape}1m${appliedColor}${ansiDefault}';
+      return '${ansiEscape}1m$appliedColor$ansiDefault';
     }
     return appliedColor;
   }

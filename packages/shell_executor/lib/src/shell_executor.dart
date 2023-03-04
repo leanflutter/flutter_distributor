@@ -29,12 +29,12 @@ class ShellExecutor {
 
     process.stdout.listen((event) {
       String msg = utf8.decoder.convert(event);
-      stdoutStr = '${stdoutStr ?? ''}${msg}';
+      stdoutStr = '${stdoutStr ?? ''}$msg';
       stdout.write(msg);
     });
     process.stderr.listen((event) {
       String msg = utf8.decoder.convert(event);
-      stderrStr = '${stderrStr ?? ''}${msg}';
+      stderrStr = '${stderrStr ?? ''}$msg';
       stdout.write(msg);
     });
     int exitCode = await process.exitCode;

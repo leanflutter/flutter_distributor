@@ -27,7 +27,7 @@ class BuildLinuxResult extends BuildResult {
     return _arch!;
   }
 
-  void set arch(String value) {
+  set arch(String value) {
     _arch = value;
   }
 

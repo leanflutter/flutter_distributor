@@ -106,7 +106,7 @@ class AppPackagePublisherFir extends AppPackagePublisher {
       }
       throw PublishError(message);
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 }

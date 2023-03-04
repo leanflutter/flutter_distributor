@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
@@ -134,6 +136,7 @@ class MakeMsixConfig extends MakeConfig {
   /// If `false`, don't try to install the certificate, default is `true`.                                                                                         | `true`                                                                                          |
   String? install_certificate;
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'display_name': display_name,

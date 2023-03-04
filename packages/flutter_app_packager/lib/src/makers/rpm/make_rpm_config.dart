@@ -100,6 +100,7 @@ class MakeRPMConfig extends MakeConfig {
   String? attr;
   String? changelog;
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'SPEC': {
@@ -153,16 +154,16 @@ class MakeRPMConfig extends MakeConfig {
         'Icon': appName,
         'Exec': '$appName %U',
         'Actions': actions != null && actions!.isNotEmpty
-            ? actions!.join(';') + ';'
+            ? '${actions!.join(';')};'
             : null,
         'MimeType': supportedMimeType != null && supportedMimeType!.isNotEmpty
-            ? supportedMimeType!.join(';') + ';'
+            ? '${supportedMimeType!.join(';')};'
             : null,
         'Categories': categories != null && categories!.isNotEmpty
-            ? categories!.join(';') + ';'
+            ? '${categories!.join(';')};'
             : null,
         'Keywords': keywords != null && keywords!.isNotEmpty
-            ? keywords!.join(';') + ';'
+            ? '${keywords!.join(';')};'
             : null,
         'StartupNotify': startupNotify
       }..removeWhere((key, value) => value == null),

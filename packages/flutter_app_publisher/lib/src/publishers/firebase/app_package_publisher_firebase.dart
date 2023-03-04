@@ -8,6 +8,7 @@ import 'package:shell_executor/shell_executor.dart';
 /// iOS: [https://firebase.google.com/docs/app-distribution/ios/distribute-cli]
 /// Android: [https://firebase.google.com/docs/app-distribution/android/distribute-cli]
 class AppPackagePublisherFirebase extends AppPackagePublisher {
+  @override
   String get name => 'firebase';
 
   @override

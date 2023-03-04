@@ -6,6 +6,7 @@ import 'package:flutter_distributor/src/utils/logger.dart';
 import 'package:shell_executor/shell_executor.dart';
 
 class DefaultShellExecutor extends ShellExecutor {
+  @override
   Future<ProcessResult> exec(
     String executable,
     List<String> arguments, {
@@ -25,12 +26,12 @@ class DefaultShellExecutor extends ShellExecutor {
 
     process.stdout.listen((event) {
       String msg = utf8.decoder.convert(event);
-      stdoutStr = '${stdoutStr ?? ''}${msg}';
+      stdoutStr = '${stdoutStr ?? ''}$msg';
       stdout.write(msg.brightBlack());
     });
     process.stderr.listen((event) {
       String msg = utf8.decoder.convert(event);
-      stderrStr = '${stderrStr ?? ''}${msg}';
+      stderrStr = '${stderrStr ?? ''}$msg';
       stdout.write(msg.brightRed());
     });
     int exitCode = await process.exitCode;

@@ -6,13 +6,16 @@ import 'package:shell_executor/shell_executor.dart';
 
 class AppPackageMakerZip extends AppPackageMaker {
   AppPackageMakerZip(String platform) {
-    this._platform = platform;
+    _platform = platform;
   }
 
   late String _platform;
 
+  @override
   String get name => 'zip';
+  @override
   String get platform => _platform;
+  @override
   String get packageFormat => 'zip';
 
   @override

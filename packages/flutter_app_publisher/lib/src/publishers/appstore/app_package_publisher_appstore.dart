@@ -6,6 +6,7 @@ import 'package:shell_executor/shell_executor.dart';
 
 /// AppStore doc [https://help.apple.com/asc/appsaltool/]
 class AppPackagePublisherAppStore extends AppPackagePublisher {
+  @override
   String get name => 'appstore';
 
   @override

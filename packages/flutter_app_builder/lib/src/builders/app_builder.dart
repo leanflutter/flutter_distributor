@@ -61,7 +61,7 @@ abstract class AppBuilder {
 
     ProcessResult processResult = await $(
       'flutter',
-      ['build', buildSubcommand]..addAll(buildArguments),
+      ['build', buildSubcommand, ...buildArguments],
     );
 
     if (processResult.exitCode != 0) {

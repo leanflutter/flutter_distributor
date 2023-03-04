@@ -121,7 +121,7 @@ class InnoSetupScript {
       Source.fromString(scriptTemplate),
     );
 
-    String content = '\uFEFF' + await template.render(context);
+    String content = '\uFEFF${await template.render(context)}';
     File file = File('${makeConfig.packagingDirectory.path}.iss');
 
     file.writeAsBytesSync(utf8.encode(content));

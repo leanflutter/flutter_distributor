@@ -2,16 +2,25 @@ import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 import 'package:flutter_app_packager/src/makers/rpm/make_rpm_config.dart';
+import 'package:flutter_app_packager/src/makers/rpm/rpmbuild.dart';
 import 'package:path/path.dart' as path;
 import 'package:shell_executor/shell_executor.dart';
 
 class AppPackageMakerRPM extends AppPackageMaker {
+  @override
+  List<Command> get requirements => [rpmbuild];
+
+  @override
   String get name => 'rpm';
+  @override
   String get platform => 'linux';
+  @override
   String get packageFormat => 'rpm';
 
+  @override
   bool get isSupportedOnCurrentPlatform => Platform.isLinux;
 
+  @override
   MakeConfigLoader get configLoader {
     return MakeRpmConfigLoader()
       ..platform = platform
@@ -95,8 +104,9 @@ class AppPackageMakerRPM extends AppPackageMaker {
 
     if (makeConfig.icon != null) {
       final iconFile = File(makeConfig.icon!);
-      if (!iconFile.existsSync())
+      if (!iconFile.existsSync()) {
         throw MakeError("provided icon ${makeConfig.icon} path wasn't found");
+      }
     }
 
     // create & write the files got from makeConfig
@@ -115,7 +125,7 @@ class AppPackageMakerRPM extends AppPackageMaker {
       'rpmbuild',
       [
         '--define',
-        '_topdir ${rpmbuildDirPath}',
+        '_topdir $rpmbuildDirPath',
         '-bb',
         specFile.path,
       ],

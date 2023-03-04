@@ -7,7 +7,9 @@ const kEnvPgyerApiKey = 'PGYER_API_KEY';
 
 /// pgyer doc [https://www.pgyer.com/doc/view/api#uploadApp]
 class AppPackagePublisherPgyer extends AppPackagePublisher {
+  @override
   String get name => 'pgyer';
+
   // dio 网络请求实例
   final Dio _dio = Dio();
   // 轮询尝试次数

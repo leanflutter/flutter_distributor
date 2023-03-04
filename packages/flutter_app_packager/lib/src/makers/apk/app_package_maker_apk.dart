@@ -1,8 +1,11 @@
 import 'package:app_package_maker/app_package_maker.dart';
 
 class AppPackageMakerApk extends AppPackageMaker {
+  @override
   String get name => 'apk';
+  @override
   String get platform => 'android';
+  @override
   String get packageFormat => 'apk';
 
   @override

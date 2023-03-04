@@ -12,8 +12,8 @@ class PubDevApi {
     try {
       final response = await Dio().get(uri.toString());
       return response.data['latest']['version'] as String?;
-    } on Exception catch (err) {
-      throw err;
+    } catch (error) {
+      rethrow;
     }
   }
 }

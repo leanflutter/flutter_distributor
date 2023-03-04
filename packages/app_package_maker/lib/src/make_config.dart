@@ -66,7 +66,7 @@ class MakeConfig {
     String filename = Template(useArtifactName).renderString(variables);
 
     Directory versionOutputDirectory =
-        Directory('${outputDirectory.path}${appVersion}');
+        Directory('${outputDirectory.path}$appVersion');
 
     if (!versionOutputDirectory.existsSync()) {
       versionOutputDirectory.createSync(recursive: true);
@@ -78,9 +78,10 @@ class MakeConfig {
   Directory get packagingDirectory {
     if (_packagingDirectory == null) {
       _packagingDirectory = Directory(
-          '${outputFile.path.replaceAll('.$packageFormat', '_$packageFormat')}');
-      if (_packagingDirectory!.existsSync())
+          outputFile.path.replaceAll('.$packageFormat', '_$packageFormat'));
+      if (_packagingDirectory!.existsSync()) {
         _packagingDirectory!.deleteSync(recursive: true);
+      }
       _packagingDirectory!.createSync(recursive: true);
     }
     return _packagingDirectory!;

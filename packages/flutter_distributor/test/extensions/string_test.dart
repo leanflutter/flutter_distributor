@@ -1,4 +1,4 @@
-import '../../lib/src/extensions/string.dart';
+import 'package:flutter_distributor/src/extensions/string.dart';
 
 void main() {
   print('black        '.black());

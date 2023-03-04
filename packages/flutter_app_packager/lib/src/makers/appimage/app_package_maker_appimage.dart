@@ -6,11 +6,16 @@ import 'package:path/path.dart' as path;
 import 'package:shell_executor/shell_executor.dart';
 
 class AppPackageMakerAppImage extends AppPackageMaker {
+  @override
   String get name => 'appimage';
+  @override
   String get platform => 'linux';
+  @override
   bool get isSupportedOnCurrentPlatform => Platform.isLinux;
+  @override
   String get packageFormat => 'appimage';
 
+  @override
   MakeConfigLoader get configLoader {
     return MakeAppImageConfigLoader()
       ..platform = platform
@@ -96,8 +101,9 @@ class AppPackageMakerAppImage extends AppPackageMaker {
       });
 
       final iconFile = File(makeConfig.icon);
-      if (!iconFile.existsSync())
+      if (!iconFile.existsSync()) {
         throw MakeError("icon ${makeConfig.icon} path doesn't exist");
+      }
 
       await iconFile.copy(path.join(
         makeConfig.packagingDirectory.path,
@@ -215,7 +221,7 @@ class AppPackageMakerAppImage extends AppPackageMaker {
             path.join(
               makeConfig.packagingDirectory.path,
               '${makeConfig.appName}.AppDir/usr/lib/',
-              '${path.basename(file.path)}',
+              path.basename(file.path),
             ),
           );
         }),

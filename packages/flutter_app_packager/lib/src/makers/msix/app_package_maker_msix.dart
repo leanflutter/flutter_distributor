@@ -6,11 +6,16 @@ import 'package:path/path.dart' as p;
 import 'package:shell_executor/shell_executor.dart';
 
 class AppPackageMakerMsix extends AppPackageMaker {
+  @override
   String get name => 'msix';
+  @override
   String get platform => 'windows';
+  @override
   bool get isSupportedOnCurrentPlatform => Platform.isWindows;
+  @override
   String get packageFormat => 'msix';
 
+  @override
   MakeConfigLoader get configLoader {
     return MakeMsixConfigLoader()
       ..platform = platform
@@ -53,7 +58,7 @@ class AppPackageMakerMsix extends AppPackageMaker {
     }
     await $(
       'flutter',
-      ['pub', 'run', 'msix:create']..addAll(arguments),
+      ['pub', 'run', 'msix:create', ...arguments],
     );
     return MakeResult(makeConfig);
   }

@@ -27,6 +27,7 @@ class AppBuilderAndroid extends AppBuilder {
 
   final String target;
 
+  @override
   bool match(String platform, [String? target]) {
     return this.platform == platform && this.target == target;
   }

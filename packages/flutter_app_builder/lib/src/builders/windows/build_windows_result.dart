@@ -17,7 +17,7 @@ class BuildWindowsResult extends BuildResult {
   @override
   Directory get outputDirectory {
     String buildMode = ReCase(config.mode.name).sentenceCase;
-    String path = 'build/windows/runner/${buildMode}';
+    String path = 'build/windows/runner/$buildMode';
     return Directory(path);
   }
 }

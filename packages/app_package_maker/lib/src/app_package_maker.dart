@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:app_package_maker/src/make_config.dart';
 import 'package:app_package_maker/src/make_result.dart';
+import 'package:shell_executor/shell_executor.dart';
 import 'package:yaml/yaml.dart';
 
 Map<String, dynamic> loadMakeConfigYaml(String path) {
@@ -11,6 +12,8 @@ Map<String, dynamic> loadMakeConfigYaml(String path) {
 }
 
 abstract class AppPackageMaker {
+  List<Command> get requirements => [];
+
   String get name => throw UnimplementedError();
   String get platform => throw UnimplementedError();
   bool get isSupportedOnCurrentPlatform => true;
@@ -25,22 +28,7 @@ abstract class AppPackageMaker {
   MakeResultResolver get resultResolver => DefaultMakeResultResolver();
 
   bool match(String platform, [String? target]) {
-    return this.platform == platform && this.name == target;
-  }
-
-  @deprecated
-  Future<MakeConfig> loadMakeConfig(
-    Directory outputDirectory,
-    Map<String, dynamic>? makeArguments,
-  ) async {
-    return MakeConfig()
-      ..platform = platform
-      ..buildMode = makeArguments?['build_mode']
-      ..flavor = makeArguments?['flavor']
-      ..channel = makeArguments?['channel']
-      ..artifactName = makeArguments?['artifact_name']
-      ..packageFormat = packageFormat
-      ..outputDirectory = outputDirectory;
+    return this.platform == platform && name == target;
   }
 
   Future<MakeResult> make(MakeConfig config) {

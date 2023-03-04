@@ -110,7 +110,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
         distributionGroup: publishConfig.distributionGroup!,
       );
     } catch (error) {
-      throw error;
+      rethrow;
     }
 
     return PublishResult(
@@ -124,7 +124,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
     required String appName,
   }) async {
     final response = await _dio.post(
-      '/apps/${ownerName}/${appName}/uploads/releases',
+      '/apps/$ownerName/$appName/uploads/releases',
     );
 
     return Map<String, dynamic>.from(response.data);
@@ -200,7 +200,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
     required String releasesId,
   }) async {
     final response = await _dio.patch(
-      '/apps/${ownerName}/${appName}/uploads/releases/$releasesId',
+      '/apps/$ownerName/$appName/uploads/releases/$releasesId',
       data: {
         'upload_status': 'uploadFinished',
         'id': releasesId,
@@ -215,14 +215,14 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
     required String appName,
     required String releasesId,
   }) async {
-    int? releaseDistinctId = null;
+    int? releaseDistinctId;
     int counter = 0;
     int maxPollAttempts = 15;
 
     while (releaseDistinctId == null && counter < maxPollAttempts) {
       try {
         final response = await _dio.get(
-          '/apps/${ownerName}/${appName}/uploads/releases/$releasesId',
+          '/apps/$ownerName/$appName/uploads/releases/$releasesId',
         );
         releaseDistinctId = response.data['release_distinct_id'];
       } catch (error) {
@@ -245,7 +245,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
     required String distributionGroup,
   }) async {
     final response = await _dio.patch(
-      '/apps/${ownerName}/${appName}/releases/$releaseDistinctId',
+      '/apps/$ownerName/$appName/releases/$releaseDistinctId',
       data: {
         'destinations': [
           {'name': distributionGroup}

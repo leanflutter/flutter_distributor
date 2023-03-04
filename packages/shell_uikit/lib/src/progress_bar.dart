@@ -22,10 +22,10 @@ class ProgressBar {
   int total = 100;
 
   // start time (used for eta calculation)
-  DateTime? startTime = null;
+  DateTime? startTime;
 
   // stop time (used for duration calculation)
-  DateTime? stopTime = null;
+  DateTime? stopTime;
 
   // progress bar active ?
   bool isActive = false;
@@ -91,13 +91,13 @@ class ProgressBar {
 
     String bar =
         '${barCompleteChar * barCompleteSize}${barIncompleteChar * (barSize - barCompleteSize)}';
-    String percentage = '${(value * 100 / total).toStringAsFixed(1)}';
+    String percentage = (value * 100 / total).toStringAsFixed(1);
 
     stdout.write('\r');
     stdout.write(format
         .replaceAll('{bar}', bar)
         .replaceAll('{percentage}', percentage)
-        .replaceAll('{value}', '${value}')
-        .replaceAll('{total}', '${total}'));
+        .replaceAll('{value}', '$value')
+        .replaceAll('{total}', '$total'));
   }
 }

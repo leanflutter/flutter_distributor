@@ -77,7 +77,7 @@ class AppPackagePublisherQiniu extends AppPackagePublisher {
     } on StorageError catch (error) {
       throw PublishError('${error.code} - ${error.message}');
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 }

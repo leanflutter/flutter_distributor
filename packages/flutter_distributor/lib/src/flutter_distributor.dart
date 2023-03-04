@@ -35,7 +35,7 @@ class FlutterDistributor {
     return _pubspec!;
   }
 
-  Map<String, String> _environment = {};
+  final Map<String, String> _environment = {};
   Map<String, String> get environment {
     if (_environment.keys.isEmpty) {
       for (String key in Platform.environment.keys) {
@@ -224,6 +224,7 @@ class FlutterDistributor {
             dynamic value = publishArguments[key];
 
             if (value is List) {
+              // ignore: prefer_for_elements_to_map_fromiterable
               value = Map.fromIterable(
                 value,
                 key: (e) => e.split('=')[0],
@@ -245,7 +246,7 @@ class FlutterDistributor {
         PublishResult publishResult = await _publisher.publish(
           file,
           target: target,
-          environment: this.environment,
+          environment: environment,
           publishArguments: newPublishArguments,
           onPublishProgress: (sent, total) {
             if (!progressBar.isActive) {
