@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Update a dependency to the latest release.
+
 ## 0.2.8
 
 * fix iOS builder adds export build argument check error

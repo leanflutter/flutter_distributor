@@ -10,19 +10,21 @@ packages:
     source: hosted
     version: "1.0.5"
   app_package_parser:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../app_package_parser"
-      relative: true
-    source: path
+      name: app_package_parser
+      sha256: "74a0dfc67552cd8c133686afb8d6009b234f8da430be8b91f9ad5f7b2fc55e45"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.2.3"
   app_package_publisher:
     dependency: "direct main"
     description:
-      path: "../app_package_publisher"
-      relative: true
-    source: path
-    version: "0.2.5"
+      name: app_package_publisher
+      sha256: "91458ad109fd2a367fc56f26e3737851247b00346086918233324d200600a6e5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   archive:
     dependency: transitive
     description:
@@ -202,10 +204,11 @@ packages:
   parse_app_package:
     dependency: "direct main"
     description:
-      path: "../parse_app_package"
-      relative: true
-    source: path
-    version: "0.2.5"
+      name: parse_app_package
+      sha256: "4a0cf7256e26e48af8c966e43d886b30020dcbb84e4cff600d312412cf91a798"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   path:
     dependency: transitive
     description:
@@ -218,10 +221,10 @@ packages:
     dependency: transitive
     description:
       name: petitparser
-      sha256: "32e46db8021f6d027d9221b937653f5c8aa043e0dc093998e18331912f22936b"
+      sha256: a9346a3fbba7546a28374bdbcd7f54ea48bb47772bf3a7ab4bfaadc40bc8b8c6
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.0"
+    version: "5.3.0"
   pointycastle:
     dependency: transitive
     description:
@@ -257,10 +260,11 @@ packages:
   shell_executor:
     dependency: "direct main"
     description:
-      path: "../shell_executor"
-      relative: true
-    source: path
-    version: "0.1.0"
+      name: shell_executor
+      sha256: "13a481583e6683f25740c87ff8a729f55f8ac70c25e5c27dd7b8d856bba7719b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   source_span:
     dependency: transitive
     description:

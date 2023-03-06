@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Update a dependency to the latest release.
+
 ## 0.2.5
 
 * Use `shell_executor` to execute commands

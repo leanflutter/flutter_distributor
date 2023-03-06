@@ -1,3 +1,8 @@
+## 0.3.0
+
+* **FEAT**: apk & app maker support profile mode.
+* **FEAT**: Linux RPM packaging support  ([#101](https://github.com/leanflutter/flutter_distributor/issues/101)).
+
 ## 0.2.7
 
 * Feat: Linux RPM packaging support (#101)

@@ -1,3 +1,7 @@
+## 0.3.0
+
+* **FEAT**: apk & app maker support profile mode.
+
 ## 0.2.5
 
 * Remove `onProcessStdOut` and `onProcessStdErr` params
