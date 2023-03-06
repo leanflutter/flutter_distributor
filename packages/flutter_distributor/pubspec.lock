@@ -23,7 +23,7 @@ packages:
       path: "../app_package_maker"
       relative: true
     source: path
-    version: "0.2.9"
+    version: "0.3.0"
   app_package_parser:
     dependency: "direct overridden"
     description:
@@ -37,7 +37,7 @@ packages:
       path: "../app_package_publisher"
       relative: true
     source: path
-    version: "0.2.5"
+    version: "0.3.0"
   archive:
     dependency: transitive
     description:
@@ -132,21 +132,21 @@ packages:
       path: "../flutter_app_builder"
       relative: true
     source: path
-    version: "0.2.8"
+    version: "0.3.0"
   flutter_app_packager:
     dependency: "direct main"
     description:
       path: "../flutter_app_packager"
       relative: true
     source: path
-    version: "0.2.9"
+    version: "0.3.0"
   flutter_app_publisher:
     dependency: "direct main"
     description:
       path: "../flutter_app_publisher"
       relative: true
     source: path
-    version: "0.2.5"
+    version: "0.3.0"
   glob:
     dependency: transitive
     description:
@@ -257,7 +257,7 @@ packages:
       path: "../parse_app_package"
       relative: true
     source: path
-    version: "0.2.5"
+    version: "0.3.0"
   path:
     dependency: "direct main"
     description:
@@ -270,10 +270,10 @@ packages:
     dependency: transitive
     description:
       name: petitparser
-      sha256: "32e46db8021f6d027d9221b937653f5c8aa043e0dc093998e18331912f22936b"
+      sha256: a9346a3fbba7546a28374bdbcd7f54ea48bb47772bf3a7ab4bfaadc40bc8b8c6
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.0"
+    version: "5.3.0"
   pointycastle:
     dependency: transitive
     description:
@@ -320,7 +320,7 @@ packages:
       path: "../shell_executor"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.1"
   shell_uikit:
     dependency: "direct main"
     description:

@@ -1,3 +1,13 @@
+## 0.3.0
+
+* bump flutter to 3.7
+* [exe] add template support for all innosetup 6.x default languages (#102)
+* Improve command usability (help texts, null checks, misc) (#106)
+* apk & app maker support profile mode.
+* flutter_distributor command add version-check flag
+* [AppImage] Use appimagetool to bundle AppImage (#109)
+* Refactor flutter_distributor
+
 ## 0.2.8
 
 * fix iOS builder adds export build argument check error
