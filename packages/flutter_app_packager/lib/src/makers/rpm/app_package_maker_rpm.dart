@@ -91,6 +91,33 @@ class AppPackageMakerRPM extends AppPackageMaker {
       );
     }
 
+    // fix lib_*_plugin.so rpath
+    //
+    // more details: https://github.com/flutter/flutter/issues/65400
+    final libFiles = Directory(path.join(buildRoot, 'lib')).listSync();
+    for (final file in libFiles) {
+      if (file is! File) continue;
+      if (!file.path.endsWith('.so')) continue;
+      // check if points to /home dir
+      final processResult = await $(
+        'patchelf',
+        [
+          '--print-rpath',
+          file.path,
+        ],
+      );
+      if (processResult.stdout.toString().contains('/home')) {
+        await $(
+          'patchelf',
+          [
+            '--set-rpath',
+            '\$ORIGIN',
+            file.path,
+          ],
+        );
+      }
+    }
+
     final iconFile = makeConfig.icon != null
         ? File(path.join(Directory.current.path, makeConfig.icon!))
         : null;
@@ -129,7 +156,7 @@ class AppPackageMakerRPM extends AppPackageMaker {
         '-bb',
         specFile.path,
       ],
-      environment: {'QA_RPATHS': (0x0001 | 0x0002 | 0x0010).toString()},
+      environment: {'QA_RPATHS': (0x0001 | 0x0010).toString()},
     );
 
     if (processResult.exitCode != 0) {
