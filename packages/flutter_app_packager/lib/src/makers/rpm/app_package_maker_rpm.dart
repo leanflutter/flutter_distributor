@@ -97,7 +97,7 @@ class AppPackageMakerRPM extends AppPackageMaker {
     final libFiles = Directory(path.join(buildRoot, 'lib')).listSync();
     for (final file in libFiles) {
       if (file is! File) continue;
-      if (!file.path.endsWith('_plugin.so')) continue;
+      if (!file.path.endsWith('.so')) continue;
       // check if points to /home dir
       final processResult = await $(
         'patchelf',
