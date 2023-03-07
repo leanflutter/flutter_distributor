@@ -20,26 +20,23 @@ packages:
   app_package_maker:
     dependency: "direct main"
     description:
-      name: app_package_maker
-      sha256: fc2d94c8f07f8f345ebb365d82228080c87d5939a8cca1e8e2f9760881fd2dad
-      url: "https://pub.dev"
-    source: hosted
+      path: "../app_package_maker"
+      relative: true
+    source: path
     version: "0.3.0"
   app_package_parser:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: app_package_parser
-      sha256: "74a0dfc67552cd8c133686afb8d6009b234f8da430be8b91f9ad5f7b2fc55e45"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../app_package_parser"
+      relative: true
+    source: path
     version: "0.2.3"
   app_package_publisher:
     dependency: "direct main"
     description:
-      name: app_package_publisher
-      sha256: "91458ad109fd2a367fc56f26e3737851247b00346086918233324d200600a6e5"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../app_package_publisher"
+      relative: true
+    source: path
     version: "0.3.0"
   archive:
     dependency: transitive
@@ -132,26 +129,23 @@ packages:
   flutter_app_builder:
     dependency: "direct main"
     description:
-      name: flutter_app_builder
-      sha256: "1fffcdbc83d9c7f00be9a91d2c11ad91401268a72d174db95d357fbeee76fa7b"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../flutter_app_builder"
+      relative: true
+    source: path
     version: "0.3.0"
   flutter_app_packager:
     dependency: "direct main"
     description:
-      name: flutter_app_packager
-      sha256: "42039bb9977955b4672516704eb54dd08e0f77194591e8f5cc8df14e7b48d8ec"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../flutter_app_packager"
+      relative: true
+    source: path
     version: "0.3.0"
   flutter_app_publisher:
     dependency: "direct main"
     description:
-      name: flutter_app_publisher
-      sha256: fd0068dbfb3c7809babd27d93cfec644bff073d584069de8be50ffa41fc236b1
-      url: "https://pub.dev"
-    source: hosted
+      path: "../flutter_app_publisher"
+      relative: true
+    source: path
     version: "0.3.0"
   glob:
     dependency: transitive
@@ -258,12 +252,11 @@ packages:
     source: hosted
     version: "2.1.0"
   parse_app_package:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: parse_app_package
-      sha256: "4a0cf7256e26e48af8c966e43d886b30020dcbb84e4cff600d312412cf91a798"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../parse_app_package"
+      relative: true
+    source: path
     version: "0.3.0"
   path:
     dependency: "direct main"
@@ -324,18 +317,16 @@ packages:
   shell_executor:
     dependency: "direct main"
     description:
-      name: shell_executor
-      sha256: "13a481583e6683f25740c87ff8a729f55f8ac70c25e5c27dd7b8d856bba7719b"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../shell_executor"
+      relative: true
+    source: path
     version: "0.1.1"
   shell_uikit:
     dependency: "direct main"
     description:
-      name: shell_uikit
-      sha256: d295ceef522e41b9e24eb2ad09dd302820062c3df7c40181b046fab452176e0c
-      url: "https://pub.dev"
-    source: hosted
+      path: "../shell_uikit"
+      relative: true
+    source: path
     version: "0.1.0"
   source_span:
     dependency: transitive

@@ -9,7 +9,6 @@ environment:
 dependencies:
   app_package_maker: ^0.3.0
   archive: ^3.1.5
-  glob: ^2.1.1
   io: ^1.0.3
   liquid_engine: ^0.2.2
   path: ^1.8.1

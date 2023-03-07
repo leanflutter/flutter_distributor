@@ -284,10 +284,9 @@ packages:
   shell_executor:
     dependency: "direct main"
     description:
-      name: shell_executor
-      sha256: "13a481583e6683f25740c87ff8a729f55f8ac70c25e5c27dd7b8d856bba7719b"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../shell_executor"
+      relative: true
+    source: path
     version: "0.1.1"
   source_map_stack_trace:
     dependency: transitive

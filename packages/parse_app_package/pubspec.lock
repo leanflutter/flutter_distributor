@@ -4,10 +4,9 @@ packages:
   app_package_parser:
     dependency: "direct main"
     description:
-      name: app_package_parser
-      sha256: "74a0dfc67552cd8c133686afb8d6009b234f8da430be8b91f9ad5f7b2fc55e45"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../app_package_parser"
+      relative: true
+    source: path
     version: "0.2.3"
   archive:
     dependency: "direct main"
@@ -188,10 +187,9 @@ packages:
   shell_executor:
     dependency: "direct main"
     description:
-      name: shell_executor
-      sha256: "13a481583e6683f25740c87ff8a729f55f8ac70c25e5c27dd7b8d856bba7719b"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../shell_executor"
+      relative: true
+    source: path
     version: "0.1.1"
   source_span:
     dependency: transitive
