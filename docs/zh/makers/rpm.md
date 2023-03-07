@@ -4,13 +4,14 @@ title: RPM
 
 ## 必要条件
 
+- [patchelf](https://github.com/NixOS/patchelf)
 - [rpmbuild](https://rpm-packaging-guide.github.io/#prerequisites)
 
-安装 `rpmbuild`:
+安装要求：
 
-- Debian/Ubuntu: `apt install rpm`
-- Fedora: `dnf install gcc rpm-build rpm-devel rpmlint make python bash coreutils diffutils patch rpmdevtools`
-- Arch: `yay -S rpmdevtools` or `pamac install rpmdevtools`
+- Debian/Ubuntu: `apt install rpm patchelf`
+- Fedora: `dnf install gcc rpm-build rpm-devel rpmlint make python bash coreutils diffutils patch rpmdevtools patchelf`
+- Arch: `yay -S rpmdevtools patchelf` or `pamac install rpmdevtools patchelf`
 
 ## 用法
 
