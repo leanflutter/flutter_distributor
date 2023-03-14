@@ -152,7 +152,7 @@ class MakeDmgConfig extends MakeConfig {
       icon: json['icon'],
       background: json['background'],
       backgroundColor: json['backgroundColor'],
-      iconSize: json['iconSize'],
+      iconSize: json['icon-size'],
       format: json['format'],
       contents: contents,
       codeSign: json['code-sign'] != null
@@ -176,7 +176,7 @@ class MakeDmgConfig extends MakeConfig {
       'icon': icon,
       'background': background,
       'backgroundColor': backgroundColor,
-      'iconSize': iconSize,
+      'icon-size': iconSize,
       'format': format,
       'contents': contents.map((e) => e.toJson()).toList(),
       'code-sign': codeSign?.toJson(),
