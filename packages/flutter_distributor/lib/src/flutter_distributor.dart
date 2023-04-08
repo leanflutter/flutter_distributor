@@ -187,8 +187,9 @@ class FlutterDistributor {
             buildOutputFiles: buildResult.outputFiles,
           );
           print(JsonEncoder.withIndent('  ').convert(makeResult.toJson()));
+          FileSystemEntity artifact = makeResult.artifacts.first;
           logger.info(
-            'Successfully packaged ${makeResult.outputFile.path}'.brightGreen(),
+            'Successfully packaged ${artifact.path}'.brightGreen(),
           );
           makeResultList.add(makeResult);
         }
@@ -205,7 +206,7 @@ class FlutterDistributor {
   }
 
   Future<List<PublishResult>> publish(
-    File file,
+    FileSystemEntity fileSystemEntity,
     List<String> targets, {
     Map<String, dynamic>? publishArguments,
   }) async {
@@ -244,7 +245,7 @@ class FlutterDistributor {
         }
 
         PublishResult publishResult = await _publisher.publish(
-          file,
+          fileSystemEntity,
           target: target,
           environment: environment,
           publishArguments: newPublishArguments,
@@ -330,8 +331,9 @@ class FlutterDistributor {
           if (job.publish != null || job.publishTo != null) {
             String? publishTarget = job.publishTo ?? job.publish?.target;
             MakeResult makeResult = makeResultList.first;
+            FileSystemEntity artifact = makeResult.artifacts.first;
             await publish(
-              makeResult.outputFile,
+              artifact,
               [publishTarget!],
               publishArguments: job.publish?.args,
             );

@@ -29,6 +29,7 @@ class CommandPublish extends Command {
         'playstore',
         'pgyer',
         'qiniu',
+        'vercel',
       ].join(','),
       help: 'The target provider(s) to publish to.',
     );
@@ -142,6 +143,11 @@ class CommandPublish extends Command {
     argParser.addOption('qiniu-bucket', valueHelp: '');
     argParser.addOption('qiniu-bucket-domain', valueHelp: '');
     argParser.addOption('qiniu-savekey-prefix', valueHelp: '');
+
+    // Vercel
+    argParser.addSeparator('vercel');
+    argParser.addOption('vercel-org-id', valueHelp: '');
+    argParser.addOption('vercel-project-id', valueHelp: '');
   }
 
   final FlutterDistributor distributor;
@@ -199,10 +205,17 @@ class CommandPublish extends Command {
       'qiniu-bucket': argResults?['qiniu-bucket'],
       'qiniu-bucket-domain': argResults?['qiniu-bucket-domain'],
       'qiniu-savekey-prefix': argResults?['qiniu-savekey-prefix'],
+      'vercel-org-id': argResults?['vercel-org-id'],
+      'vercel-project-id': argResults?['vercel-project-id'],
     }..removeWhere((key, value) => value == null);
 
+    final fileSystemEntity =
+        await FileSystemEntity.type(path) == FileSystemEntityType.directory
+            ? Directory(path)
+            : File(path);
+
     return distributor.publish(
-      File(path),
+      fileSystemEntity,
       targets,
       publishArguments: publishArguments,
     );

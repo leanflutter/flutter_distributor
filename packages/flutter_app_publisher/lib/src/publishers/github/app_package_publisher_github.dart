@@ -23,11 +23,12 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
 
   @override
   Future<PublishResult> publish(
-    File file, {
+    FileSystemEntity fileSystemEntity, {
     Map<String, String>? environment,
     Map<String, dynamic>? publishArguments,
     PublishProgressCallback? onPublishProgress,
   }) async {
+    File file = fileSystemEntity as File;
     PublishGithubConfig publishConfig = PublishGithubConfig.parse(
       environment,
       publishArguments,

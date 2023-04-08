@@ -19,11 +19,12 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
 
   @override
   Future<PublishResult> publish(
-    File file, {
+    FileSystemEntity fileSystemEntity, {
     Map<String, String>? environment,
     Map<String, dynamic>? publishArguments,
     PublishProgressCallback? onPublishProgress,
   }) async {
+    File file = fileSystemEntity as File;
     String? apiKey = (environment ?? Platform.environment)[kEnvPgyerApiKey];
     if ((apiKey ?? '').isEmpty) {
       throw PublishError('Missing `$kEnvPgyerApiKey` environment variable.');

@@ -49,11 +49,12 @@ class AppPackagePublisherFir extends AppPackagePublisher {
 
   @override
   Future<PublishResult> publish(
-    File file, {
+    FileSystemEntity fileSystemEntity, {
     Map<String, String>? environment,
     Map<String, dynamic>? publishArguments,
     PublishProgressCallback? onPublishProgress,
   }) async {
+    File file = fileSystemEntity as File;
     String? apiToken = (environment ?? Platform.environment)[kEnvFirApiToken];
     if ((apiToken ?? '').isEmpty) {
       throw PublishError('Missing `$kEnvFirApiToken` environment variable.');

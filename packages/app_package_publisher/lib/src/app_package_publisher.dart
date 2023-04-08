@@ -12,7 +12,7 @@ abstract class AppPackagePublisher {
   List<String> get supportedPlatforms => throw UnimplementedError();
 
   Future<PublishResult> publish(
-    File file, {
+    FileSystemEntity fileSystemEntity, {
     Map<String, String>? environment,
     Map<String, dynamic>? publishArguments,
     PublishProgressCallback? onPublishProgress,

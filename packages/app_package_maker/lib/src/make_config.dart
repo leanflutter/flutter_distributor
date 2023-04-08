@@ -1,13 +1,14 @@
 import 'dart:io';
 
+import 'package:app_package_maker/app_package_maker.dart';
 import 'package:mustache_template/mustache.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 const _kArtifactName =
-    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{build_name}}+{{build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
+    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{build_name}}+{{build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}';
 const _kArtifactNameWithChannel =
-    '{{name}}-{{channel}}-{{build_name}}+{{build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}.{{ext}}';
+    '{{name}}-{{channel}}-{{build_name}}+{{build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}';
 
 class MakeConfig {
   late bool isInstaller = false;
@@ -45,6 +46,13 @@ class MakeConfig {
   }
 
   File get outputFile {
+    if (packageFormat.isEmpty) {
+      throw MakeError('Direct output is not a file');
+    }
+    return File(outputArtifactPath);
+  }
+
+  String get outputArtifactPath {
     String useArtifactName = _kArtifactName;
     if (channel != null) useArtifactName = _kArtifactNameWithChannel;
     if (artifactName != null) useArtifactName = artifactName!;
@@ -60,7 +68,7 @@ class MakeConfig {
       'platform': platform,
       'flavor': flavor,
       'channel': channel,
-      'ext': packageFormat,
+      'ext': packageFormat.isEmpty ? null : packageFormat,
     };
 
     String filename = Template(useArtifactName).renderString(variables);
@@ -72,13 +80,24 @@ class MakeConfig {
       versionOutputDirectory.createSync(recursive: true);
     }
 
-    return File('${versionOutputDirectory.path}/$filename');
+    return '${versionOutputDirectory.path}/$filename';
+  }
+
+  List<FileSystemEntity> get outputArtifacts {
+    List<FileSystemEntity> artifacts = [];
+    if (packageFormat.isEmpty) {
+      artifacts.add(Directory(outputArtifactPath));
+    } else {
+      artifacts.add(File(outputArtifactPath));
+    }
+    return artifacts;
   }
 
   Directory get packagingDirectory {
     if (_packagingDirectory == null) {
       _packagingDirectory = Directory(
-          outputFile.path.replaceAll('.$packageFormat', '_$packageFormat'));
+        outputArtifactPath.replaceAll('.$packageFormat', '_$packageFormat'),
+      );
       if (_packagingDirectory!.existsSync()) {
         _packagingDirectory!.deleteSync(recursive: true);
       }

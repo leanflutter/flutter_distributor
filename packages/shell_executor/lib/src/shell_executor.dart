@@ -4,10 +4,15 @@ import 'dart:io';
 Future<ProcessResult> $(
   String executable,
   List<String> arguments, {
+  String? workingDirectory,
   Map<String, String>? environment,
 }) {
-  return ShellExecutor.global
-      .exec(executable, arguments, environment: environment);
+  return ShellExecutor.global.exec(
+    executable,
+    arguments,
+    workingDirectory: workingDirectory,
+    environment: environment,
+  );
 }
 
 class ShellExecutor {
@@ -16,11 +21,13 @@ class ShellExecutor {
   Future<ProcessResult> exec(
     String executable,
     List<String> arguments, {
+    String? workingDirectory,
     Map<String, String>? environment,
   }) async {
     final Process process = await Process.start(
       executable,
       arguments,
+      workingDirectory: workingDirectory,
       environment: environment,
     );
 
@@ -35,7 +42,7 @@ class ShellExecutor {
     process.stderr.listen((event) {
       String msg = utf8.decoder.convert(event);
       stderrStr = '${stderrStr ?? ''}$msg';
-      stdout.write(msg);
+      stderr.write(msg);
     });
     int exitCode = await process.exitCode;
     return ProcessResult(process.pid, exitCode, stdoutStr, stderrStr);

@@ -10,11 +10,13 @@ class DefaultShellExecutor extends ShellExecutor {
   Future<ProcessResult> exec(
     String executable,
     List<String> arguments, {
+    String? workingDirectory,
     Map<String, String>? environment,
   }) async {
     final Process process = await Process.start(
       executable,
       arguments,
+      workingDirectory: workingDirectory,
       environment: environment,
       runInShell: true,
     );
@@ -32,7 +34,7 @@ class DefaultShellExecutor extends ShellExecutor {
     process.stderr.listen((event) {
       String msg = utf8.decoder.convert(event);
       stderrStr = '${stderrStr ?? ''}$msg';
-      stdout.write(msg.brightRed());
+      stderr.write(msg.brightRed());
     });
     int exitCode = await process.exitCode;
     return ProcessResult(process.pid, exitCode, stdoutStr, stderrStr);

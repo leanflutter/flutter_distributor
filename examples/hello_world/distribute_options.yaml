@@ -61,7 +61,7 @@ releases:
           target: exe
           build_args:
             profile: true
-      # msix does not support profile mode yet    
+      # msix does not support profile mode yet
       # - name: windows-msix
       #   package:
       #     platform: windows
@@ -126,3 +126,7 @@ releases:
         package:
           platform: windows
           target: zip
+      - name: web-direct
+        package:
+          platform: web
+          target: direct

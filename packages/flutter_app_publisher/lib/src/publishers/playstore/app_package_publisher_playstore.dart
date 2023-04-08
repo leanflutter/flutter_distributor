@@ -15,11 +15,12 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
 
   @override
   Future<PublishResult> publish(
-    File file, {
+    FileSystemEntity fileSystemEntity, {
     Map<String, String>? environment,
     Map<String, dynamic>? publishArguments,
     PublishProgressCallback? onPublishProgress,
   }) async {
+    File file = fileSystemEntity as File;
     PublishPlayStoreConfig publishConfig = PublishPlayStoreConfig.parse(
       environment,
       publishArguments,
