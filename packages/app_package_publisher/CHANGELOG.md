@@ -1,3 +1,8 @@
+## 0.3.1
+
+* Modify the `publish` method to accept `FileSystemEntity` instead of just `File`
+* Bump `shell_executor` to 0.1.2.
+
 ## 0.3.0
 
 * Update a dependency to the latest release.

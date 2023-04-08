@@ -1,3 +1,9 @@
+## 0.3.1
+
+* `MakeConfig` adds `outputArtifacts` field.
+* `MakeResult` adds `artifacts` field.
+* Bump `shell_executor` to 0.1.2.
+
 ## 0.3.0
 
 * **FEAT**: apk & app maker support profile mode.

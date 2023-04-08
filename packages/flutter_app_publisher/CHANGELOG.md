@@ -1,3 +1,9 @@
+## 0.3.1
+
+* Add `firebase-hosting` publisher.
+* Add `vercel` publisher.
+* Modify the `publish` method to accept `FileSystemEntity` instead of just `File`
+
 ## 0.3.0
 
 * Update a dependency to the latest release.

@@ -1,3 +1,14 @@
+## 0.3.1
+
+* Add `direct` maker
+* [rpm] fix lib/*.so rpath before packaging (#110)
+* feat:fix appdmg “icon-size” Specification。 (#113)
+* Add `firebase-hosting` publisher.
+* Add `vercel` publisher.
+* Modify the `publish` method to accept `FileSystemEntity` instead of just `File`
+* Add the `workingDirectory` parameter to the `DefaultShellExecutor` and related classes.
+* Bump `shell_executor` to 0.1.2.
+
 ## 0.3.0
 
 * bump flutter to 3.7

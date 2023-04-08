@@ -190,7 +190,7 @@ packages:
       path: "../shell_executor"
       relative: true
     source: path
-    version: "0.1.1"
+    version: "0.1.2"
   source_span:
     dependency: transitive
     description:

@@ -22,7 +22,7 @@ packages:
       path: "../app_package_publisher"
       relative: true
     source: path
-    version: "0.3.0"
+    version: "0.3.1"
   archive:
     dependency: transitive
     description:
@@ -205,7 +205,7 @@ packages:
       path: "../parse_app_package"
       relative: true
     source: path
-    version: "0.3.0"
+    version: "0.3.1"
   path:
     dependency: transitive
     description:
@@ -260,7 +260,7 @@ packages:
       path: "../shell_executor"
       relative: true
     source: path
-    version: "0.1.1"
+    version: "0.1.2"
   source_span:
     dependency: transitive
     description:

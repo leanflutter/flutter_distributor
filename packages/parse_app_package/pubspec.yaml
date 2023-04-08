@@ -1,6 +1,6 @@
 name: parse_app_package
 description: Parse app package
-version: 0.3.0
+version: 0.3.1
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
@@ -10,7 +10,7 @@ dependencies:
   app_package_parser: ^0.2.3
   archive: ^3.1.5
   args: ^2.2.0
-  shell_executor: ^0.1.1
+  shell_executor: ^0.1.2
   xml: ^5.1.2
 
 executables:

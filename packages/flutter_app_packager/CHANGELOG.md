@@ -1,3 +1,10 @@
+## 0.3.1
+
+* Add `direct` maker
+* [rpm] fix lib/*.so rpath before packaging (#110)
+* feat:fix appdmg “icon-size” Specification。 (#113)
+* Bump `shell_executor` to 0.1.2.
+
 ## 0.3.0
 
 * **FEAT**: apk & app maker support profile mode.
