@@ -1,8 +1,6 @@
-import { hasProperty } from "hast-util-has-property";
 import { headingRank } from "hast-util-heading-rank";
 import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
-import { Root } from "hast";
 
 interface ExtractHeadingsConfig {
   rank: number;
@@ -17,7 +15,7 @@ export default function rehypeExtractHeadings({
   rank = 2,
   headings,
 }: ExtractHeadingsConfig) {
-  return (tree: Root) => {
+  return (tree: any) => {
     visit(tree, "element", (node: any) => {
       if (headingRank(node) === rank) {
         headings.push({

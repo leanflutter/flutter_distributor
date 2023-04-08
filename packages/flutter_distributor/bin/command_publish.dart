@@ -113,6 +113,10 @@ class CommandPublish extends Command {
       ].join('\n'),
     );
 
+    // Firebase Hosting
+    argParser.addSeparator('firebase-hosting');
+    argParser.addOption('firebase-hosting-project-id', valueHelp: '');
+
     // Github
     argParser.addSeparator('github');
 
@@ -198,6 +202,7 @@ class CommandPublish extends Command {
       'firebase-testers-file': argResults?['firebase-testers-file'],
       'firebase-groups': argResults?['firebase-groups'],
       'firebase-groups-file': argResults?['firebase-groups-file'],
+      'firebase-hosting-project-id': argResults?['firebase-hosting-project-id'],
       'github-repo-owner': argResults?['github-repo-owner'],
       'github-repo-name': argResults?['github-repo-name'],
       'github-release-title': argResults?['github-release-title'],

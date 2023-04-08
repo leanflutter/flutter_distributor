@@ -1,16 +1,12 @@
 ---
-title: vercel
+title: firebase-hosting
 ---
 
-The vercel target publishes your web artifacts to the [vercel.com](https://vercel.com).
+The firebase-hosting target publishes your web artifacts to the [firebase hosting](https://firebase.google.com/docs/hosting).
 
 ## 获取发布参数
 
-打开 [vercel.com](https://vercel.com) 并登录
-
-### 获取 `org-id`
-
-打开账户设置页面，并找到 `Your ID`
+打开 [https://firebase.google.com](https://firebase.google.com/) 并登录
 
 ### 获取 `project-id`
 
@@ -23,9 +19,8 @@ The vercel target publishes your web artifacts to the [vercel.com](https://verce
 ```
 flutter_distributor publish \
   --path dist/1.0.0+1/hello_world-1.0.0+1-web \
-  --targets vercel \
-  --vercel-org-id your-org-id \
-  --vercel-project-id your-project-id
+  --targets firebase-hosting \
+  --firebase-hosting-project-id your-project-id
 ```
 
 ### 配置 `distribute_options.yaml`
@@ -40,9 +35,8 @@ releases:
           platform: web
           target: direct
         publish:
-          target: vercel
+          target: firebase-hosting
           args:
-            org-id: your-org-id
             project-id: your-project-id
 ```
 

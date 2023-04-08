@@ -8,6 +8,7 @@ class FlutterAppPublisher {
     AppPackagePublisherAppStore(),
     AppPackagePublisherFir(),
     AppPackagePublisherFirebase(),
+    AppPackagePublisherFirebaseHosting(),
     AppPackagePublisherGithub(),
     AppPackagePublisherPgyer(),
     AppPackagePublisherPlayStore(),

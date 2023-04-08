@@ -4,6 +4,7 @@ export 'appcenter/app_package_publisher_appcenter.dart';
 export 'appstore/app_package_publisher_appstore.dart';
 export 'fir/app_package_publisher_fir.dart';
 export 'firebase/app_package_publisher_firebase.dart';
+export 'firebase_hosting/app_package_publisher_firebase_hosting.dart';
 export 'github/app_package_publisher_github.dart';
 export 'pgyer/app_package_publisher_pgyer.dart';
 export 'playstore/app_package_publisher_playstore.dart';

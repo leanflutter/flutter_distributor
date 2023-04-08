@@ -9,17 +9,17 @@ const mockdata = [
   {
     label: "Getting Started",
     icon: Notes,
-    link: "/docs/getting-started"
+    link: "/docs/getting-started",
   },
   {
     label: "Distribute Options",
     icon: Notes,
-    link: "/docs/distribute-options"
+    link: "/docs/distribute-options",
   },
   {
     label: "CLI",
     icon: Notes,
-    link: "/docs/cli"
+    link: "/docs/cli",
   },
   {
     label: "Makers",
@@ -45,9 +45,11 @@ const mockdata = [
       { label: "appstore", link: "/docs/publishers/appstore" },
       { label: "fir", link: "/docs/publishers/fir" },
       { label: "firebase", link: "/docs/publishers/firebase" },
+      { label: "firebase-hosting", link: "/docs/publishers/firebase-hosting" },
       { label: "github", link: "/docs/publishers/github" },
       { label: "pgyer", link: "/docs/publishers/pgyer" },
       { label: "qiniu", link: "/docs/publishers/qiniu" },
+      { label: "vercel", link: "/docs/publishers/vercel" },
     ],
   },
   {
@@ -66,11 +68,7 @@ export function Navbar() {
   ));
 
   return (
-    <NavbarComp
-      height={800}
-      width={{ sm: 260 }}
-      className={classes.navbar}
-    >
+    <NavbarComp height={800} width={{ sm: 260 }} className={classes.navbar}>
       <NavbarComp.Section grow className={classes.links} component={ScrollArea}>
         <div className={classes.linksInner}>{links}</div>
       </NavbarComp.Section>
