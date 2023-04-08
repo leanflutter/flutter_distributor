@@ -13,9 +13,7 @@ command:
 
 scripts:
   analyze:
-    run: |
-      melos exec -c 10 -- \
-        flutter analyze --fatal-infos
+    exec: flutter analyze --fatal-infos
     description: Run `flutter analyze` for all packages.
 
   format:
@@ -32,8 +30,8 @@ scripts:
 
   dependency_validator:
     exec: flutter pub run dependency_validator
-    select-package:
-      depends-on:
+    packageFilters:
+      dependsOn:
         - dependency_validator
 
   activate:
