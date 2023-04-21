@@ -1,7 +1,8 @@
 name: parse_app_package
 description: Parse app package
 version: 0.3.1
-homepage: https://github.com/leanflutter/flutter_distributor
+homepage: https://distributor.leanflutter.org
+repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/parse_app_package
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
