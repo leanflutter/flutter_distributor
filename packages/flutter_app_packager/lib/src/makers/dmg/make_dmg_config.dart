@@ -57,8 +57,10 @@ class DmgWindow {
 
   factory DmgWindow.fromJson(Map<String, dynamic> json) {
     return DmgWindow(
-      position: DmgWindowPosition.fromJson(json['position']),
-      size: DmgWindowSize.fromJson(json['size']),
+      position: json['position'] != null
+          ? DmgWindowPosition.fromJson(json['position'])
+          : null,
+      size: json['size'] != null ? DmgWindowSize.fromJson(json['size']) : null,
     );
   }
   final DmgWindowPosition? position;
@@ -140,6 +142,7 @@ class MakeDmgConfig extends MakeConfig {
     this.format,
     required this.contents,
     this.codeSign,
+    this.window,
   });
 
   factory MakeDmgConfig.fromJson(Map<String, dynamic> json) {
@@ -158,6 +161,8 @@ class MakeDmgConfig extends MakeConfig {
       codeSign: json['code-sign'] != null
           ? DmgCodeSign.fromJson(json['code-sign'])
           : null,
+      window:
+          json['window'] != null ? DmgWindow.fromJson(json['window']) : null,
     );
   }
   final String title;
@@ -168,6 +173,7 @@ class MakeDmgConfig extends MakeConfig {
   final String? format;
   final List<DmgContent> contents;
   final DmgCodeSign? codeSign;
+  final DmgWindow? window;
 
   @override
   Map<String, dynamic> toJson() {
@@ -180,6 +186,7 @@ class MakeDmgConfig extends MakeConfig {
       'format': format,
       'contents': contents.map((e) => e.toJson()).toList(),
       'code-sign': codeSign?.toJson(),
+      'window': window?.toJson(),
     }..removeWhere((key, value) => value == null);
   }
 }
