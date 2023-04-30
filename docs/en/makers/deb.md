@@ -20,9 +20,9 @@ essential: false
 icon: assets/logo.png
 
 postinstall_scripts:
-  - echo `Installed my awesome app`
+  - echo "Installed my awesome app"
 postuninstall_scripts:
-  - echo `Surprised Pickachu face`
+  - echo "Surprised Pickachu face"
 
 keywords:
   - Hello
