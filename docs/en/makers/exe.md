@@ -11,8 +11,8 @@ title: exe
 Add `make_config.yaml` to your project `windows/packaging/exe` directory.
 
 ```yaml
-// The value of AppId uniquely identifies this application.
-// Do not use the same AppId value in installers for other applications.
+# The value of AppId uniquely identifies this application.
+# Do not use the same AppId value in installers for other applications.
 app_id: 5B599538-42B1-4826-A479-AF079F21A65D
 publisher: LeanFlutter
 publisher_url: https://github.com/leanflutter/flutter_distributor

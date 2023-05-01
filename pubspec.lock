@@ -61,10 +61,10 @@ packages:
     dependency: transitive
     description:
       name: conventional_commit
-      sha256: "8eee25c315cf1946215d02d598402ca75cfee8a8ab482f3fac34cb0717323afa"
+      sha256: dec15ad1118f029c618651a4359eb9135d8b88f761aa24e4016d061cd45948f2
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "0.6.0+1"
   file:
     dependency: transitive
     description:
@@ -149,10 +149,10 @@ packages:
     dependency: "direct dev"
     description:
       name: melos
-      sha256: cd8e7db0250ee822c5354a8214afc751b6c1c41aadfbbef927456d509d953244
+      sha256: "993ac467e7a36bd832a6cdabbe18a0487c30bc52b5cca14e476a824679ebdce0"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "3.0.1"
   meta:
     dependency: transitive
     description:
