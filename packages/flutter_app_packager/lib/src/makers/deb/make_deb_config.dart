@@ -28,6 +28,9 @@ priority: optional
 # refer: https://www.debian.org/doc/debian-policy/ch-archive.html#s-subsections
 section: x11
 
+# The CPU architecture for the distribution - arm64, amd64 (default if not specified)
+build_arch: amd64
+
 # the size of binary in kilobyte
 installed_size: 24400
 
@@ -131,6 +134,7 @@ class MakeDebConfig extends MakeConfig {
     List<String>? postuninstallScripts,
     this.priority = 'optional',
     this.section = 'x11',
+    this.buildArch,
     this.actions,
     this.breaks,
     this.buildDependencies,
@@ -163,6 +167,7 @@ class MakeDebConfig extends MakeConfig {
             .toList(),
         priority: map['priority'],
         section: map['section'],
+        buildArch: map['build_arch'],
         dependencies: map['dependencies'] != null
             ? List.castFrom<dynamic, String>(map['dependencies'])
             : null,
@@ -227,6 +232,7 @@ class MakeDebConfig extends MakeConfig {
   String priority;
   String section;
   int installedSize;
+  String? buildArch; 
   bool? essential;
   String? icon;
   String? genericName;
@@ -270,7 +276,7 @@ class MakeDebConfig extends MakeConfig {
         'Version': appVersion.toString(),
         'Section': section,
         'Priority': priority,
-        'Architecture': 'amd64',
+        'Architecture': buildArch ?? 'amd64',
         'Essential':
             essential != null ? (essential == true ? 'yes' : 'no') : null,
         'Installed-Size': installedSize,
