@@ -91,6 +91,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "animator",
+      "name": "Ankit Mahato",
+      "avatar_url": "https://avatars.githubusercontent.com/u/615622?v=4",
+      "profile": "http://animator.github.io",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
