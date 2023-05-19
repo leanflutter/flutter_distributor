@@ -24,24 +24,27 @@ class AppPackageMakerZip extends AppPackageMaker {
     Directory packagingDirectory = appDirectory;
 
     if (platform == 'macos') {
+      // 由于使用 archive 在压缩时会导致 app 损坏，所以这里使用 7z 压缩。
       packagingDirectory = config.packagingDirectory;
       File appFile = appDirectory
           .listSync()
           .where((e) => e.path.endsWith('.app'))
           .map((e) => File(e.path))
           .first;
-
       await $('cp', ['-RH', appFile.path, packagingDirectory.path]);
+      await $(
+        '7z',
+        ['a', config.outputFile.path, './${packagingDirectory.path}/*.app'],
+      );
+      packagingDirectory.deleteSync(recursive: true);
+    } else {
+      final zipFileEncoder = ZipFileEncoder();
+      zipFileEncoder.zipDirectory(
+        packagingDirectory,
+        filename: config.outputFile.path,
+        followLinks: true,
+      );
     }
-
-    final zipFileEncoder = ZipFileEncoder();
-    zipFileEncoder.zipDirectory(
-      packagingDirectory,
-      filename: config.outputFile.path,
-      followLinks: true,
-    );
-    packagingDirectory.deleteSync(recursive: true);
-
     return resultResolver.resolve(config);
   }
 }

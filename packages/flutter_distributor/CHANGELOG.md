@@ -1,3 +1,7 @@
+## 0.3.2
+
+* feat: compress macOS app with 7zip
+
 ## 0.3.1
 
 * Add `direct` maker
