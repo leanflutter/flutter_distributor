@@ -11,7 +11,11 @@ dependencies:
   archive: ^3.1.5
   io: ^1.0.3
   liquid_engine: ^0.2.2
-  msix: ^3.13.0
+  # msix: ^3.13.0
+  msix:
+    git:
+      ref: feat/locate_msix_assets_path_from_script_file_directory
+      url: https://github.com/lijy91/msix.git
   path: ^1.8.1
   shell_executor: ^0.1.2
 

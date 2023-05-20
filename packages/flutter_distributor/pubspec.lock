@@ -270,10 +270,11 @@ packages:
   msix:
     dependency: transitive
     description:
-      name: msix
-      sha256: "2c7efa40c462978131058462bc72fc962c2fb48a92dfd77591a4a5e6c8e2949f"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "feat/locate_msix_assets_path_from_script_file_directory"
+      resolved-ref: "68ed974fb2786ff22d0cad6e5e4c4def4466ec53"
+      url: "https://github.com/lijy91/msix.git"
+    source: git
     version: "3.13.0"
   mustache_template:
     dependency: transitive
