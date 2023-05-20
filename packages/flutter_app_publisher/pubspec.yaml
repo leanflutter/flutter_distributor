@@ -5,7 +5,7 @@ homepage: https://distributor.leanflutter.org
 repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/flutter_app_publisher
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.16.0 <4.0.0"
 
 dependencies:
   app_package_publisher: ^0.3.1
