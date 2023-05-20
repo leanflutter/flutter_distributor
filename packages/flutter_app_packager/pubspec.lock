@@ -48,6 +48,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  cli_util:
+    dependency: transitive
+    description:
+      name: cli_util
+      sha256: b8db3080e59b2503ca9e7922c3df2072cf13992354d5e944074ffa836fba43b7
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.0"
   collection:
     dependency: transitive
     description:
@@ -56,6 +64,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.2"
+  console:
+    dependency: transitive
+    description:
+      name: console
+      sha256: e04e7824384c5b39389acdd6dc7d33f3efe6b232f6f16d7626f194f6a01ad69a
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   convert:
     dependency: transitive
     description:
@@ -88,6 +104,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
+  get_it:
+    dependency: transitive
+    description:
+      name: get_it
+      sha256: "529de303c739fca98cd7ece5fca500d8ff89649f1bb4b4e94fb20954abcd7468"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.6.0"
   glob:
     dependency: transitive
     description:
@@ -96,6 +120,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  image:
+    dependency: transitive
+    description:
+      name: image
+      sha256: a72242c9a0ffb65d03de1b7113bc4e189686fc07c7147b8b41811d0dd0e0d9bf
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.17"
   io:
     dependency: "direct main"
     description:
@@ -144,6 +176,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  msix:
+    dependency: "direct main"
+    description:
+      name: msix
+      sha256: "2c7efa40c462978131058462bc72fc962c2fb48a92dfd77591a4a5e6c8e2949f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.13.0"
   mustache_template:
     dependency: transitive
     description:
@@ -168,6 +208,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.3"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      sha256: cb3798bef7fc021ac45b308f4b51208a152792445cce0448c9a4ba5879dd8750
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.4.0"
   pointycastle:
     dependency: transitive
     description:
@@ -231,6 +279,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.2"
+  vector_math:
+    dependency: transitive
+    description:
+      name: vector_math
+      sha256: "80b3257d1492ce4d091729e3a67a60407d227c27241d6927be0130c98e741803"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.4"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      sha256: "5bc72e1e45e941d825fd7468b9b4cc3b9327942649aeb6fc5cdbf135f0a86e84"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.3.0"
   yaml:
     dependency: transitive
     description:

@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:app_package_maker/app_package_maker.dart';
 import 'package:flutter_app_packager/src/makers/msix/make_msix_config.dart';
+import 'package:msix/msix.dart';
 import 'package:path/path.dart' as p;
-import 'package:shell_executor/shell_executor.dart';
 
 class AppPackageMakerMsix extends AppPackageMaker {
   @override
@@ -56,10 +56,7 @@ class AppPackageMakerMsix extends AppPackageMaker {
         arguments.addAll(['--$newKey', value]);
       }
     }
-    await $(
-      'flutter',
-      ['pub', 'run', 'msix:create', ...arguments],
-    );
+    await Msix(arguments).create();
     return MakeResult(makeConfig);
   }
 }

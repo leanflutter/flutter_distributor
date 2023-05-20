@@ -4,13 +4,6 @@ title: msix
 
 ## Usage
 
-Add this to your package's `pubspec.yaml` file:
-
-```yaml
-dev_dependencies:
-  msix: any
-```
-
 Add `make_config.yaml` to your project `windows/packaging/msix` directory.
 
 ```yaml

@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Bump `xml` to 6.3.0.
+
 ## 0.3.1
 
 * Bump `shell_executor` to 0.1.2.
