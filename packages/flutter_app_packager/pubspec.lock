@@ -7,7 +7,7 @@ packages:
       path: "../app_package_maker"
       relative: true
     source: path
-    version: "0.3.1"
+    version: "0.3.2"
   archive:
     dependency: "direct main"
     description:
@@ -179,12 +179,11 @@ packages:
   msix:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "feat/locate_msix_assets_path_from_script_file_directory"
-      resolved-ref: "68ed974fb2786ff22d0cad6e5e4c4def4466ec53"
-      url: "https://github.com/lijy91/msix.git"
-    source: git
-    version: "3.13.0"
+      name: msix
+      sha256: "5dbf26361fbff0e74abd06c80f0b446476c739eea017d833d15e093c3c778fdd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.13.2"
   mustache_template:
     dependency: transitive
     description:
@@ -247,7 +246,7 @@ packages:
       path: "../shell_executor"
       relative: true
     source: path
-    version: "0.1.2"
+    version: "0.1.3"
   source_span:
     dependency: transitive
     description:

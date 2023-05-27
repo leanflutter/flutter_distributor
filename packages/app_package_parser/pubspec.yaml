@@ -1,6 +1,6 @@
 name: app_package_parser
 description: App package parser
-version: 0.2.3
+version: 0.2.4
 homepage: https://distributor.leanflutter.org
 repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/app_package_parser
 

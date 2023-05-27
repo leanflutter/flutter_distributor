@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Update dart sdk version to ">=2.16.0 <4.0.0"
+
 ## 0.1.2
 
 * Add the `workingDirectory` parameter to the `ShellExecutor` and related classes.

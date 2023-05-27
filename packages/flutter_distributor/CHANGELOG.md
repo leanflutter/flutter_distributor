@@ -1,5 +1,6 @@
 ## 0.3.2
 
+* Update dart sdk version to ">=2.16.0 <4.0.0"
 * feat: compress macOS app with 7zip
 
 ## 0.3.1
