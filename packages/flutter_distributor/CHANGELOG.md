@@ -2,6 +2,11 @@
 
 * Update dart sdk version to ">=2.16.0 <4.0.0"
 * feat: compress macOS app with 7zip
+* [dmg-maker] Rename `backgroundColor` to `background-color` in `MakeDmgConfig`
+* [dmg-maker] fix: fix make_dmg_config lost <window> specification (#120)
+* [deb-maker] Fixes #117 install and uninstall errors (#121)
+* fix(docs): fix exe make_config.yaml example error
+* chore: Optimize msix maker
 
 ## 0.3.1
 
