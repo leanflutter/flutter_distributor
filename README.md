@@ -42,9 +42,12 @@ The full documentation can be found on [distributor.leanflutter.org](https://dis
 - [appstore](./packages/flutter_app_publisher/lib/src/publishers/appstore/) - Publish your app to `appstore`.
 - [fir](./packages/flutter_app_publisher/lib/src/publishers/fir/) - Publish your app to `fir`.
 - [firebase](./packages/flutter_app_publisher/lib/src/publishers/firebase/) - Publish your app to `firebase`.
+- [firebase_hosting](./packages/flutter_app_publisher/lib/src/publishers/firebase_hosting/) - Publish your app to `firebase_hosting`.
 - [github](./packages/flutter_app_publisher/lib/src/publishers/github/) - Publish your app to `github` release.
 - [pgyer](./packages/flutter_app_publisher/lib/src/publishers/pgyer/) - Publish your app to `pgyer`.
+- [playstore](./packages/flutter_app_publisher/lib/src/publishers/playstore/) - Publish your app to `playstore`.
 - [qiniu](./packages/flutter_app_publisher/lib/src/publishers/qiniu/) - Publish your app to `qiniu`.
+- [vercel](./packages/flutter_app_publisher/lib/src/publishers/vercel/) - Publish your app to `vercel`.
 
 ## Getting Started
 

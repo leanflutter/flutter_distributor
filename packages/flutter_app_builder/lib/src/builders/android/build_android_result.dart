@@ -104,11 +104,6 @@ class _BuildAndroidApkResult extends BuildResult {
 
   @override
   Directory get outputDirectory {
-    String buildMode = config.mode.name;
-    String path = 'build/app/outputs/apk/$buildMode';
-    if (config.flavor != null) {
-      path = 'build/app/outputs/apk/${config.flavor}/$buildMode';
-    }
-    return Directory(path);
+    return Directory('build/app/outputs/flutter-apk');
   }
 }
