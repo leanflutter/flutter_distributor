@@ -1,6 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.leanflutter.examples.multiple_flavors">
-   <application
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application
         android:label="multiple_flavors"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
