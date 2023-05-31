@@ -1,3 +1,9 @@
+## 0.3.4
+
+* bump `shell_executor` to 0.1.4
+* Supports custom `FLUTTER_ROOT` environment variable.
+* Support defining environment variables in releases and jobs.
+
 ## 0.3.3
 
 * [apk-builer] fix apk not found 

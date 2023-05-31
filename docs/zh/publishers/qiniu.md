@@ -29,7 +29,7 @@ flutter_distributor publish \
 ### 配置 `distribute_options.yaml`
 
 ```yaml
-env:
+variables:
   QINIU_ACCESS_KEY: your access key
   QINIU_SECRET_KEY: your secret key
 output: dist/

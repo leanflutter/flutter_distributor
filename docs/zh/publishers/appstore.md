@@ -39,7 +39,7 @@ flutter_distributor publish \
 ### 配置 `distribute_options.yaml`
 
 ```yaml
-env:
+variables:
   APPSTORE_USERNAME: "xxx"
   APPSTORE_PASSWORD: "xxx"
   # or

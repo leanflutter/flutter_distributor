@@ -1,6 +1,7 @@
-env:
-# PGYER_API_KEY: your api key
 output: dist/
+variables:
+  FLUTTER_ROOT: ~/fvm/versions/3.10.0
+  # PGYER_API_KEY: your api key
 releases:
   - name: dev-profile
     jobs:
@@ -77,6 +78,8 @@ releases:
   - name: dev-release
     jobs:
       - name: android-aab
+        variables:
+          FLUTTER_ROOT: ~/fvm/versions/3.10.2
         package:
           platform: android
           target: aab

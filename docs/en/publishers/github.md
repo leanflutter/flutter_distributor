@@ -29,7 +29,7 @@ flutter_distributor publish \
 ### Configure `distribute_options.yaml`
 
 ```yaml
-env:
+variables:
   GITHUB_TOKEN: your personal access token, See[https://docs.github.com/cn/enterprise-server@3.2/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token]
 output: dist/
 releases:

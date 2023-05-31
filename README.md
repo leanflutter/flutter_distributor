@@ -62,7 +62,7 @@ dart pub global activate flutter_distributor
 Add `distribute_options.yaml` to your project root directory.
 
 ```yaml
-env:
+variables:
   PGYER_API_KEY: "your api key"
 output: dist/
 releases:

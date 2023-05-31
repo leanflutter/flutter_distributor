@@ -42,7 +42,7 @@ flutter_distributor publish \
 ### Configure `distribute_options.yaml`
 
 ```yaml
-env:
+variables:
   FIREBASE_TOKEN: your token, See[https://firebase.google.com/docs/cli?authuser=0#cli-ci-systems]
 output: dist/
 releases:

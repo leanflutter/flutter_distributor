@@ -24,7 +24,7 @@ output: dist/
 Let's take `pgyer` as an example, after logging in, click the user avatar on the right side to go to the [API information](https://www.pgyer.com/account/api) page from the menu, copy the `API Key` and add it to the env node.
 
 ```yaml
-env:
+variables:
   PGYER_API_KEY: "your api key"
 ```
 
@@ -67,7 +67,7 @@ releases:
 ### Full Example Configuration
 
 ```yaml
-env:
+variables:
   PGYER_API_KEY: "your api key"
 output: dist/
 releases:

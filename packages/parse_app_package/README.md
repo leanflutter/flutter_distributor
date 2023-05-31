@@ -11,7 +11,7 @@
 
 ```yaml
 dependencies:
-  parse_app_package: ^0.3.2
+  parse_app_package: ^0.3.4
 ```
 
 ## Usage

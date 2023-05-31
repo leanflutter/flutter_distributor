@@ -5,7 +5,7 @@ title: 分发选项
 ## 示例
 
 ```yaml
-env:
+variables:
   PGYER_API_KEY: "your api key"
 output: dist/
 releases:

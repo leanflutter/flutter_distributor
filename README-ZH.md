@@ -62,7 +62,7 @@ dart pub global activate flutter_distributor
 将 `distribute_options.yaml` 添加到你的项目根目录。
 
 ```yaml
-env:
+variables:
   PGYER_API_KEY: "your api key"
 output: dist/
 releases:

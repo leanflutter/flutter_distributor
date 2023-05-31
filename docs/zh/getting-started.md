@@ -22,7 +22,7 @@ output: dist/
 以 `pgyer` 为例，登录后，点击右侧的用户头像，从菜单中进入[API 信息](https://www.pgyer.com/account/api)页面，复制 `API Key` 并将其添加到 `env` 节点。
 
 ```yaml
-env:
+variables:
   PGYER_API_KEY: "your api key"
 ```
 
@@ -65,7 +65,7 @@ releases:
 ### 完整的示例配置
 
 ```yaml
-env:
+variables:
   PGYER_API_KEY: "your api key"
 output: dist/
 releases:

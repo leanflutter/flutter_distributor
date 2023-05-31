@@ -14,6 +14,7 @@ class ReleaseJobPackage {
       buildArgs: json['build_args'],
     );
   }
+
   final String platform;
   final String target;
   final String? channel;
@@ -54,6 +55,7 @@ class ReleaseJobPublish {
 
 class ReleaseJob {
   ReleaseJob({
+    this.variables,
     required this.name,
     required this.package,
     this.publish,
@@ -61,7 +63,12 @@ class ReleaseJob {
   });
 
   factory ReleaseJob.fromJson(Map<String, dynamic> json) {
+    Map<String, String> variables = {};
+    if (json.containsKey('variables') && json['variables'] != null) {
+      variables = Map<String, String>.from(json['variables']);
+    }
     return ReleaseJob(
+      variables: variables,
       name: json['name'],
       package: ReleaseJobPackage.fromJson(json['package']),
       publish: json['publish'] != null
@@ -71,6 +78,7 @@ class ReleaseJob {
     );
   }
 
+  final Map<String, String>? variables;
   final String name;
   final ReleaseJobPackage package;
   final ReleaseJobPublish? publish;
@@ -78,6 +86,7 @@ class ReleaseJob {
 
   Map<String, dynamic> toJson() {
     return {
+      'variables': variables,
       'name': name,
       'package': package.toJson(),
       'publish': publish?.toJson(),

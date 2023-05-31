@@ -1,6 +1,6 @@
 import 'package:flutter_app_builder/src/build_result.dart';
 import 'package:flutter_app_builder/src/builders/builders.dart';
-import 'package:shell_executor/shell_executor.dart';
+import 'package:flutter_app_builder/src/commands/flutter.dart';
 
 class FlutterAppBuilder {
   final List<AppBuilder> _builders = [
@@ -13,14 +13,17 @@ class FlutterAppBuilder {
     AppBuilderWindows(),
   ];
 
-  Future<void> clean() async {
-    await $('flutter', ['clean']);
+  Future<void> clean({
+    Map<String, String>? environment,
+  }) async {
+    await flutter.withEnv(environment).clean();
   }
 
   Future<BuildResult> build(
     String platform, {
     String? target,
     required Map<String, dynamic> arguments,
+    Map<String, String>? environment,
   }) {
     final builder = _builders.firstWhere((e) => e.match(platform, target));
     if (!builder.isSupportedOnCurrentPlatform) {
@@ -28,6 +31,9 @@ class FlutterAppBuilder {
         '${builder.runtimeType} is not supported on the current platform',
       );
     }
-    return builder.build(arguments: arguments);
+    return builder.build(
+      arguments: arguments,
+      environment: environment,
+    );
   }
 }

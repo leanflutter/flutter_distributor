@@ -1,3 +1,7 @@
+## 0.3.4
+
+* bump `shell_executor` to 0.1.4
+
 ## 0.3.3
 
 * [apk-builer] fix apk not found 

@@ -21,6 +21,7 @@ class AppBuilderIos extends AppBuilder {
   @override
   Future<BuildResult> build({
     required Map<String, dynamic> arguments,
+    Map<String, String>? environment,
   }) {
     if (!arguments.containsKey('export-options-plist') &&
         !arguments.containsKey('export-method')) {
@@ -28,6 +29,9 @@ class AppBuilderIos extends AppBuilder {
         'Missing `export-options-plist` or `export-method` build argument.',
       );
     }
-    return super.build(arguments: arguments);
+    return super.build(
+      arguments: arguments,
+      environment: environment,
+    );
   }
 }

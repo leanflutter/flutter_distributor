@@ -30,7 +30,7 @@ flutter_distributor publish \
 ### 配置 `distribute_options.yaml`
 
 ```yaml
-env:
+variables:
   # See: https://appcenter.ms/settings/apitokens
   APPCENTER_API_TOKEN: <api-token>
 output: dist/
