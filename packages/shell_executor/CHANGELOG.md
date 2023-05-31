@@ -1,3 +1,7 @@
+## 0.1.4
+
+* add `pathExpansion` utility method.
+
 ## 0.1.3
 
 * Update dart sdk version to ">=2.16.0 <4.0.0"
