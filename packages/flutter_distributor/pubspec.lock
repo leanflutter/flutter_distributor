@@ -23,7 +23,7 @@ packages:
       path: "../app_package_maker"
       relative: true
     source: path
-    version: "0.3.4"
+    version: "0.3.5"
   app_package_parser:
     dependency: "direct overridden"
     description:
@@ -155,7 +155,7 @@ packages:
       path: "../flutter_app_packager"
       relative: true
     source: path
-    version: "0.3.4"
+    version: "0.3.5"
   flutter_app_publisher:
     dependency: "direct main"
     description:

@@ -1,3 +1,7 @@
+## 0.3.5
+
+* [deb-maker] Supports custom binary name
+
 ## 0.3.4
 
 * bump `shell_executor` to 0.1.4

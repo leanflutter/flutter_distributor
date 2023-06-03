@@ -2,10 +2,10 @@ output: dist/
 releases:
   - name: dev
     jobs:
-      - name: linux-appimage
-        package:
-          platform: linux
-          target: appimage
+      # - name: linux-appimage
+      #   package:
+      #     platform: linux
+      #     target: appimage
       - name: linux-deb
         package:
           platform: linux

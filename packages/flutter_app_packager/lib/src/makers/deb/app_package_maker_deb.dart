@@ -42,7 +42,7 @@ class AppPackageMakerDeb extends AppPackageMaker {
 
     /// Need to create following directories
     /// /DEBIAN
-    /// /usr/share/$appName
+    /// /usr/share/$appBinaryName
     /// /usr/share/applications
     /// /usr/share/icons/hicolor/128x128/apps
     /// /usr/share/icons/hicolor/256x256/apps
@@ -61,7 +61,7 @@ class AppPackageMakerDeb extends AppPackageMaker {
     final mkdirProcessResult = await $('mkdir', [
       '-p',
       debianDir,
-      path.join(packagingDirectory.path, 'usr/share', makeConfig.appName),
+      path.join(packagingDirectory.path, 'usr/share', makeConfig.appBinaryName),
       applicationsDir,
       if (makeConfig.icon != null) ...[icon128Dir, icon256Dir],
     ]);
@@ -77,13 +77,13 @@ class AppPackageMakerDeb extends AppPackageMaker {
       await iconFile.copy(
         path.join(
           icon128Dir,
-          makeConfig.appName + path.extension(makeConfig.icon!),
+          makeConfig.appBinaryName + path.extension(makeConfig.icon!),
         ),
       );
       await iconFile.copy(
         path.join(
           icon256Dir,
-          makeConfig.appName + path.extension(makeConfig.icon!),
+          makeConfig.appBinaryName + path.extension(makeConfig.icon!),
         ),
       );
     }
@@ -93,7 +93,7 @@ class AppPackageMakerDeb extends AppPackageMaker {
     final postinstFile = File(path.join(debianDir, 'postinst'));
     final postrmFile = File(path.join(debianDir, 'postrm'));
     final desktopEntryFile =
-        File(path.join(applicationsDir, '${makeConfig.appName}.desktop'));
+        File(path.join(applicationsDir, '${makeConfig.appBinaryName}.desktop'));
 
     if (!controlFile.existsSync()) controlFile.createSync();
     if (!postinstFile.existsSync()) postinstFile.createSync();
@@ -108,11 +108,11 @@ class AppPackageMakerDeb extends AppPackageMaker {
     // give execution permission to shell scripts
     await $('chmod', ['+x', postinstFile.path, postrmFile.path]);
 
-    // copy the application binary to /usr/share/$appName
+    // copy the application binary to /usr/share/$appBinaryName
     await $('cp', [
       '-fr',
       '${appDirectory.path}/.',
-      '${packagingDirectory.path}/usr/share/${makeConfig.appName}/',
+      '${packagingDirectory.path}/usr/share/${makeConfig.appBinaryName}/',
     ]);
 
     ProcessResult processResult = await $('dpkg-deb', [

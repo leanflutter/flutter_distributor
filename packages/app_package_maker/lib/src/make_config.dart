@@ -25,6 +25,7 @@ class MakeConfig {
   late Directory outputDirectory;
 
   String get appName => pubspec.name;
+  String get appBinaryName => pubspec.name;
   Version get appVersion => pubspec.version!;
   String get appBuildName => appVersion.toString().split('+').first;
   String get appBuildNumber => appVersion.toString().split('+').last;
@@ -164,5 +165,25 @@ class DefaultMakeConfigLoader extends MakeConfigLoader {
       ..artifactName = arguments?['artifact_name']
       ..packageFormat = packageFormat
       ..outputDirectory = outputDirectory;
+  }
+}
+
+class MakeLinuxPackageConfig extends MakeConfig {
+  String? _appBinaryName;
+  @override
+  String get appBinaryName {
+    if (_appBinaryName == null) {
+      final cMakeListsFile = File('linux/CMakeLists.txt');
+      final RegExp regex = RegExp(r'(?<=set\(BINARY_NAME\s")[^"]+(?="\))');
+      final Match? match = regex.firstMatch(cMakeListsFile.readAsStringSync());
+
+      if (match != null) {
+        final String? binaryName = match.group(0);
+        _appBinaryName = binaryName;
+      } else {
+        _appBinaryName = appName;
+      }
+    }
+    return _appBinaryName!;
   }
 }
