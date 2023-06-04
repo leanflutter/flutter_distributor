@@ -33,6 +33,7 @@ The full documentation can be found on [distributor.leanflutter.org](https://dis
 - [exe](./packages/flutter_app_packager/lib/src/makers/exe/) - Create a `exe` package for your app.
 - [ipa](./packages/flutter_app_packager/lib/src/makers/ipa/) - Create a `ipa` package for your app.
 - [msix](./packages/flutter_app_packager/lib/src/makers/msix/) - Create a `msix` package for your app.
+- [pkg](./packages/flutter_app_packager/lib/src/makers/pkg/) - Create a `pkg` package for your app.
 - [rpm](./packages/flutter_app_packager/lib/src/makers/rpm/) - Create a `rpm` package for your app.
 - [zip](./packages/flutter_app_packager/lib/src/makers/zip/) - Create a `zip` package for your app.
 

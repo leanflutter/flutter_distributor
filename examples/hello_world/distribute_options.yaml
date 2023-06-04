@@ -113,6 +113,10 @@ releases:
         package:
           platform: macos
           target: dmg
+      - name: macos-pkg
+        package:
+          platform: macos
+          target: pkg
       - name: macos-zip
         package:
           platform: macos

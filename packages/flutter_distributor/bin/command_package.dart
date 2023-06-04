@@ -36,6 +36,7 @@ class CommandPackage extends Command {
         'exe',
         'ipa',
         'msix',
+        'pkg',
         'rpm',
         'zip',
       ].join(','),
