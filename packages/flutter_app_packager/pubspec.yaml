@@ -7,11 +7,12 @@ environment:
   sdk: ">=2.16.0 <4.0.0"
 
 dependencies:
-  app_package_maker: ^0.3.5
+  app_package_maker: 
+    path: ../app_package_maker
   archive: ^3.1.5
   io: ^1.0.3
   liquid_engine: ^0.2.2
-  msix: ^3.13.2
+  msix: 
   path: ^1.8.1
   shell_executor: ^0.1.4
 

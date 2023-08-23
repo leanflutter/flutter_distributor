@@ -15,13 +15,18 @@ environment:
 
 dependencies:
   ansicolor: ^2.0.1
-  app_package_maker: ^0.3.5
-  app_package_publisher: ^0.3.4
+  app_package_maker: 
+    path: ../app_package_maker
+  app_package_publisher: 
+    path: ../app_package_publisher
   args: ^2.2.0
   dio: ^5.1.2
-  flutter_app_builder: ^0.3.4
-  flutter_app_packager: ^0.3.5
-  flutter_app_publisher: ^0.3.4
+  flutter_app_builder:
+    path: ../flutter_app_builder
+  flutter_app_packager: 
+    path: ../flutter_app_packager
+  flutter_app_publisher: 
+    path: ../flutter_app_publisher
   logging: ^1.0.2
   path: ^1.8.1
   pubspec_parse: ^1.1.0

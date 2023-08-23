@@ -13,17 +13,17 @@ class AppPackageParserIpa extends AppPackageParser {
   _handleElem(XmlElement el) {
     switch (el.name.local) {
       case 'string':
-        return el.value;
+        return el.text;
       case 'real':
-        return double.parse(el.value!);
+        return double.parse(el.text);
       case 'integer':
-        return int.parse(el.value!);
+        return int.parse(el.text);
       case 'true':
         return true;
       case 'false':
         return false;
       case 'date':
-        return DateTime.parse(el.value!);
+        return DateTime.parse(el.text);
     }
   }
 
@@ -47,7 +47,7 @@ class AppPackageParserIpa extends AppPackageParser {
 
     List<String> keys = elDict.childElements
         .where((e) => e.name.local == 'key')
-        .map((e) => e.value!)
+        .map((e) => e.text)
         .toList();
     List<dynamic> values = elDict.childElements
         .where((e) => e.name.local != 'key')
