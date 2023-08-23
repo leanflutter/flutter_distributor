@@ -182,7 +182,7 @@ class MakeMsixConfigLoader extends DefaultMakeConfigLoader {
       buildOutputFiles: buildOutputFiles,
     );
     final map = loadMakeConfigYaml(
-      '$platform/packaging/$packageFormat/make_config.yaml',
+      '$platform/packaging/$packageFormat/${arguments?['flavor']}/make_config.yaml',
     );
     return MakeMsixConfig.fromJson(map).copyWith(baseMakeConfig);
   }

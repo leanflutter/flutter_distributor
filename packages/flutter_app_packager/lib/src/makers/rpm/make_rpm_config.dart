@@ -217,7 +217,7 @@ class MakeRpmConfigLoader extends DefaultMakeConfigLoader {
       buildOutputFiles: buildOutputFiles,
     );
     final map = loadMakeConfigYaml(
-      '$platform/packaging/$packageFormat/make_config.yaml',
+      '$platform/packaging/$packageFormat/${arguments?['flavor']}/make_config.yaml',
     );
     return MakeRPMConfig.fromJson(map).copyWith(baseMakeConfig);
   }
