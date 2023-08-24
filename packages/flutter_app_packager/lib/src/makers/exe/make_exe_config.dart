@@ -105,9 +105,11 @@ class MakeExeConfigLoader extends DefaultMakeConfigLoader {
       buildOutputFiles: buildOutputFiles,
     );
     print('xxxxx${arguments.toString()}====${outputDirectory.path}');
+    String chanel = arguments?['channel'];
+    print('$platform/packaging/$packageFormat/$chanel/make_config.yaml');
 
     final map = loadMakeConfigYaml(
-      '$platform/packaging/$packageFormat/${arguments?['channel']}/make_config.yaml',
+      '$platform/packaging/$packageFormat/$chanel/make_config.yaml',
     );
     print('xxxxx$map');
 
