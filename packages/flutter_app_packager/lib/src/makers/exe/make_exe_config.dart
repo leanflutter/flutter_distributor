@@ -109,6 +109,8 @@ class MakeExeConfigLoader extends DefaultMakeConfigLoader {
     final map = loadMakeConfigYaml(
       '$platform/packaging/$packageFormat/${arguments?['channel']}/make_config.yaml',
     );
+    print('xxxxx$map');
+
     return MakeExeConfig.fromJson(map).copyWith(baseMakeConfig)
       ..isInstaller = true;
   }
