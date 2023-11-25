@@ -43,8 +43,10 @@ class FlutterVersion {
   final String? flutterVersion;
 
   bool isGreaterOrEqual(String versionString) {
-    final Version version = Version.parse(flutterVersion!);
-    return version.compareTo(Version.parse(versionString)) >= 0;
+    // just keep the first part of the version string
+    final String currentVersionString = flutterVersion!.split('-').first;
+    final Version currentVersion = Version.parse(currentVersionString);
+    return currentVersion.compareTo(Version.parse(versionString)) >= 0;
   }
 }
 
