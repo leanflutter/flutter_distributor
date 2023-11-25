@@ -98,7 +98,7 @@ class AppPackagePublisherFir extends AppPackagePublisher {
       return PublishResult(
         url: downloadUri.toString(),
       );
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       String? message;
       if (error.response?.data != null) {
         int? code = error.response?.data['code'];
