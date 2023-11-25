@@ -42,7 +42,7 @@ void main() {
           arguments: {'profile': true},
         ),
       );
-      expect(r.outputDirectory.path, 'build/app/outputs/apk/profile');
+      expect(r.outputDirectory.path, 'build/app/outputs/flutter-apk');
     });
     test('profile mode + flavor', () {
       final r = BuildAndroidResult.apk(
@@ -50,13 +50,13 @@ void main() {
           arguments: {'profile': true, 'flavor': 'dev'},
         ),
       );
-      expect(r.outputDirectory.path, 'build/app/outputs/apk/dev/profile');
+      expect(r.outputDirectory.path, 'build/app/outputs/flutter-apk');
     });
     test('release mode', () {
       final r = BuildAndroidResult.apk(
         BuildConfig(),
       );
-      expect(r.outputDirectory.path, 'build/app/outputs/apk/release');
+      expect(r.outputDirectory.path, 'build/app/outputs/flutter-apk');
     });
 
     test('release mode + flavor', () {
@@ -66,7 +66,7 @@ void main() {
         ),
       );
       String dirPath = r.outputDirectory.path;
-      expect(dirPath, 'build/app/outputs/apk/dev/release');
+      expect(dirPath, 'build/app/outputs/flutter-apk');
     });
   });
 }

@@ -47,4 +47,21 @@ class ShellExecutor {
     int exitCode = await process.exitCode;
     return ProcessResult(process.pid, exitCode, stdoutStr, stderrStr);
   }
+
+  ProcessResult execSync(
+    String executable,
+    List<String> arguments, {
+    String? workingDirectory,
+    Map<String, String>? environment,
+    bool runInShell = false,
+  }) {
+    final ProcessResult processResult = Process.runSync(
+      executable,
+      arguments,
+      workingDirectory: workingDirectory,
+      environment: environment,
+      runInShell: runInShell,
+    );
+    return processResult;
+  }
 }
