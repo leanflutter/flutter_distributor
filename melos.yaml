@@ -16,6 +16,13 @@ scripts:
     exec: flutter analyze --fatal-infos
     description: Run `flutter analyze` for all packages.
 
+  test:
+    exec: flutter test
+    description: Run `flutter test` for a specific package.
+    packageFilters:
+      dirExists:
+        - test
+
   format:
     exec: dart format . --fix
     description: Run `dart format` for all packages.
@@ -33,15 +40,6 @@ scripts:
     packageFilters:
       dependsOn:
         - dependency_validator
-
-  test:
-    run: |
-      melos exec -c 6 --fail-fast -- \
-        "flutter test"
-    description: Run `flutter test` for a specific package.
-    packageFilters:
-      dirExists:
-        - test
 
   activate:
     run: melos exec --scope="flutter_distributor" -- dart pub global activate -s path .
