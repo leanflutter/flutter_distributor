@@ -65,7 +65,7 @@ abstract class AppBuilder {
     );
 
     if (processResult.exitCode != 0) {
-      throw BuildError();
+      throw BuildError('${processResult.stderr}');
     }
 
     return resultResolver.resolve(config)..duration = time.elapsed;

@@ -50,6 +50,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  String get _appEnv {
+    return const String.fromEnvironment('APP_ENV');
+  }
+
   String get _buildName {
     return const String.fromEnvironment('FLUTTER_BUILD_NAME');
   }
@@ -109,6 +113,10 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            Text(
+              'APP_ENV: $_appEnv',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             Text(
               'FLUTTER_BUILD_NAME: $_buildName',

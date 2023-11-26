@@ -56,6 +56,12 @@ class _Flutter extends Command {
     String flutterRoot = environment?['FLUTTER_ROOT'] ?? '';
     if (flutterRoot.isNotEmpty) {
       flutterRoot = pathExpansion(flutterRoot, environment ?? {});
+      if (!Directory(flutterRoot).existsSync()) {
+        throw CommandError(
+          this,
+          'FLUTTER_ROOT environment variable is set to a path that does not exist: $flutterRoot',
+        );
+      }
       return p.join(flutterRoot, 'bin', 'flutter');
     }
     return 'flutter';
@@ -63,7 +69,7 @@ class _Flutter extends Command {
 
   Map<String, String>? environment;
 
-  withEnv(Map<String, String>? environment) {
+  _Flutter withEnv(Map<String, String>? environment) {
     this.environment = environment;
     return this;
   }

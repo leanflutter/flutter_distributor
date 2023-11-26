@@ -1,6 +1,6 @@
 output: dist/
 variables:
-  FLUTTER_ROOT: ~/fvm/versions/3.10.0
+  FLUTTER_ROOT: ~/fvm/versions/3.10.3
   # PGYER_API_KEY: your api key
 releases:
   - name: dev-profile
@@ -79,7 +79,7 @@ releases:
     jobs:
       - name: android-aab
         variables:
-          FLUTTER_ROOT: ~/fvm/versions/3.10.2
+          FLUTTER_ROOT: ~/fvm/versions/3.10.3
         package:
           platform: android
           target: aab
@@ -113,6 +113,8 @@ releases:
         package:
           platform: macos
           target: dmg
+          build_args:
+            dart-define-from-file: env.json
       - name: macos-pkg
         package:
           platform: macos
