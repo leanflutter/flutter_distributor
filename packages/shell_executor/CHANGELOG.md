@@ -1,3 +1,7 @@
+## 0.1.5
+
+* Add `execSync` to `ShellExecutor` and `Command` classes.
+
 ## 0.1.4
 
 * add `pathExpansion` utility method.

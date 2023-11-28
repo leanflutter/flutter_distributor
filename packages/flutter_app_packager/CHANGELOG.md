@@ -1,3 +1,8 @@
+## 0.3.6
+
+* bump `shell_executor` to 0.1.5
+* bump `msix` to 3.16.6
+
 ## 0.3.5
 
 * [deb-maker] Supports custom binary name

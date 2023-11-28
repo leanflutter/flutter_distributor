@@ -39,7 +39,7 @@ packages:
       path: "../app_package_maker"
       relative: true
     source: path
-    version: "0.3.5"
+    version: "0.3.6"
   app_package_parser:
     dependency: "direct overridden"
     description:
@@ -53,7 +53,7 @@ packages:
       path: "../app_package_publisher"
       relative: true
     source: path
-    version: "0.3.4"
+    version: "0.3.6"
   archive:
     dependency: transitive
     description:
@@ -180,21 +180,21 @@ packages:
       path: "../flutter_app_builder"
       relative: true
     source: path
-    version: "0.3.4"
+    version: "0.3.6"
   flutter_app_packager:
     dependency: "direct main"
     description:
       path: "../flutter_app_packager"
       relative: true
     source: path
-    version: "0.3.5"
+    version: "0.3.6"
   flutter_app_publisher:
     dependency: "direct main"
     description:
       path: "../flutter_app_publisher"
       relative: true
     source: path
-    version: "0.3.4"
+    version: "0.3.6"
   frontend_server_client:
     dependency: transitive
     description:
@@ -369,7 +369,7 @@ packages:
       path: "../parse_app_package"
       relative: true
     source: path
-    version: "0.3.4"
+    version: "0.3.6"
   path:
     dependency: "direct main"
     description:
@@ -472,7 +472,7 @@ packages:
       path: "../shell_executor"
       relative: true
     source: path
-    version: "0.1.4"
+    version: "0.1.5"
   shell_uikit:
     dependency: "direct main"
     description:

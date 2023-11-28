@@ -7,7 +7,7 @@ packages:
       path: "../app_package_maker"
       relative: true
     source: path
-    version: "0.3.5"
+    version: "0.3.6"
   archive:
     dependency: "direct main"
     description:
@@ -246,7 +246,7 @@ packages:
       path: "../shell_executor"
       relative: true
     source: path
-    version: "0.1.4"
+    version: "0.1.5"
   source_span:
     dependency: transitive
     description:

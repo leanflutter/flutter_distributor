@@ -1,6 +1,6 @@
 name: app_package_maker
 description: App package maker
-version: 0.3.5
+version: 0.3.6
 homepage: https://distributor.leanflutter.org
 repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/app_package_maker
 
@@ -11,7 +11,7 @@ dependencies:
   mustache_template: ^2.0.0
   pub_semver: ^2.1.0
   pubspec_parse: ^1.1.0
-  shell_executor: ^0.1.4
+  shell_executor: ^0.1.5
   yaml: ^3.1.0
 
 dev_dependencies:

@@ -1,3 +1,9 @@
+## 0.3.6
+
+* bump `shell_executor` to 0.1.5
+* bump `dio` to 5.3.4
+* bump `googleapis` to 9.1.0
+
 ## 0.3.4
 
 * bump `shell_executor` to 0.1.4
