@@ -9,7 +9,7 @@
 [visits-count-image]: https://img.shields.io/badge/dynamic/json?label=Visits%20Count&query=value&url=https://api.countapi.xyz/hit/leanflutter.flutter_distributor/visits
 [all-contributors-image]: https://img.shields.io/github/all-contributors/leanflutter/flutter_distributor?color=ee8449&style=flat-square
 
-一个完整的工具，用于打包和发布您的 [Flutter](https://flutter.dev) 应用。
+一款全能的 [Flutter](https://flutter.dev) 应用打包和发布工具，为您提供一站式解决方案，满足各种分发需求。
 
 ---
 
@@ -19,7 +19,7 @@
 
 ## 文档
 
-完整的文档可以在 [distributor.leanflutter.org](https://distributor.leanflutter.org/zh) 上找到。
+完整的文档可以在 [distributor.leanflutter.org](https://distributor.leanflutter.dev/zh-hans) 上找到。
 
 ## 功能
 

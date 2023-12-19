@@ -9,7 +9,7 @@
 [visits-count-image]: https://img.shields.io/badge/dynamic/json?label=Visits%20Count&query=value&url=https://api.countapi.xyz/hit/leanflutter.flutter_distributor/visits
 [all-contributors-image]: https://img.shields.io/github/all-contributors/leanflutter/flutter_distributor?color=ee8449&style=flat-square
 
-A complete tool for packaging and publishing your [Flutter](https://flutter.dev) apps.
+An all-in-one [Flutter](https://flutter.dev) application packaging and distribution tool, providing you with a one-stop solution to meet various distribution needs.
 
 ---
 
@@ -19,7 +19,7 @@ English | [简体中文](./README-ZH.md)
 
 ## Documentation
 
-The full documentation can be found on [distributor.leanflutter.org](https://distributor.leanflutter.org/).
+The full documentation can be found on [distributor.leanflutter.dev](https://distributor.leanflutter.org/).
 
 ## Features
 
