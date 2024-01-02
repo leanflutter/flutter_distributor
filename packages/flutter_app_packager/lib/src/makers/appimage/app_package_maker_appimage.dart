@@ -13,7 +13,7 @@ class AppPackageMakerAppImage extends AppPackageMaker {
   @override
   bool get isSupportedOnCurrentPlatform => Platform.isLinux;
   @override
-  String get packageFormat => 'appimage';
+  String get packageFormat => 'AppImage';
 
   @override
   MakeConfigLoader get configLoader {
@@ -234,7 +234,7 @@ class AppPackageMakerAppImage extends AppPackageMaker {
             makeConfig.packagingDirectory.path,
             '${makeConfig.appName}.AppDir',
           ),
-          makeConfig.outputFile.path.replaceAll('.appimage', '.AppImage'),
+          makeConfig.outputFile.path,
         ],
         environment: {
           'ARCH': 'x86_64',

@@ -118,7 +118,7 @@ class MakeAppImageConfigLoader extends DefaultMakeConfigLoader {
       buildOutputFiles: buildOutputFiles,
     );
     final map = loadMakeConfigYaml(
-      '$platform/packaging/$packageFormat/make_config.yaml',
+      '$platform/packaging/${packageFormat.toLowerCase()}/make_config.yaml',
     );
     return MakeAppImageConfig.fromJson(map).copyWith(baseMakeConfig);
   }
