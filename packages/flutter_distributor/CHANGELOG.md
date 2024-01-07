@@ -1,5 +1,9 @@
-## 0.3.6
+## 0.3.7
 
+* fix: Unhandled exception Null check operator used on a null value #159
+* Use correct architecture when making deb #150
+
+## 0.3.6
 
 * bump `shell_executor` to 0.1.5
 * bump `msix` to 3.16.6

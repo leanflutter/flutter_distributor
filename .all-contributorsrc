@@ -21,7 +21,7 @@
       ]
     },
     {
-      "login": "yy1300326388",
+      "login": "BytesZero",
       "name": "Zero",
       "avatar_url": "https://avatars.githubusercontent.com/u/8764899?v=4",
       "profile": "https://juejin.cn/user/764915820276439",
@@ -106,6 +106,15 @@
       "name": "Tien Do Nam",
       "avatar_url": "https://avatars.githubusercontent.com/u/38380847?v=4",
       "profile": "http://tienisto.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "zacksleo",
+      "name": "zacks",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3369169?v=4",
+      "profile": "https://zacksleo.top/",
       "contributions": [
         "code"
       ]
