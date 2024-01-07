@@ -270,7 +270,7 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
         'Version': appVersion.toString(),
         'Section': section,
         'Priority': priority,
-        'Architecture': 'amd64',
+        'Architecture': _getArchitecture(),
         'Essential':
             essential != null ? (essential == true ? 'yes' : 'no') : null,
         'Installed-Size': installedSize,
@@ -366,5 +366,14 @@ class MakeDebConfigLoader extends DefaultMakeConfigLoader {
       '$platform/packaging/$packageFormat/make_config.yaml',
     );
     return MakeDebConfig.fromJson(map).copyWith(baseMakeConfig);
+  }
+}
+
+String _getArchitecture() {
+  final result = Process.runSync('uname', ['-m']);
+  if ('${result.stdout}'.trim() == 'aarch64') {
+    return 'arm64';
+  } else {
+    return 'amd64';
   }
 }
