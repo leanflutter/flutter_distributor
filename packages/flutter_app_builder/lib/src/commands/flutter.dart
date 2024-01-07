@@ -28,7 +28,7 @@ class FlutterVersion {
       engineRevision: json['engineRevision'] as String?,
       dartSdkVersion: json['dartSdkVersion'] as String?,
       devToolsVersion: json['devToolsVersion'] as String?,
-      flutterVersion: json['flutterVersion'] as String?,
+      flutterVersion: json['flutterVersion'] as String? ?? (json['frameworkVersion'] as String?),
     );
   }
 
