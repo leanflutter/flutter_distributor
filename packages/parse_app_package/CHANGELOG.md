@@ -1,3 +1,7 @@
+## 0.3.8
+
+* bump `archive` to 3.4.10
+
 ## 0.3.4
 
 * bump `shell_executor` to 0.1.4

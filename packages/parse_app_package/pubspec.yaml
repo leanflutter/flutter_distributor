@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   app_package_parser: ^0.2.4
-  archive: ^3.1.5
+  archive: ^3.4.10
   args: ^2.2.0
   shell_executor: ^0.1.5
   xml: ^6.3.0
