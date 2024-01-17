@@ -124,11 +124,11 @@ class MakeRPMConfig extends MakeConfig {
           '%description': description ?? pubspec.description,
           '%install': [
             'mkdir -p %{buildroot}%{_bindir}',
-            'mkdir -p %{buildroot}%{_datadir}/%{name}',
+            'mkdir -p %{buildroot}/opt/%{name}',
             'mkdir -p %{buildroot}%{_datadir}/applications',
             'mkdir -p %{buildroot}%{_datadir}/pixmaps',
-            'cp -r %{name}/* %{buildroot}%{_datadir}/%{name}',
-            'ln -s %{_datadir}/%{name}/%{name} %{buildroot}%{_bindir}/%{name}',
+            'cp -r %{name}/* {buildroot}/opt/%{name}',
+            'ln -s /opt/%{name}/%{name} %{buildroot}%{_bindir}/%{name}',
             'cp -r %{name}.desktop %{buildroot}%{_datadir}/applications',
             'cp -r %{name}.png %{buildroot}%{_datadir}/pixmaps',
             'update-mime-database %{_datadir}/mime &> /dev/null || :',
@@ -137,7 +137,7 @@ class MakeRPMConfig extends MakeConfig {
               .join('\n'),
           '%files': [
             '%{_bindir}/%{name}',
-            '%{_datadir}/%{name}',
+            '/opt/%{name}',
             '%{_datadir}/applications/%{name}.desktop',
           ].join('\n'),
         }..removeWhere((key, value) => value == null),
