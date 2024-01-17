@@ -127,7 +127,7 @@ class MakeRPMConfig extends MakeConfig {
             'mkdir -p %{buildroot}/opt/%{name}',
             'mkdir -p %{buildroot}%{_datadir}/applications',
             'mkdir -p %{buildroot}%{_datadir}/pixmaps',
-            'cp -r %{name}/* {buildroot}/opt/%{name}',
+            'cp -r %{name}/* %{buildroot}/opt/%{name}',
             'ln -s /opt/%{name}/%{name} %{buildroot}%{_bindir}/%{name}',
             'cp -r %{name}.desktop %{buildroot}%{_datadir}/applications',
             'cp -r %{name}.png %{buildroot}%{_datadir}/pixmaps',
