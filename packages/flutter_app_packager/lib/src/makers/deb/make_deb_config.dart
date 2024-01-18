@@ -251,7 +251,7 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
   List<String>? categories;
 
   List<String> get postinstallScripts => [
-        'ln -s /usr/share/$appBinaryName/$appBinaryName /usr/bin/$appBinaryName',
+        'ln -s /opt/$appBinaryName/$appBinaryName /usr/bin/$appBinaryName',
         'chmod +x /usr/bin/$appBinaryName',
         ..._postinstallScripts,
       ];
@@ -291,7 +291,6 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
       }..removeWhere((key, value) => value == null),
       'DESKTOP': {
         'Type': 'Application',
-        'Version': appVersion.toString(),
         'Name': displayName,
         'GenericName': genericName,
         'Icon': appBinaryName,
