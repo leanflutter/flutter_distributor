@@ -104,6 +104,7 @@ flutter_distributor release --name dev
 - [Biyi](https://biyidev.com/) - A convenient translation and dictionary app.
 - [Qianji](https://qianjiapp.com/) - A purely bookkeeping app.
 - [Alga](https://github.com/laiiihz/alga/) - A developer tools app.
+- [Airclap](https://airclap.app/) - Send any file to any device. cross platform, ultra fast and easy to use.
 
 ## Contributors
 
