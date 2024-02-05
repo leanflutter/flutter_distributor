@@ -70,7 +70,7 @@ export default defineConfig({
             { label: "appcenter", link: "/publishers/appcenter/" },
             { label: "appstore", link: "/publishers/appstore/" },
             { label: "fir", link: "/publishers/fir/" },
-            { label: "firebase", link: "/publishers/firebase/" },
+            { label: "firebase-hosting", link: "/publishers/firebase-hosting/" },
             { label: "firebase", link: "/publishers/firebase/" },
             { label: "github", link: "/publishers/github/" },
             { label: "pgyer", link: "/publishers/pgyer/" },
