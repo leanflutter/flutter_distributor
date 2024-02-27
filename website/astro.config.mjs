@@ -1,5 +1,9 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import tailwind from "@astrojs/tailwind";
+import partytown from "@astrojs/partytown";
+
+const googleAnalyticsId = "G-EC75P3JKR5";
 
 // https://astro.build/config
 export default defineConfig({
@@ -70,7 +74,10 @@ export default defineConfig({
             { label: "appcenter", link: "/publishers/appcenter/" },
             { label: "appstore", link: "/publishers/appstore/" },
             { label: "fir", link: "/publishers/fir/" },
-            { label: "firebase-hosting", link: "/publishers/firebase-hosting/" },
+            {
+              label: "firebase-hosting",
+              link: "/publishers/firebase-hosting/",
+            },
             { label: "firebase", link: "/publishers/firebase/" },
             { label: "github", link: "/publishers/github/" },
             { label: "pgyer", link: "/publishers/pgyer/" },
@@ -86,6 +93,46 @@ export default defineConfig({
           ],
         },
       ],
+      head: [
+        {
+          tag: "script",
+          attrs: {
+            type: "text/partytown",
+            src: `https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`,
+            async: true,
+          },
+        },
+        {
+          tag: "script",
+          attrs: {
+            type: "text/partytown",
+          },
+          content: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${googleAnalyticsId}');
+            `,
+        },
+        {
+          tag: "script",
+          attrs: {
+            src: `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6049036475236211`,
+            async: true,
+            crossorigin: "anonymous",
+          },
+        },
+      ],
+    }),
+    tailwind({
+      // Disable the default base styles:
+      applyBaseStyles: false,
+    }),
+    partytown({
+      // Adds dataLayer.push as a forwarding-event.
+      config: {
+        forward: ["dataLayer.push"],
+      },
     }),
   ],
 });
