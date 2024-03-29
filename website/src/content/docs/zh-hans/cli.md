@@ -39,7 +39,7 @@ flutter_distributor publish --path hello_world-1.0.0+1-android.apk --targets fir
 
 会根据配置文件（`distribute_options.yaml`），将你的应用打包成特定的格式并发布到分发平台。
 
-<table><thead><tr><th>Flag</th><th>Value</th><th data-type="checkbox">Required</th></tr></thead><tbody><tr><td><code>--name</code></td><td>名称, e.g. <code>dev</code></td><td>true</td></tr><tr><td><code>--skip-client</code></td><td>跳过在构建之前一次</td><td>false</td></tr></tbody></table>
+<table><thead><tr><th>Flag</th><th>Value</th><th data-type="checkbox">Required</th></tr></thead><tbody><tr><td><code>--name</code></td><td>名称, e.g. <code>dev</code></td><td>true</td></tr><tr><td><code>--skip-clean</code></td><td>跳过在构建之前一次</td><td>false</td></tr></tbody></table>
 
 示例：
 
