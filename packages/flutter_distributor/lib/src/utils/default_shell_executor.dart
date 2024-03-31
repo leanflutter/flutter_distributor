@@ -1,9 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:charset/charset.dart';
 import 'package:flutter_distributor/src/extensions/string.dart';
 import 'package:flutter_distributor/src/utils/logger.dart';
 import 'package:shell_executor/shell_executor.dart';
+
+/// Convert bytes to string (UTF-8 or detected charset)
+String convertToString(List<int> bytes) {
+  final charset = Charset.detect(bytes);
+  if (charset != null) {
+    return charset.decode(bytes);
+  }
+  return utf8.decode(bytes, allowMalformed: true);
+}
 
 class DefaultShellExecutor extends ShellExecutor {
   @override
@@ -26,13 +36,13 @@ class DefaultShellExecutor extends ShellExecutor {
     String? stdoutStr;
     String? stderrStr;
 
-    process.stdout.listen((event) {
-      String msg = utf8.decoder.convert(event);
+    process.stdout.listen((data) {
+      String msg = convertToString(data);
       stdoutStr = '${stdoutStr ?? ''}$msg';
       stdout.write(msg.brightBlack());
     });
-    process.stderr.listen((event) {
-      String msg = utf8.decoder.convert(event);
+    process.stderr.listen((data) {
+      String msg = convertToString(data);
       stderrStr = '${stderrStr ?? ''}$msg';
       stderr.write(msg.brightRed());
     });

@@ -18,6 +18,7 @@ dependencies:
   app_package_maker: ^0.3.6
   app_package_publisher: ^0.3.6
   args: ^2.2.0
+  charset: ^2.0.1
   dio: ^5.3.4
   flutter_app_builder: ^0.3.7
   flutter_app_packager: ^0.3.7

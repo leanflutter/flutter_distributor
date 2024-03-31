@@ -1,3 +1,7 @@
+## 0.3.9
+
+* fix: Can't decode gbk encoding issue #131
+
 ## 0.3.8
 
 * bump `archive` to 3.4.10
