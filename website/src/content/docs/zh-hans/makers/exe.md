@@ -18,7 +18,8 @@ publisher: LeanFlutter
 publisher_url: https://github.com/leanflutter/flutter_distributor
 display_name: Hello 世界
 create_desktop_icon: true
-install_dir_name: HELLO-WORLD
+# See: https://jrsoftware.org/ishelp/index.php?topic=setup_defaultdirname
+# install_dir_name: "D:\\HELLO-WORLD"
 locales:
   - en
   - zh
