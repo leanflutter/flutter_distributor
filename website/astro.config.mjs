@@ -93,6 +93,9 @@ export default defineConfig({
           ],
         },
       ],
+      components: {
+        TableOfContents: "./src/components/starlight/TableOfContents.astro",
+      },
       head: [
         {
           tag: "script",
