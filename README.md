@@ -19,7 +19,7 @@ English | [简体中文](./README-ZH.md)
 
 ## Documentation
 
-The full documentation can be found on [distributor.leanflutter.dev](https://distributor.leanflutter.org/).
+The full documentation can be found on [distributor.leanflutter.dev](https://distributor.leanflutter.dev/).
 
 ## Features
 

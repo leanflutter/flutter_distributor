@@ -1,7 +1,7 @@
 name: flutter_app_builder
 description: Build your Flutter app via Dart.
 version: 0.3.7
-homepage: https://distributor.leanflutter.org
+homepage: https://distributor.leanflutter.dev
 repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/flutter_app_builder
 
 environment:

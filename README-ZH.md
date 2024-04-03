@@ -19,7 +19,7 @@
 
 ## 文档
 
-完整的文档可以在 [distributor.leanflutter.org](https://distributor.leanflutter.dev/zh-hans) 上找到。
+完整的文档可以在 [distributor.leanflutter.dev](https://distributor.leanflutter.dev/zh-hans) 上找到。
 
 ## 功能
 

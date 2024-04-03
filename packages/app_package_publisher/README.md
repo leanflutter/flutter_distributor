@@ -7,4 +7,4 @@
 
 ---
 
-Part of [flutter_distributor](https://github.com/leanflutter/flutter_distributor), See also https://distributor.leanflutter.org
+Part of [flutter_distributor](https://github.com/leanflutter/flutter_distributor), See also https://distributor.leanflutter.dev
