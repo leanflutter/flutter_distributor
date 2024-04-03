@@ -25,7 +25,7 @@ class AppPackageParserIpa extends AppPackageParser {
     return AppPackage(
       platform: 'ios',
       identifier: result['CFBundleIdentifier'],
-      name: result['CFBundleDisplayName'],
+      name: result['CFBundleDisplayName'] ?? result['CFBundleName'],
       version: result['CFBundleShortVersionString'],
       buildNumber: int.parse(result['CFBundleVersion']),
     );
