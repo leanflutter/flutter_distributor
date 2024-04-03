@@ -1,3 +1,7 @@
+## 0.4.0
+
+* bump `parse_app_package` to 0.4.0
+
 ## 0.3.6
 
 * bump `shell_executor` to 0.1.5

@@ -1,6 +1,6 @@
 name: parse_app_package
 description: Parse app package
-version: 0.3.6
+version: 0.4.0
 homepage: https://distributor.leanflutter.org
 repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/parse_app_package
 
@@ -11,8 +11,8 @@ dependencies:
   app_package_parser: ^0.2.4
   archive: ^3.4.10
   args: ^2.2.0
+  plist_parser: ^0.0.11
   shell_executor: ^0.1.5
-  xml: ^6.3.0
 
 executables:
   parse_app_package: main

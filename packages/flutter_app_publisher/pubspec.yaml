@@ -1,6 +1,6 @@
 name: flutter_app_publisher
 description: Flutter app publisher
-version: 0.3.6
+version: 0.4.0
 homepage: https://distributor.leanflutter.org
 repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/flutter_app_publisher
 
@@ -12,7 +12,7 @@ dependencies:
   dio: ^5.3.4
   googleapis: ^9.1.0
   googleapis_auth: ^1.3.1
-  parse_app_package: ^0.3.6
+  parse_app_package: ^0.4.0
   qiniu_sdk_base: ^0.5.0
   shell_executor: ^0.1.5
 dev_dependencies:

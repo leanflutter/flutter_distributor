@@ -202,7 +202,7 @@ packages:
       path: "../flutter_app_publisher"
       relative: true
     source: path
-    version: "0.3.6"
+    version: "0.4.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -377,7 +377,7 @@ packages:
       path: "../parse_app_package"
       relative: true
     source: path
-    version: "0.3.6"
+    version: "0.4.0"
   path:
     dependency: "direct main"
     description:
@@ -394,6 +394,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.4.0"
+  plist_parser:
+    dependency: transitive
+    description:
+      name: plist_parser
+      sha256: e2a6f9abfa0c45c0253656b7360abb0dfb84af9937bace74605b93d2aad2bf0c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.11"
   pointycastle:
     dependency: transitive
     description:

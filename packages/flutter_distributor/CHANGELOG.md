@@ -1,3 +1,7 @@
+## 0.4.0
+
+* fix failure to parse `Property List Binary` format
+
 ## 0.3.9
 
 * fix: Can't decode gbk encoding issue #131
