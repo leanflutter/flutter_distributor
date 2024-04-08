@@ -10,7 +10,7 @@ class BuildMacOsResultResolver extends BuildResultResolver {
   @override
   BuildResult resolve(BuildConfig config) {
     final r = BuildMacOsResult(config);
-    final String pattern = '${r.outputDirectory.path}/**.app';
+    final String pattern = '${r.outputDirectory.path}/*.app';
     r.outputFiles = Glob(pattern).listSync().map((e) => File(e.path)).toList();
     return r;
   }
