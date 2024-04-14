@@ -9,23 +9,27 @@ abstract class Command {
 
   Future<ProcessResult> exec(
     List<String> arguments, {
+    String? workingDirectory,
     Map<String, String>? environment,
   }) {
     return ShellExecutor.global.exec(
       executable,
       arguments,
+      workingDirectory: workingDirectory,
       environment: environment,
     );
   }
 
   ProcessResult execSync(
     List<String> arguments, {
+    String? workingDirectory,
     Map<String, String>? environment,
     bool runInShell = false,
   }) {
     return ShellExecutor.global.execSync(
       executable,
       arguments,
+      workingDirectory: workingDirectory,
       environment: environment,
       runInShell: runInShell,
     );

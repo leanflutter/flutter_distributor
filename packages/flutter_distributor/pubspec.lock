@@ -488,7 +488,7 @@ packages:
       path: "../shell_executor"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.1.6"
   shell_uikit:
     dependency: "direct main"
     description:

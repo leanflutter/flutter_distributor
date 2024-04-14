@@ -1,3 +1,7 @@
+## 0.1.6
+
+* Add `workingDirectory` parameter to related methods in `Command` class.
+
 ## 0.1.5
 
 * Add `execSync` to `ShellExecutor` and `Command` classes.
