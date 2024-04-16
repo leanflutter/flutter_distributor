@@ -37,10 +37,10 @@ class AppPackageMakerDmg extends AppPackageMaker {
         .first;
 
     try {
-      await $('cp', ['-RH', appFile.path, packagingDirectory.path]);
-
-      await $('cp', ['-RH', 'macos/packaging/dmg/.', packagingDirectory.path]);
-
+      await $('cp', ['-RH', '"${appFile.path}"', '"${packagingDirectory.path}"']);
+      
+      await $('cp', ['-RH', 'macos/packaging/dmg/.', '"${packagingDirectory.path}"']);
+      
       File makeDmgConfigJsonFile = File(
         '${packagingDirectory.path}/make_config.json',
       );
