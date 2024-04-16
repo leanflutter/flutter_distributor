@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:app_package_publisher/app_package_publisher.dart';
+import 'package:flutter_app_publisher/src/api/app_package_publisher.dart';
 
 const kEnvAppCenterApiToken = 'APPCENTER_API_TOKEN';
 

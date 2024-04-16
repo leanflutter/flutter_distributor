@@ -40,13 +40,6 @@ packages:
       relative: true
     source: path
     version: "0.2.4"
-  app_package_publisher:
-    dependency: "direct main"
-    description:
-      path: "../app_package_publisher"
-      relative: true
-    source: path
-    version: "0.3.6"
   archive:
     dependency: transitive
     description:

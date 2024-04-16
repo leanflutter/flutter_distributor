@@ -1,5 +1,3 @@
-export 'package:app_package_publisher/app_package_publisher.dart';
-
 export 'appcenter/app_package_publisher_appcenter.dart';
 export 'appstore/app_package_publisher_appstore.dart';
 export 'fir/app_package_publisher_fir.dart';

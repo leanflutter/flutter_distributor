@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:app_package_publisher/app_package_publisher.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_app_publisher/src/api/app_package_publisher.dart';
 import 'package:flutter_app_publisher/src/publishers/fir/publish_fir_config.dart';
 import 'package:parse_app_package/parse_app_package.dart';
 

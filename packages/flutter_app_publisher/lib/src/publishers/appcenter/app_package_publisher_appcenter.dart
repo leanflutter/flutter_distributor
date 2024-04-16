@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:app_package_publisher/app_package_publisher.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_app_publisher/src/api/app_package_publisher.dart';
 import 'package:flutter_app_publisher/src/publishers/appcenter/publish_appcenter_config.dart';
 import 'package:shell_executor/shell_executor.dart';
 
