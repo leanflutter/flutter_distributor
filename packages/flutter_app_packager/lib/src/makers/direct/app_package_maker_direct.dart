@@ -1,4 +1,4 @@
-import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 import 'package:io/io.dart';
 
 class AppPackageMakerDirect extends AppPackageMaker {

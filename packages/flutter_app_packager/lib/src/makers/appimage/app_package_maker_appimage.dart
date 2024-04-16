@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 import 'package:flutter_app_packager/src/makers/appimage/make_appimage_config.dart';
 import 'package:path/path.dart' as path;
 import 'package:shell_executor/shell_executor.dart';
@@ -33,7 +33,8 @@ class AppPackageMakerAppImage extends AppPackageMaker {
         final soDeps = lines
             .split('\n')
             .where(
-                (line) => line.contains('=>') && line.trim().startsWith('lib'))
+              (line) => line.contains('=>') && line.trim().startsWith('lib'),
+            )
 
             /// converts this:
             ///  libkeybinder-3.0.so.0 => /lib64/libkeybinder-3.0.so.0 (0x00007f6513811000)
@@ -69,28 +70,30 @@ class AppPackageMakerAppImage extends AppPackageMaker {
         path.join(
           makeConfig.packagingDirectory.path,
           '${makeConfig.appName}.AppDir',
-        )
+        ),
       ]).then((value) {
         if (value.exitCode != 0) {
           throw MakeError(value.stderr as String);
         }
       });
 
-      final desktopFile = File(path.join(
-        makeConfig.packagingDirectory.path,
-        '${makeConfig.appName}.AppDir',
-        '${makeConfig.appName}.desktop',
-      ))
-        ..createSync(recursive: true);
+      final desktopFile = File(
+        path.join(
+          makeConfig.packagingDirectory.path,
+          '${makeConfig.appName}.AppDir',
+          '${makeConfig.appName}.desktop',
+        ),
+      )..createSync(recursive: true);
 
       await desktopFile.writeAsString(makeConfig.desktopFileContent);
 
-      final appRunFile = File(path.join(
-        makeConfig.packagingDirectory.path,
-        '${makeConfig.appName}.AppDir',
-        'AppRun',
-      ))
-        ..createSync(recursive: true);
+      final appRunFile = File(
+        path.join(
+          makeConfig.packagingDirectory.path,
+          '${makeConfig.appName}.AppDir',
+          'AppRun',
+        ),
+      )..createSync(recursive: true);
 
       await appRunFile.writeAsString(makeConfig.appRunContent);
 
@@ -105,11 +108,13 @@ class AppPackageMakerAppImage extends AppPackageMaker {
         throw MakeError("icon ${makeConfig.icon} path doesn't exist");
       }
 
-      await iconFile.copy(path.join(
-        makeConfig.packagingDirectory.path,
-        '${makeConfig.appName}.AppDir',
-        '${makeConfig.appName}${path.extension(makeConfig.icon)}',
-      ));
+      await iconFile.copy(
+        path.join(
+          makeConfig.packagingDirectory.path,
+          '${makeConfig.appName}.AppDir',
+          '${makeConfig.appName}${path.extension(makeConfig.icon)}',
+        ),
+      );
 
       final icon256x256 = path.join(
         makeConfig.packagingDirectory.path,
@@ -130,15 +135,19 @@ class AppPackageMakerAppImage extends AppPackageMaker {
         }
       });
 
-      await iconFile.copy(path.join(
-        icon128x128,
-        '${makeConfig.appName}${path.extension(makeConfig.icon)}',
-      ));
+      await iconFile.copy(
+        path.join(
+          icon128x128,
+          '${makeConfig.appName}${path.extension(makeConfig.icon)}',
+        ),
+      );
 
-      await iconFile.copy(path.join(
-        icon256x256,
-        '${makeConfig.appName}${path.extension(makeConfig.icon)}',
-      ));
+      await iconFile.copy(
+        path.join(
+          icon256x256,
+          '${makeConfig.appName}${path.extension(makeConfig.icon)}',
+        ),
+      );
 
       final defaultSharedObjects = [
         'libapp.so',
@@ -146,10 +155,12 @@ class AppPackageMakerAppImage extends AppPackageMaker {
         'libgtk-3.so.0',
       ];
 
-      final appSOLibs = Directory(path.join(
-        makeConfig.packagingDirectory.path,
-        '${makeConfig.appName}.AppDir/lib',
-      ))
+      final appSOLibs = Directory(
+        path.join(
+          makeConfig.packagingDirectory.path,
+          '${makeConfig.appName}.AppDir/lib',
+        ),
+      )
           .listSync()
           .where((e) => !defaultSharedObjects.contains(path.basename(e.path)));
 
@@ -174,11 +185,13 @@ class AppPackageMakerAppImage extends AppPackageMaker {
 
       await Future.wait(
         appSOLibs.map((so) async {
-          final referencedSharedLibs = await _getSharedDependencies(so.path)
-              .then((d) => d.difference(libFlutterGtkDeps)
-                ..removeWhere(
-                  (lib) => lib.contains('libflutter_linux_gtk.so'),
-                ));
+          final referencedSharedLibs =
+              await _getSharedDependencies(so.path).then(
+            (d) => d.difference(libFlutterGtkDeps)
+              ..removeWhere(
+                (lib) => lib.contains('libflutter_linux_gtk.so'),
+              ),
+          );
 
           if (referencedSharedLibs.isEmpty) return;
 
@@ -189,7 +202,7 @@ class AppPackageMakerAppImage extends AppPackageMaker {
               path.join(
                 makeConfig.packagingDirectory.path,
                 '${makeConfig.appName}.AppDir/usr/lib',
-              )
+              ),
             ],
           ).then((value) {
             if (value.exitCode != 0) {

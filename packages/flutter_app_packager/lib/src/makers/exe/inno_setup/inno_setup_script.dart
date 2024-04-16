@@ -101,7 +101,7 @@ class InnoSetupScript {
       'OUTPUT_BASE_FILENAME': makeConfig.outputBaseFileName,
       'LOCALES': makeConfig.locales,
       'SETUP_ICON_FILE': makeConfig.setupIconFile ?? '',
-      'PRIVILEGES_REQUIRED': makeConfig.privilegesRequired ?? 'none'
+      'PRIVILEGES_REQUIRED': makeConfig.privilegesRequired ?? 'none',
     }..removeWhere((key, value) => value == null);
 
     Context context = Context.create();
@@ -109,10 +109,12 @@ class InnoSetupScript {
 
     String scriptTemplate = _template;
     if (makeConfig.scriptTemplate != null) {
-      File scriptTemplateFile = File(path.join(
-        'windows/packaging/exe/',
-        makeConfig.scriptTemplate!,
-      ));
+      File scriptTemplateFile = File(
+        path.join(
+          'windows/packaging/exe/',
+          makeConfig.scriptTemplate!,
+        ),
+      );
       scriptTemplate = scriptTemplateFile.readAsStringSync();
     }
 

@@ -86,7 +86,7 @@ class CommandPackage extends Command {
       valueHelp: 'foo=bar',
       help: [
         'The --dart-define argument(s) passed to \'flutter build\'',
-        'You may add multiple \'--build-dart-define key=value\' pairs'
+        'You may add multiple \'--build-dart-define key=value\' pairs',
       ].join('\n'),
     );
   }
@@ -101,7 +101,7 @@ class CommandPackage extends Command {
         'Package the current Flutter application',
         '',
         'Options named --build-* are passed to \'flutter build\' as is',
-        'Please consult the \'flutter build\' CLI help for more informations.'
+        'Please consult the \'flutter build\' CLI help for more informations.',
       ].join('\n');
 
   @override

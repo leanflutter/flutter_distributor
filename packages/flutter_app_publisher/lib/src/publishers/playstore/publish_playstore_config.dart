@@ -19,7 +19,8 @@ class PublishPlayStoreConfig extends PublishConfig {
 
     if ((credentialsFile ?? '').isEmpty) {
       throw PublishError(
-          'Missing `$kEnvPlayStoreCredentialsFile` environment variable.');
+        'Missing `$kEnvPlayStoreCredentialsFile` environment variable.',
+      );
     }
     PublishPlayStoreConfig publishConfig = PublishPlayStoreConfig(
       credentialsFile: credentialsFile!,

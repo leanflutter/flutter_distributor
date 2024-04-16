@@ -36,7 +36,7 @@ class AppPackagePublisherAppStore extends AppPackagePublisher {
         '--type',
         type,
         // cmd list
-        ...publishConfig.toAppStoreCliDistributeArgs()
+        ...publishConfig.toAppStoreCliDistributeArgs(),
       ],
     );
 

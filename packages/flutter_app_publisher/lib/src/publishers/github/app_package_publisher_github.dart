@@ -34,9 +34,11 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
       publishArguments,
     );
     // Set auth
-    _dio.options = BaseOptions(headers: {
-      'Authorization': 'token ${publishConfig.token}',
-    });
+    _dio.options = BaseOptions(
+      headers: {
+        'Authorization': 'token ${publishConfig.token}',
+      },
+    );
 
     // Get uploadUrl
     String? uploadUrl;
@@ -61,9 +63,11 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
 
   /// Get uploadUrl by releaseName
   Future<String?> _getUploadurlByReleaseName(
-      PublishGithubConfig publishConfig) async {
+    PublishGithubConfig publishConfig,
+  ) async {
     Response resp = await _dio.get(
-        'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases');
+      'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases',
+    );
     List relist = (resp.data as List?) ?? [];
     var release = relist.firstWhere(
       (item) => item['name'] == publishConfig.releaseTitle,
@@ -79,7 +83,7 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
       data: {
         'tag_name': publishConfig.releaseTitle,
         'name': publishConfig.releaseTitle,
-        'draft': true
+        'draft': true,
       },
     );
     return resp.data?['upload_url'];
@@ -87,15 +91,20 @@ class AppPackagePublisherGithub extends AppPackagePublisher {
 
   /// Get uploadUrl by latest release
   Future<String?> _getUploadurlByLatestRelease(
-      PublishGithubConfig publishConfig) async {
+    PublishGithubConfig publishConfig,
+  ) async {
     Response resp = await _dio.get(
-        'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases/latest');
+      'https://api.github.com/repos/${publishConfig.repoOwner}/${publishConfig.repoName}/releases/latest',
+    );
     return resp.data?['upload_url'];
   }
 
   /// Upload Release Asset
-  Future<String> _uploadReleaseAsset(File file, String uploadUrl,
-      PublishProgressCallback? onPublishProgress) async {
+  Future<String> _uploadReleaseAsset(
+    File file,
+    String uploadUrl,
+    PublishProgressCallback? onPublishProgress,
+  ) async {
     // Fromat uploadUrl
     uploadUrl = uploadUrl.split('{').first;
     String fileName = file.path.split('/').last;

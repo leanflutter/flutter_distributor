@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 
 class MakeRPMConfig extends MakeConfig {
   MakeRPMConfig({
@@ -144,7 +144,7 @@ class MakeRPMConfig extends MakeConfig {
         'inline-body': {
           '%defattr': '(-,root,root)',
           '%attr': '(4755, root, root) %{_datadir}/pixmaps/%{name}.png',
-        }
+        },
       },
       'DESKTOP': {
         'Type': 'Application',
@@ -165,7 +165,7 @@ class MakeRPMConfig extends MakeConfig {
         'Keywords': keywords != null && keywords!.isNotEmpty
             ? '${keywords!.join(';')};'
             : null,
-        'StartupNotify': startupNotify
+        'StartupNotify': startupNotify,
       }..removeWhere((key, value) => value == null),
     };
   }

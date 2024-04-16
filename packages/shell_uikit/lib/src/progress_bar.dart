@@ -45,7 +45,7 @@ class ProgressBar {
     // set flag
     isActive = true;
 
-    timer = Timer.periodic(Duration(milliseconds: 10), (_) {
+    timer = Timer.periodic(const Duration(milliseconds: 10), (_) {
       render();
       if (!isActive && timer?.isActive == true) {
         timer?.cancel();
@@ -94,10 +94,12 @@ class ProgressBar {
     String percentage = (value * 100 / total).toStringAsFixed(1);
 
     stdout.write('\r');
-    stdout.write(format
-        .replaceAll('{bar}', bar)
-        .replaceAll('{percentage}', percentage)
-        .replaceAll('{value}', '$value')
-        .replaceAll('{total}', '$total'));
+    stdout.write(
+      format
+          .replaceAll('{bar}', bar)
+          .replaceAll('{percentage}', percentage)
+          .replaceAll('{value}', '$value')
+          .replaceAll('{total}', '$total'),
+    );
   }
 }

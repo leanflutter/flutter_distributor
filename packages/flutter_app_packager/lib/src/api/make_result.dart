@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:app_package_maker/src/make_config.dart';
-import 'package:app_package_maker/src/make_error.dart';
+import 'package:flutter_app_packager/src/api/make_config.dart';
+import 'package:flutter_app_packager/src/api/make_error.dart';
 
 class MakeResult {
   MakeResult(
@@ -17,10 +17,12 @@ class MakeResult {
     return {
       'config': config.toJson(),
       'artifacts': artifacts
-          .map((e) => {
-                'type': e is File ? 'file' : 'directory',
-                'path': e.path,
-              })
+          .map(
+            (e) => {
+              'type': e is File ? 'file' : 'directory',
+              'path': e.path,
+            },
+          )
           .toList(),
       'duration': duration,
     }..removeWhere((key, value) => value == null);

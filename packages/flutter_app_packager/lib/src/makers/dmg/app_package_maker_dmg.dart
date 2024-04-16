@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 import 'package:flutter_app_packager/src/makers/dmg/commands/appdmg.dart';
 import 'package:flutter_app_packager/src/makers/dmg/make_dmg_config.dart';
 import 'package:shell_executor/shell_executor.dart';

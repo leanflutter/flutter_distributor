@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 import 'package:flutter_app_packager/src/makers/pkg/make_pkg_config.dart';
 import 'package:shell_executor/shell_executor.dart';
 
@@ -25,10 +25,12 @@ class AppPackageMakerPkg extends AppPackageMaker {
     File appFile = config.buildOutputFiles.first;
 
     File outputFile = config.outputFile;
-    File unsignedPkgFile = File(outputFile.path.replaceFirst(
-      '.$packageFormat',
-      '-unsigned.$packageFormat',
-    ));
+    File unsignedPkgFile = File(
+      outputFile.path.replaceFirst(
+        '.$packageFormat',
+        '-unsigned.$packageFormat',
+      ),
+    );
 
     await $('xcrun', [
       'productbuild',

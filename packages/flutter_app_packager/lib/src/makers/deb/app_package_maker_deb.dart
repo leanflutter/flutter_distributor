@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 import 'package:flutter_app_packager/src/makers/deb/make_deb_config.dart';
 import 'package:path/path.dart' as path;
 import 'package:shell_executor/shell_executor.dart';
@@ -119,7 +119,7 @@ class AppPackageMakerDeb extends AppPackageMaker {
       '--build',
       '--root-owner-group',
       packagingDirectory.path,
-      makeConfig.outputFile.path
+      makeConfig.outputFile.path,
     ]);
 
     if (processResult.exitCode != 0) {

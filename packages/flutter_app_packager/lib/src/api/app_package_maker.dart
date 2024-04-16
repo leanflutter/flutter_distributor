@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:app_package_maker/src/make_config.dart';
-import 'package:app_package_maker/src/make_result.dart';
+import 'package:flutter_app_packager/src/api/make_config.dart';
+import 'package:flutter_app_packager/src/api/make_result.dart';
 import 'package:shell_executor/shell_executor.dart';
 import 'package:yaml/yaml.dart';
+
+export 'make_config.dart';
+export 'make_error.dart';
+export 'make_result.dart';
 
 Map<String, dynamic> loadMakeConfigYaml(String path) {
   final yamlDoc = loadYaml(File(path).readAsStringSync());

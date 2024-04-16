@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 import 'package:flutter_app_packager/src/makers/makers.dart';
 
 class FlutterAppPackager {

@@ -20,7 +20,8 @@ class PublishAppCenterConfig extends PublishConfig {
         (environment ?? Platform.environment)[kEnvAppCenterApiToken];
     if ((apiToken ?? '').isEmpty) {
       throw PublishError(
-          'Missing `$kEnvAppCenterApiToken` environment variable.');
+        'Missing `$kEnvAppCenterApiToken` environment variable.',
+      );
     }
     String? ownerName = publishArguments?['owner-name'];
     if ((ownerName ?? '').isEmpty) {

@@ -1,5 +1,3 @@
-export 'package:app_package_maker/app_package_maker.dart';
-
 export 'aab/app_package_maker_aab.dart';
 export 'apk/app_package_maker_apk.dart';
 export 'appimage/app_package_maker_appimage.dart';

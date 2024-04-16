@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 
 // format of make_config for deb
 /*
@@ -154,71 +154,72 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
 
   factory MakeDebConfig.fromJson(Map<String, dynamic> map) {
     return MakeDebConfig(
-        displayName: map['display_name'],
-        packageName: map['package_name'],
-        maintainer:
-            "${map['maintainer']['name']} <${map['maintainer']['email']}>",
-        coAuthors: (map['co_authors'] as List?)
-            ?.map((e) => "${e['name']} <${e['email']}>")
-            .toList(),
-        priority: map['priority'],
-        section: map['section'],
-        dependencies: map['dependencies'] != null
-            ? List.castFrom<dynamic, String>(map['dependencies'])
-            : null,
-        buildDependenciesIndep: map['build_dependencies_indep'] != null
-            ? List.castFrom<dynamic, String>(map['build_dependencies_indep'])
-            : null,
-        buildDependencies: map['build_dependencies'] != null
-            ? List.castFrom<dynamic, String>(map['build_dependencies'])
-            : null,
-        recommendedDependencies: map['recommended_dependencies'] != null
-            ? List.castFrom<dynamic, String>(map['recommended_dependencies'])
-            : null,
-        suggestedDependencies: map['suggested_dependencies'] != null
-            ? List.castFrom<dynamic, String>(map['suggested_dependencies'])
-            : null,
-        enhances: map['enhances'] != null
-            ? List.castFrom<dynamic, String>(map['enhances'])
-            : null,
-        preDependencies: map['pre_dependencies'] != null
-            ? List.castFrom<dynamic, String>(map['pre_dependencies'])
-            : null,
-        breaks: map['breaks'] != null
-            ? List.castFrom<dynamic, String>(map['breaks'])
-            : null,
-        conflicts: map['conflicts'] != null
-            ? List.castFrom<dynamic, String>(map['conflicts'])
-            : null,
-        provides: map['provides'] != null
-            ? List.castFrom<dynamic, String>(map['provides'])
-            : null,
-        replaces: map['replaces'] != null
-            ? List.castFrom<dynamic, String>(map['replaces'])
-            : null,
-        postinstallScripts: map['postinstall_scripts'] != null
-            ? List.castFrom<dynamic, String>(map['postinstall_scripts'])
-            : null,
-        postuninstallScripts: map['postuninstall_scripts'] != null
-            ? List.castFrom<dynamic, String>(map['postuninstall_scripts'])
-            : null,
-        keywords: map['keywords'] != null
-            ? List.castFrom<dynamic, String>(map['keywords'])
-            : null,
-        supportedMimeType: map['supported_mime_type'] != null
-            ? List.castFrom<dynamic, String>(map['supported_mime_type'])
-            : null,
-        actions: map['actions'] != null
-            ? List.castFrom<dynamic, String>(map['actions'])
-            : null,
-        categories: map['categories'] != null
-            ? List.castFrom<dynamic, String>(map['categories'])
-            : null,
-        essential: map['essential'],
-        genericName: map['generic_name'],
-        startupNotify: map['startup_notify'],
-        installedSize: map['installed_size'],
-        icon: map['icon']);
+      displayName: map['display_name'],
+      packageName: map['package_name'],
+      maintainer:
+          "${map['maintainer']['name']} <${map['maintainer']['email']}>",
+      coAuthors: (map['co_authors'] as List?)
+          ?.map((e) => "${e['name']} <${e['email']}>")
+          .toList(),
+      priority: map['priority'],
+      section: map['section'],
+      dependencies: map['dependencies'] != null
+          ? List.castFrom<dynamic, String>(map['dependencies'])
+          : null,
+      buildDependenciesIndep: map['build_dependencies_indep'] != null
+          ? List.castFrom<dynamic, String>(map['build_dependencies_indep'])
+          : null,
+      buildDependencies: map['build_dependencies'] != null
+          ? List.castFrom<dynamic, String>(map['build_dependencies'])
+          : null,
+      recommendedDependencies: map['recommended_dependencies'] != null
+          ? List.castFrom<dynamic, String>(map['recommended_dependencies'])
+          : null,
+      suggestedDependencies: map['suggested_dependencies'] != null
+          ? List.castFrom<dynamic, String>(map['suggested_dependencies'])
+          : null,
+      enhances: map['enhances'] != null
+          ? List.castFrom<dynamic, String>(map['enhances'])
+          : null,
+      preDependencies: map['pre_dependencies'] != null
+          ? List.castFrom<dynamic, String>(map['pre_dependencies'])
+          : null,
+      breaks: map['breaks'] != null
+          ? List.castFrom<dynamic, String>(map['breaks'])
+          : null,
+      conflicts: map['conflicts'] != null
+          ? List.castFrom<dynamic, String>(map['conflicts'])
+          : null,
+      provides: map['provides'] != null
+          ? List.castFrom<dynamic, String>(map['provides'])
+          : null,
+      replaces: map['replaces'] != null
+          ? List.castFrom<dynamic, String>(map['replaces'])
+          : null,
+      postinstallScripts: map['postinstall_scripts'] != null
+          ? List.castFrom<dynamic, String>(map['postinstall_scripts'])
+          : null,
+      postuninstallScripts: map['postuninstall_scripts'] != null
+          ? List.castFrom<dynamic, String>(map['postuninstall_scripts'])
+          : null,
+      keywords: map['keywords'] != null
+          ? List.castFrom<dynamic, String>(map['keywords'])
+          : null,
+      supportedMimeType: map['supported_mime_type'] != null
+          ? List.castFrom<dynamic, String>(map['supported_mime_type'])
+          : null,
+      actions: map['actions'] != null
+          ? List.castFrom<dynamic, String>(map['actions'])
+          : null,
+      categories: map['categories'] != null
+          ? List.castFrom<dynamic, String>(map['categories'])
+          : null,
+      essential: map['essential'],
+      genericName: map['generic_name'],
+      startupNotify: map['startup_notify'],
+      installedSize: map['installed_size'],
+      icon: map['icon'],
+    );
   }
 
   String displayName;
@@ -308,7 +309,7 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
         'Keywords': keywords != null && keywords!.isNotEmpty
             ? '${keywords!.join(';')};'
             : null,
-        'StartupNotify': startupNotify
+        'StartupNotify': startupNotify,
       }..removeWhere((key, value) => value == null),
     };
   }
@@ -342,7 +343,7 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
               ...postuninstallScripts,
               'exit 0',
             ].join('\n')
-          : null
+          : null,
     }..removeWhere((key, value) => value == null);
     return Map.castFrom<String, String?, String, String>(map);
   }

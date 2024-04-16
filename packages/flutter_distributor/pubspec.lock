@@ -33,13 +33,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
-  app_package_maker:
-    dependency: "direct main"
-    description:
-      path: "../app_package_maker"
-      relative: true
-    source: path
-    version: "0.3.6"
   app_package_parser:
     dependency: "direct overridden"
     description:

@@ -32,7 +32,7 @@ class AppPackagePublisherFirebase extends AppPackagePublisher {
         'appdistribution:distribute',
         file.path,
         // cmd list
-        ...publishConfig.toFirebaseCliDistributeArgs()
+        ...publishConfig.toFirebaseCliDistributeArgs(),
       ],
     );
     if (processResult.exitCode == 0) {

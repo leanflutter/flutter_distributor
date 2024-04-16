@@ -29,10 +29,12 @@ class AppPackagePublisherVercel extends AppPackagePublisher {
     try {
       File file = File('${directory.path}/.vercel/project.json');
       file.createSync(recursive: true);
-      file.writeAsStringSync(json.encode({
-        'orgId': publishConfig.orgId,
-        'projectId': publishConfig.projectId,
-      }));
+      file.writeAsStringSync(
+        json.encode({
+          'orgId': publishConfig.orgId,
+          'projectId': publishConfig.projectId,
+        }),
+      );
       ProcessResult r = await $(
         'vercel',
         ['--prod'],

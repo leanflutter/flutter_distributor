@@ -139,7 +139,8 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
     required String contentType,
   }) async {
     final response = await _dio.post(
-        '$_kUploadDomain/set_metadata/$packageAssetId?file_name=$fileName&file_size=$fileSize&token=$urlEncodedToken&content_type=$contentType');
+      '$_kUploadDomain/set_metadata/$packageAssetId?file_name=$fileName&file_size=$fileSize&token=$urlEncodedToken&content_type=$contentType',
+    );
     return Map<String, dynamic>.from(response.data);
   }
 
@@ -170,10 +171,12 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
       await _dio.post(
         '$_kUploadDomain/upload_chunk/$packageAssetId?token=$urlEncodedToken&block_number=${i + 1}',
         data: Stream.fromIterable(fileData.map((e) => [e])),
-        options: Options(headers: {
-          Headers.contentLengthHeader: contentLength,
-          Headers.contentTypeHeader: contentType,
-        }),
+        options: Options(
+          headers: {
+            Headers.contentLengthHeader: contentLength,
+            Headers.contentTypeHeader: contentType,
+          },
+        ),
         onSendProgress: (sent, total) {
           if (onPublishProgress != null) {
             onPublishProgress((i * chunkSize) + sent, file.lengthSync());
@@ -230,7 +233,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
         // skip
       }
       counter = counter + 1;
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 3));
     }
 
     if (releaseDistinctId == null) {
@@ -249,7 +252,7 @@ class AppPackagePublisherAppCenter extends AppPackagePublisher {
       '/apps/$ownerName/$appName/releases/$releaseDistinctId',
       data: {
         'destinations': [
-          {'name': distributionGroup}
+          {'name': distributionGroup},
         ],
       },
     );

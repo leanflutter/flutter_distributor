@@ -16,19 +16,23 @@ class PublishFirebaseConfig extends PublishConfig {
     this.groupsFile,
   });
 
-  factory PublishFirebaseConfig.parse(Map<String, String>? environment,
-      Map<String, dynamic>? publishArguments) {
+  factory PublishFirebaseConfig.parse(
+    Map<String, String>? environment,
+    Map<String, dynamic>? publishArguments,
+  ) {
     // Get token
     String? token = (environment ?? Platform.environment)[kEnvFirebaseToken];
     if ((token ?? '').isEmpty) {
       throw PublishError(
-          'Missing `$kEnvFirebaseToken` environment variable. See:https://firebase.google.com/docs/cli?authuser=0#cli-ci-systems');
+        'Missing `$kEnvFirebaseToken` environment variable. See:https://firebase.google.com/docs/cli?authuser=0#cli-ci-systems',
+      );
     }
     // Get app
     String? app = publishArguments?['app'];
     if ((app ?? '').isEmpty) {
       throw PublishError(
-          'Missing app args. See:https://console.firebase.google.com/project/_/settings/general/?authuser=0');
+        'Missing app args. See:https://console.firebase.google.com/project/_/settings/general/?authuser=0',
+      );
     }
     return PublishFirebaseConfig(
       app: app!,

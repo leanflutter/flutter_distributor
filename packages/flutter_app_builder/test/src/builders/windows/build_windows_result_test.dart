@@ -11,7 +11,7 @@ void main() {
           arguments: {'profile': true},
         ),
       );
-      r.flutterVersion = FlutterVersion(flutterVersion: '3.16.0');
+      r.flutterVersion = const FlutterVersion(flutterVersion: '3.16.0');
       expect(r.outputDirectory.path, 'build/windows/x64/runner/Profile');
     });
     test('profile mode (less 3.15.0)', () {
@@ -20,21 +20,21 @@ void main() {
           arguments: {'profile': true},
         ),
       );
-      r.flutterVersion = FlutterVersion(flutterVersion: '3.10.0');
+      r.flutterVersion = const FlutterVersion(flutterVersion: '3.10.0');
       expect(r.outputDirectory.path, 'build/windows/runner/Profile');
     });
     test('release mode', () {
       final r = BuildWindowsResult(
         BuildConfig(),
       );
-      r.flutterVersion = FlutterVersion(flutterVersion: '3.16.0');
+      r.flutterVersion = const FlutterVersion(flutterVersion: '3.16.0');
       expect(r.outputDirectory.path, 'build/windows/x64/runner/Release');
     });
     test('release mode (less 3.15.0)', () {
       final r = BuildWindowsResult(
         BuildConfig(),
       );
-      r.flutterVersion = FlutterVersion(flutterVersion: '3.10.0');
+      r.flutterVersion = const FlutterVersion(flutterVersion: '3.10.0');
       expect(r.outputDirectory.path, 'build/windows/runner/Release');
     });
   });

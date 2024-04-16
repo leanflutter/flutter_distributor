@@ -2,7 +2,7 @@
 
 import 'dart:io';
 
-import 'package:app_package_maker/app_package_maker.dart';
+import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 
 class AppImageAction {
   AppImageAction({
@@ -51,8 +51,11 @@ class MakeAppImageConfig extends MakeConfig {
       startupNotify: map['startup_notify'] as bool? ?? false,
       genericName: map['generic_name'] as String? ?? 'A Flutter Application',
       actions: (map['actions'] as List? ?? [])
-          .map((e) => AppImageAction.fromJson(
-              (Map.castFrom<dynamic, dynamic, String, dynamic>(e))))
+          .map(
+            (e) => AppImageAction.fromJson(
+              (Map.castFrom<dynamic, dynamic, String, dynamic>(e)),
+            ),
+          )
           .toList(),
     );
   }

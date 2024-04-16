@@ -30,17 +30,21 @@ class AppPackagePublisherFirebaseHosting extends AppPackagePublisher {
     try {
       File firebaseRcFile = File('${directory.path}/.firebaserc');
       firebaseRcFile.createSync(recursive: true);
-      firebaseRcFile.writeAsStringSync(json.encode({
-        'projects': {'default': publishConfig.projectId}
-      }));
+      firebaseRcFile.writeAsStringSync(
+        json.encode({
+          'projects': {'default': publishConfig.projectId},
+        }),
+      );
       File firebaseJsonFile = File('${directory.path}/firebase.json');
       firebaseJsonFile.createSync(recursive: true);
-      firebaseJsonFile.writeAsStringSync(json.encode({
-        'hosting': {
-          'public': '.',
-          'ignore': ['firebase.json']
-        }
-      }));
+      firebaseJsonFile.writeAsStringSync(
+        json.encode({
+          'hosting': {
+            'public': '.',
+            'ignore': ['firebase.json'],
+          },
+        }),
+      );
       ProcessResult r = await $(
         'firebase',
         ['deploy'],

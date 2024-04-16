@@ -9,7 +9,7 @@ String pathExpansion(
 
   final matches = [
     ...RegExp(r'\$(\w+)').allMatches(path),
-    ...RegExp(r'\$\{(\w+)\}').allMatches(path)
+    ...RegExp(r'\$\{(\w+)\}').allMatches(path),
   ];
   for (final match in matches) {
     final envName = match.group(1);

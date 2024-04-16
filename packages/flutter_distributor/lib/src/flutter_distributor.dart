@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:app_package_maker/app_package_maker.dart';
 import 'package:app_package_publisher/app_package_publisher.dart';
 import 'package:flutter_app_builder/flutter_app_builder.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
@@ -157,7 +156,9 @@ class FlutterDistributor {
               arguments: buildArguments,
               environment: variables ?? globalVariables,
             );
-            print(JsonEncoder.withIndent('  ').convert(buildResult.toJson()));
+            print(
+              const JsonEncoder.withIndent('  ').convert(buildResult.toJson()),
+            );
             logger.info(
               'Successfully built ${buildResult.outputDirectory} in ${buildResult.duration!.inSeconds}s'
                   .brightGreen(),
@@ -187,7 +188,9 @@ class FlutterDistributor {
             buildOutputDirectory: buildResult.outputDirectory,
             buildOutputFiles: buildResult.outputFiles,
           );
-          print(JsonEncoder.withIndent('  ').convert(makeResult.toJson()));
+          print(
+            const JsonEncoder.withIndent('  ').convert(makeResult.toJson()),
+          );
           FileSystemEntity artifact = makeResult.artifacts.first;
           logger.info(
             'Successfully packaged ${artifact.path}'.brightGreen(),

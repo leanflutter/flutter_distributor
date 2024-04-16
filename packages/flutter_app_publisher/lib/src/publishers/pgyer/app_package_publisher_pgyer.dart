@@ -70,8 +70,11 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
   /// [tokenInfo] token信息
   /// [file] 文件
   /// [onPublishProgress] 进度回调
-  Future<String> uploadApp(Response tokenInfo, File file,
-      PublishProgressCallback? onPublishProgress) async {
+  Future<String> uploadApp(
+    Response tokenInfo,
+    File file,
+    PublishProgressCallback? onPublishProgress,
+  ) async {
     var tokenData = tokenInfo.data['data'];
     String endpoint = tokenData['endpoint'];
     String key = tokenData['key'];
@@ -111,7 +114,7 @@ class AppPackagePublisherPgyer extends AppPackagePublisher {
     if (tryCount > maxTryCount) {
       throw PublishError('getBuildInfo error :Too many retries');
     }
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3));
     try {
       Response response = await _dio.get(
         'https://www.pgyer.com/apiv2/app/buildInfo',
