@@ -33,13 +33,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
-  app_package_parser:
-    dependency: "direct overridden"
-    description:
-      path: "../app_package_parser"
-      relative: true
-    source: path
-    version: "0.2.4"
   archive:
     dependency: transitive
     description:

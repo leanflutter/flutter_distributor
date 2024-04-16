@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:app_package_parser/app_package_parser.dart';
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
+import 'package:parse_app_package/src/api/app_package_parser.dart';
 import 'package:plist_parser/plist_parser.dart';
 
 class AppPackageParserIpa extends AppPackageParser {

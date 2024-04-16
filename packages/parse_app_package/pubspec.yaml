@@ -8,7 +8,6 @@ environment:
   sdk: ">=2.16.0 <4.0.0"
 
 dependencies:
-  app_package_parser: ^0.2.4
   archive: ^3.4.10
   args: ^2.2.0
   plist_parser: ^0.0.11
