@@ -167,21 +167,21 @@ packages:
       path: "../flutter_app_builder"
       relative: true
     source: path
-    version: "0.3.7"
+    version: "0.4.2"
   flutter_app_packager:
     dependency: "direct main"
     description:
       path: "../flutter_app_packager"
       relative: true
     source: path
-    version: "0.3.7"
+    version: "0.4.2"
   flutter_app_publisher:
     dependency: "direct main"
     description:
       path: "../flutter_app_publisher"
       relative: true
     source: path
-    version: "0.4.1"
+    version: "0.4.2"
   frontend_server_client:
     dependency: transitive
     description:

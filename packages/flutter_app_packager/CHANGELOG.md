@@ -1,3 +1,7 @@
+## 0.4.2
+
+* some fixes
+
 ## 0.3.8
 
 * bump `archive` to 3.4.10

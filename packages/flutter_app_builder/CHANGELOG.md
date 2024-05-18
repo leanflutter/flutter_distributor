@@ -1,3 +1,7 @@
+## 0.4.2
+
+* some fixes
+
 ## 0.3.7
 
 * fix: Unhandled exception Null check operator used on a null value #159
