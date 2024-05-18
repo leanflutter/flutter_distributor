@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_app_publisher/src/api/app_package_publisher.dart';
 
-const kEnvPlayStoreCredentialsFile = 'GOOGLE_APPLICATION_CREDENTIALS';
+const kEnvPlayStoreCredentialsFile = 'PLAYSTORE_CREDENTIALS';
 
 class PublishPlayStoreConfig extends PublishConfig {
   PublishPlayStoreConfig({

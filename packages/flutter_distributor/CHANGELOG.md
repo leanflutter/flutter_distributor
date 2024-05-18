@@ -1,3 +1,7 @@
+## 0.4.1
+
+* [playstore] - Replace `GOOGLE_APPLICATION_CREDENTIALS` to `PLAYSTORE_CREDENTIALS`
+
 ## 0.4.0
 
 * fix failure to parse `Property List Binary` format
