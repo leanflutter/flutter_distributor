@@ -81,6 +81,7 @@ export default defineConfig({
             { label: "firebase", link: "/publishers/firebase/" },
             { label: "github", link: "/publishers/github/" },
             { label: "pgyer", link: "/publishers/pgyer/" },
+            { label: "playstore", link: "/publishers/playstore/" },
             { label: "qiniu", link: "/publishers/qiniu/" },
             { label: "vercel", link: "/publishers/vercel/" },
           ],
