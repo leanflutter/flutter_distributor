@@ -1,3 +1,7 @@
+## 0.4.3
+
+* Fix the issue of garbled text in parseAppPackage on macOS.
+
 ## 0.4.2
 
 * some fixes

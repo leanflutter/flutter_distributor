@@ -8,9 +8,11 @@ import 'package:shell_executor/shell_executor.dart';
 
 /// Convert bytes to string (UTF-8 or detected charset)
 String convertToString(List<int> bytes) {
-  final charset = Charset.detect(bytes);
-  if (charset != null) {
-    return charset.decode(bytes);
+  if (Platform.isWindows) {
+    final charset = Charset.detect(bytes);
+    if (charset != null) {
+      return charset.decode(bytes);
+    }
   }
   return utf8.decode(bytes, allowMalformed: true);
 }
