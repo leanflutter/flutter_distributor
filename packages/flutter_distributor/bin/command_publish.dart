@@ -141,6 +141,7 @@ class CommandPublish extends Command {
     // PlayStore
     argParser.addSeparator('playstore');
     argParser.addOption('playstore-package-name', valueHelp: '');
+    argParser.addOption('playstore-track', valueHelp: 'alpha as default value');
 
     // Qiniu
     argParser.addSeparator('qiniu');

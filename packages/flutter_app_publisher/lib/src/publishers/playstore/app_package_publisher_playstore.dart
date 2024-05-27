@@ -50,6 +50,14 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
       appEdit.id!,
       uploadMedia: uploadMedia,
     );
+    final String? track = publishArguments?['track'];
+
+    await publisherApi.edits.tracks.update(
+      Track()..track = track,
+      publishConfig.packageName,
+      appEdit.id!,
+      track ?? 'alpha',
+    );
 
     await publisherApi.edits.commit(
       publishConfig.packageName,
