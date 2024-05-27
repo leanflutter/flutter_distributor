@@ -208,6 +208,7 @@ class CommandPublish extends Command {
       'github-repo-name': argResults?['github-repo-name'],
       'github-release-title': argResults?['github-release-title'],
       'playstore-package-name': argResults?['playstore-package-name'],
+      'playstore-track': argResults?['playstore-track'],
       'qiniu-bucket': argResults?['qiniu-bucket'],
       'qiniu-bucket-domain': argResults?['qiniu-bucket-domain'],
       'qiniu-savekey-prefix': argResults?['qiniu-savekey-prefix'],
