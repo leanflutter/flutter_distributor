@@ -51,6 +51,7 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
       uploadMedia: uploadMedia,
     );
     final String? track = publishArguments?['track'];
+    print(publishArguments);
     if (track != null) {
       await publisherApi.edits.tracks.update(
         Track()..track = track,
