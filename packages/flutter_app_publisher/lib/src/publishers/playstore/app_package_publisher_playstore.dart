@@ -53,7 +53,7 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
 
     if (publishConfig.track != null) {
       await publisherApi.edits.tracks.update(
-        Track()..track = publishConfig.track,
+        Track(track: publishConfig.track),
         publishConfig.packageName,
         appEdit.id!,
         publishConfig.track!,
