@@ -26,6 +26,8 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
       publishArguments,
     );
 
+    print(publishArguments);
+
     String jsonString = File(publishConfig.credentialsFile).readAsStringSync();
     ServiceAccountCredentials serviceAccountCredentials =
         ServiceAccountCredentials.fromJson(json.decode(jsonString));
@@ -44,14 +46,12 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
       publishConfig.packageName,
     );
     Media uploadMedia = Media(file.openRead(), file.lengthSync());
-
     await publisherApi.edits.bundles.upload(
       publishConfig.packageName,
       appEdit.id!,
       uploadMedia: uploadMedia,
     );
     final String? track = publishArguments?['track'];
-    print(publishArguments);
     if (track != null) {
       await publisherApi.edits.tracks.update(
         Track()..track = track,
