@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter_app_publisher/src/api/app_package_publisher.dart';
 import 'package:flutter_app_publisher/src/publishers/playstore/publish_playstore_config.dart';
 import 'package:googleapis/androidpublisher/v3.dart';
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:logging/logging.dart';
 
+Logger logger = Logger('flutter_distributor')
+  ..onRecord.listen((record) {
+    print(record.message);
+  });
 class AppPackagePublisherPlayStore extends AppPackagePublisher {
   @override
   String get name => 'playstore';
@@ -26,7 +30,7 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
       publishArguments,
     );
 
-    print(publishArguments);
+    logger.info("publishArguments : $publishArguments");
 
     String jsonString = File(publishConfig.credentialsFile).readAsStringSync();
     ServiceAccountCredentials serviceAccountCredentials =
