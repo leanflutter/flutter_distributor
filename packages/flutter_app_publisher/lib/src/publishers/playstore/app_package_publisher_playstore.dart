@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter_app_publisher/src/api/app_package_publisher.dart';
 import 'package:flutter_app_publisher/src/publishers/playstore/publish_playstore_config.dart';
 import 'package:googleapis/androidpublisher/v3.dart';
 import 'package:googleapis_auth/auth_io.dart';
-import 'package:logging/logging.dart';
 
 class AppPackagePublisherPlayStore extends AppPackagePublisher {
   @override
@@ -44,6 +44,7 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
       publishConfig.packageName,
     );
     Media uploadMedia = Media(file.openRead(), file.lengthSync());
+
     await publisherApi.edits.bundles.upload(
       publishConfig.packageName,
       appEdit.id!,
