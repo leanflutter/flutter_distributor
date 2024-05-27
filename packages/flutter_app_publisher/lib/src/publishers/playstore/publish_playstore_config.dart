@@ -32,5 +32,5 @@ class PublishPlayStoreConfig extends PublishConfig {
   }
   final String credentialsFile;
   final String packageName;
-  final String track;
+  final String? track;
 }

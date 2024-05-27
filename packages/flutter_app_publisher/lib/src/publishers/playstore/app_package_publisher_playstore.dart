@@ -6,10 +6,6 @@ import 'package:googleapis/androidpublisher/v3.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:logging/logging.dart';
 
-Logger logger = Logger('flutter_distributor')
-  ..onRecord.listen((record) {
-    print(record.message);
-  });
 class AppPackagePublisherPlayStore extends AppPackagePublisher {
   @override
   String get name => 'playstore';
@@ -29,8 +25,6 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
       environment,
       publishArguments,
     );
-
-    logger.info("publishArguments : $publishArguments");
 
     String jsonString = File(publishConfig.credentialsFile).readAsStringSync();
     ServiceAccountCredentials serviceAccountCredentials =
@@ -55,13 +49,13 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
       appEdit.id!,
       uploadMedia: uploadMedia,
     );
-    final String? track = publishArguments?['track'];
-    if (track != null) {
+
+    if (publishConfig.track != null) {
       await publisherApi.edits.tracks.update(
-        Track()..track = track,
+        Track()..track = publishConfig.track,
         publishConfig.packageName,
         appEdit.id!,
-        track,
+        publishConfig.track!,
       );
     }
 
