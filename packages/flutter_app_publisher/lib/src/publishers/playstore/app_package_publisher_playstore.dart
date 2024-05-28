@@ -51,6 +51,11 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
       uploadMedia: uploadMedia,
     );
 
+    await publisherApi.edits.commit(
+      publishConfig.packageName,
+      appEdit.id!,
+    );
+
     if (publishConfig.track != null) {
       await publisherApi.edits.tracks.update(
         Track(track: publishConfig.track),
@@ -59,11 +64,6 @@ class AppPackagePublisherPlayStore extends AppPackagePublisher {
         publishConfig.track!,
       );
     }
-
-    await publisherApi.edits.commit(
-      publishConfig.packageName,
-      appEdit.id!,
-    );
 
     return PublishResult(
       url: '',
