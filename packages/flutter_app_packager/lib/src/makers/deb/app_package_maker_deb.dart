@@ -90,8 +90,7 @@ class AppPackageMakerDeb extends AppPackageMaker {
     if (makeConfig.metainfo != null) {
       final metainfoFile = File(makeConfig.metainfo!);
       if (!metainfoFile.existsSync()) {
-        throw MakeError(
-            "provided metainfo ${makeConfig.metainfo} path wasn't found");
+        throw MakeError("Metainfo ${makeConfig.metainfo} path wasn't found");
       }
       final metainfoDir =
           path.join(packagingDirectory.path, 'usr/share/metainfo');
