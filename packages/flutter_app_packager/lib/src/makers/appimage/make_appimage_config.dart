@@ -41,11 +41,13 @@ class MakeAppImageConfig extends MakeConfig {
     this.startupNotify = true,
     this.genericName = 'A Flutter Application',
     this.supportedMimeType,
+    this.metainfo,
   });
   factory MakeAppImageConfig.fromJson(Map<String, dynamic> map) {
     return MakeAppImageConfig(
       displayName: map['display_name'] as String,
       icon: map['icon'] as String,
+      metainfo: map['metainfo'] as String?,
       include: (map['include'] as List<dynamic>? ?? []).cast<String>(),
       keywords: (map['keywords'] as List<dynamic>? ?? []).cast<String>(),
       categories: (map['categories'] as List<dynamic>? ?? []).cast<String>(),
@@ -65,6 +67,7 @@ class MakeAppImageConfig extends MakeConfig {
   }
 
   final String icon;
+  final String? metainfo;
   final List<String> keywords;
   final List<String> categories;
   final List<AppImageAction> actions;

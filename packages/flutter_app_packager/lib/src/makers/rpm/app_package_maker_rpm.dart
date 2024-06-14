@@ -136,6 +136,19 @@ class AppPackageMakerRPM extends AppPackageMaker {
       }
     }
 
+    if (makeConfig.metainfo != null) {
+      final metainfoFile = File(makeConfig.metainfo!);
+      if (!metainfoFile.existsSync()) {
+        throw MakeError("Metainfo ${makeConfig.metainfo} path doesn't exist");
+      }
+      await metainfoFile.copy(
+        path.join(
+          rpmbuildDirPath,
+          makeConfig.appBinaryName + path.extension(makeConfig.metainfo!, 2),
+        ),
+      );
+    }
+
     // create & write the files got from makeConfig
     final specFile = File(path.join(specsPath, '${makeConfig.appName}.spec'));
     final desktopEntryFile =

@@ -11,6 +11,7 @@ class MakeRPMConfig extends MakeConfig {
     this.categories,
     this.genericName,
     this.icon,
+    this.metainfo,
     this.keywords,
     this.supportedMimeType,
 
@@ -40,6 +41,7 @@ class MakeRPMConfig extends MakeConfig {
     return MakeRPMConfig(
       displayName: json['display_name'] as String,
       icon: json['icon'] as String?,
+      metainfo: json['metainfo'] as String?,
       genericName: json['generic_name'] as String?,
       startupNotify: json['startup_notify'] as bool?,
       keywords: (json['keywords'] as List<dynamic>?)?.cast<String>(),
@@ -71,6 +73,7 @@ class MakeRPMConfig extends MakeConfig {
 
   String displayName;
   String? icon;
+  String? metainfo;
   String? genericName;
   bool? startupNotify;
   List<String>? keywords;
@@ -126,11 +129,13 @@ class MakeRPMConfig extends MakeConfig {
             'mkdir -p %{buildroot}%{_bindir}',
             'mkdir -p %{buildroot}%{_datadir}/%{name}',
             'mkdir -p %{buildroot}%{_datadir}/applications',
+            'mkdir -p %{buildroot}%{_datadir}/metainfo',
             'mkdir -p %{buildroot}%{_datadir}/pixmaps',
             'cp -r %{name}/* %{buildroot}%{_datadir}/%{name}',
             'ln -s %{_datadir}/%{name}/%{name} %{buildroot}%{_bindir}/%{name}',
             'cp -r %{name}.desktop %{buildroot}%{_datadir}/applications',
             'cp -r %{name}.png %{buildroot}%{_datadir}/pixmaps',
+            'cp -r %{name}.xml %{buildroot}%{_datadir}/metainfo',
             'update-mime-database %{_datadir}/mime &> /dev/null || :',
           ].join('\n'),
           '%postun': ['update-mime-database %{_datadir}/mime &> /dev/null || :']

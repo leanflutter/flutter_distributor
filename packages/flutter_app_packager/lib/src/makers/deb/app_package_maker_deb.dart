@@ -87,6 +87,21 @@ class AppPackageMakerDeb extends AppPackageMaker {
         ),
       );
     }
+    if (makeConfig.metainfo != null) {
+      final metainfoFile = File(makeConfig.metainfo!);
+      if (!metainfoFile.existsSync()) {
+        throw MakeError(
+            "provided metainfo ${makeConfig.metainfo} path wasn't found");
+      }
+      final metainfoDir =
+          path.join(packagingDirectory.path, 'usr/share/metainfo');
+      await metainfoFile.copy(
+        path.join(
+          metainfoDir,
+          makeConfig.appBinaryName + path.extension(makeConfig.metainfo!, 2),
+        ),
+      );
+    }
 
     // create & write the files got from makeConfig
     final controlFile = File(path.join(debianDir, 'control'));

@@ -142,6 +142,7 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
     this.enhances,
     this.genericName,
     this.icon,
+    this.metainfo,
     this.keywords,
     this.preDependencies,
     this.provides,
@@ -219,6 +220,7 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
       startupNotify: map['startup_notify'],
       installedSize: map['installed_size'],
       icon: map['icon'],
+      metainfo: map['metainfo'],
     );
   }
 
@@ -230,6 +232,7 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
   int installedSize;
   bool? essential;
   String? icon;
+  String? metainfo;
   String? genericName;
   bool? startupNotify;
   List<String>? coAuthors;
