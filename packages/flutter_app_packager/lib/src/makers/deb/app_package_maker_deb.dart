@@ -58,11 +58,14 @@ class AppPackageMakerDeb extends AppPackageMaker {
       packagingDirectory.path,
       'usr/share/icons/hicolor/256x256/apps',
     );
+    final metainfoDir =
+        path.join(packagingDirectory.path, 'usr/share/metainfo');
     final mkdirProcessResult = await $('mkdir', [
       '-p',
       debianDir,
       path.join(packagingDirectory.path, 'usr/share', makeConfig.appBinaryName),
       applicationsDir,
+      if (makeConfig.metainfo != null) metainfoDir,
       if (makeConfig.icon != null) ...[icon128Dir, icon256Dir],
     ]);
 
@@ -89,13 +92,11 @@ class AppPackageMakerDeb extends AppPackageMaker {
     }
     if (makeConfig.metainfo != null) {
       final metainfoPath =
-          path.join(makeConfig.packagingDirectory.path, makeConfig.metainfo!);
+          path.join(Directory.current.path, makeConfig.metainfo!);
       final metainfoFile = File(metainfoPath);
       if (!metainfoFile.existsSync()) {
-        throw MakeError("Metainfo ${makeConfig.metainfo} path wasn't found");
+        throw MakeError("Metainfo $metainfoPath path wasn't found");
       }
-      final metainfoDir =
-          path.join(packagingDirectory.path, 'usr/share/metainfo');
       await metainfoFile.copy(
         path.join(
           metainfoDir,
