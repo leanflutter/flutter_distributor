@@ -137,7 +137,9 @@ class AppPackageMakerRPM extends AppPackageMaker {
     }
 
     if (makeConfig.metainfo != null) {
-      final metainfoFile = File(makeConfig.metainfo!);
+      final metainfoPath =
+          path.join(makeConfig.packagingDirectory.path, makeConfig.metainfo!);
+      final metainfoFile = File(metainfoPath);
       if (!metainfoFile.existsSync()) {
         throw MakeError("Metainfo ${makeConfig.metainfo} path doesn't exist");
       }
