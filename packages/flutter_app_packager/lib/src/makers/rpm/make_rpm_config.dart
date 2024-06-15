@@ -144,6 +144,7 @@ class MakeRPMConfig extends MakeConfig {
             '%{_bindir}/%{name}',
             '%{_datadir}/%{name}',
             '%{_datadir}/applications/%{name}.desktop',
+            '%{_datadir}/metainfo',
           ].join('\n'),
         }..removeWhere((key, value) => value == null),
         'inline-body': {
