@@ -14,6 +14,8 @@ generic_name: Cool Application
 # supported_mime_type:
 #   - audio/mpeg
 
+metainfo: linux/packaging/helloworld.appdata.xml
+
 actions:
   - name: Say Hi
     label: say-hi
