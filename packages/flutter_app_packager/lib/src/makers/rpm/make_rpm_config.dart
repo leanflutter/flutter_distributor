@@ -135,7 +135,7 @@ class MakeRPMConfig extends MakeConfig {
             'ln -s %{_datadir}/%{name}/%{name} %{buildroot}%{_bindir}/%{name}',
             'cp -r %{name}.desktop %{buildroot}%{_datadir}/applications',
             'cp -r %{name}.png %{buildroot}%{_datadir}/pixmaps',
-            'cp -r %{name}.xml %{buildroot}%{_datadir}/metainfo',
+            'cp -r %{name}*.xml %{buildroot}%{_datadir}/metainfo',
             'update-mime-database %{_datadir}/mime &> /dev/null || :',
           ].join('\n'),
           '%postun': ['update-mime-database %{_datadir}/mime &> /dev/null || :']
