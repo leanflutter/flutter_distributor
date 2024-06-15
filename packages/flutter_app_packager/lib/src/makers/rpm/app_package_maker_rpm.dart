@@ -143,7 +143,7 @@ class AppPackageMakerRPM extends AppPackageMaker {
       }
       await metainfoFile.copy(
         path.join(
-          rpmbuildDirPath,
+          buildPath,
           makeConfig.appBinaryName + path.extension(makeConfig.metainfo!, 2),
         ),
       );
