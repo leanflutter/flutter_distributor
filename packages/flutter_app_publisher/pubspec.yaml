@@ -1,6 +1,6 @@
 name: flutter_app_publisher
 description: Flutter app publisher
-version: 0.4.2
+version: 0.4.3
 homepage: https://distributor.leanflutter.dev
 repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/flutter_app_publisher
 
