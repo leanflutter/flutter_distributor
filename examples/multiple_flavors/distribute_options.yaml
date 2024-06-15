@@ -63,6 +63,13 @@ releases:
             target-platform: android-arm64
             dart-define:
               APP_ENV: prod
+      - name: googleplay-apk
+        package:
+          platform: android
+          target: apk
+          build_args:
+            profile: true
+            flavor: googlePlay
   - name: release-ios
     jobs:
       - name: release-ios-dev-ipa

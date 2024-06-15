@@ -91,7 +91,7 @@ class _BuildAndroidApkResultResolver extends BuildResultResolver {
     final r = _BuildAndroidApkResult(config)..duration = duration;
     final String pattern = [
       '${r.outputDirectory.path}/**',
-      config.flavor != null ? '-${config.flavor}' : '',
+      config.flavor != null ? '-${config.flavor!.toLowerCase()}' : '',
       '-${config.mode.name}.apk',
     ].join();
     r.outputFiles = Glob(pattern).listSync().map((e) => File(e.path)).toList();
