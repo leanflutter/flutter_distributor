@@ -270,6 +270,7 @@ class AppPackageMakerAppImage extends AppPackageMaker {
       await $(
         'appimagetool',
         [
+          '--no-appstream',
           path.join(
             makeConfig.packagingDirectory.path,
             '${makeConfig.appName}.AppDir',
