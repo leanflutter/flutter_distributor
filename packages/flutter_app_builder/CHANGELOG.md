@@ -1,3 +1,7 @@
+## 0.4.4
+
+* feat: macOS builder support flavor arg. #133
+
 ## 0.4.2
 
 * some fixes
