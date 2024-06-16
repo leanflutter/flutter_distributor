@@ -95,6 +95,8 @@ generic_name: Music Application
 # supported_mime_type:
 #   - audio/mpeg
 
+metainfo: linux/packaging/helloworld.appdata.xml
+
 # shown when right clicked the desktop entry icons
 # actions:
 #   - Gallery

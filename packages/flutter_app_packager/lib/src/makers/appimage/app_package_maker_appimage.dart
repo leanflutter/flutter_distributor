@@ -149,6 +149,33 @@ class AppPackageMakerAppImage extends AppPackageMaker {
         ),
       );
 
+      if (makeConfig.metainfo != null) {
+        final metainfoDir = path.join(
+          makeConfig.packagingDirectory.path,
+          '${makeConfig.appName}.AppDir/usr/share/metainfo',
+        );
+        await $('mkdir', [
+          '-p',
+          metainfoDir,
+        ]).then((value) {
+          if (value.exitCode != 0) {
+            throw MakeError(value.stderr as String);
+          }
+        });
+        final metainfoPath =
+            path.join(Directory.current.path, makeConfig.metainfo!);
+        final metainfoFile = File(metainfoPath);
+        if (!metainfoFile.existsSync()) {
+          throw MakeError("Metainfo $metainfoPath path doesn't exist");
+        }
+        await metainfoFile.copy(
+          path.join(
+            metainfoDir,
+            makeConfig.appBinaryName + path.extension(makeConfig.metainfo!, 2),
+          ),
+        );
+      }
+
       final defaultSharedObjects = [
         'libapp.so',
         'libflutter_linux_gtk.so',
@@ -243,6 +270,7 @@ class AppPackageMakerAppImage extends AppPackageMaker {
       await $(
         'appimagetool',
         [
+          '--no-appstream',
           path.join(
             makeConfig.packagingDirectory.path,
             '${makeConfig.appName}.AppDir',

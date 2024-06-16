@@ -10,6 +10,12 @@ keywords:
 
 generic_name: Cool Application
 
+# supported mime types that can be opened using this application
+# supported_mime_type:
+#   - audio/mpeg
+
+metainfo: linux/packaging/helloworld.appdata.xml
+
 actions:
   - name: Say Hi
     label: say-hi

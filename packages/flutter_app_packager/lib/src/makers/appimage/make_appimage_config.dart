@@ -40,11 +40,14 @@ class MakeAppImageConfig extends MakeConfig {
     this.include = const [],
     this.startupNotify = true,
     this.genericName = 'A Flutter Application',
+    this.supportedMimeType,
+    this.metainfo,
   });
   factory MakeAppImageConfig.fromJson(Map<String, dynamic> map) {
     return MakeAppImageConfig(
       displayName: map['display_name'] as String,
       icon: map['icon'] as String,
+      metainfo: map['metainfo'] as String?,
       include: (map['include'] as List<dynamic>? ?? []).cast<String>(),
       keywords: (map['keywords'] as List<dynamic>? ?? []).cast<String>(),
       categories: (map['categories'] as List<dynamic>? ?? []).cast<String>(),
@@ -57,10 +60,14 @@ class MakeAppImageConfig extends MakeConfig {
             ),
           )
           .toList(),
+      supportedMimeType: map['supported_mime_type'] != null
+          ? List.castFrom<dynamic, String>(map['supported_mime_type'])
+          : null,
     );
   }
 
   final String icon;
+  final String? metainfo;
   final List<String> keywords;
   final List<String> categories;
   final List<AppImageAction> actions;
@@ -68,6 +75,7 @@ class MakeAppImageConfig extends MakeConfig {
   final String genericName;
   final String displayName;
   final List<String> include;
+  List<String>? supportedMimeType;
 
   String get desktopFileContent {
     final fields = {
@@ -77,6 +85,9 @@ class MakeAppImageConfig extends MakeConfig {
       'Icon': appName,
       'Type': 'Application',
       'StartupNotify': startupNotify ? 'true' : 'false',
+      'MimeType': supportedMimeType != null && supportedMimeType!.isNotEmpty
+          ? '${supportedMimeType!.join(';')};'
+          : null,
       if (categories.isNotEmpty) 'Categories': categories.join(';'),
       if (keywords.isNotEmpty) 'Keywords': keywords.join(';'),
       if (this.actions.isNotEmpty)

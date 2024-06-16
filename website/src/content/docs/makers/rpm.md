@@ -42,6 +42,10 @@ categories:
   - Awesome
 
 startup_notify: true
+
+# You can also specify [metainfo](https://freedesktop.org/software/appstream/docs/chap-Quickstart.html) file
+# which contains metadata of the app.
+# metainfo: linux/packaging/myappid.appdata.xml
 ```
 
 Run:

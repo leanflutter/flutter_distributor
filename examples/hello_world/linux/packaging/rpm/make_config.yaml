@@ -17,6 +17,8 @@ keywords:
 
 generic_name: Cool Application
 
+metainfo: linux/packaging/helloworld.appdata.xml
+
 categories:
   - Cool
   - Awesome
