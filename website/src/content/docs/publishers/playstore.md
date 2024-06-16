@@ -22,6 +22,7 @@ flutter_distributor publish \
   --path dist/1.0.0+1/hello_world-1.0.0+1-android.aab \
   --targets playstore \
   --playstore-package-name 'org.leanflutter.examples.hello_world' /
+  --playstore-track alpha
 ```
 
 ### Configure `distribute_options.yaml`
@@ -42,6 +43,7 @@ releases:
           target: playstore
           args:
             package-name: org.leanflutter.examples.hello_world
+            track: alpha
 ```
 
 Run:
