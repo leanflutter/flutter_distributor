@@ -1,3 +1,7 @@
+## 0.4.4
+
+* Support set track for playstore deployment (#185)
+
 ## 0.4.2
 
 * some fixes

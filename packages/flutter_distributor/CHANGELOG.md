@@ -1,6 +1,9 @@
 ## 0.4.4
 
-* feat: macOS builder support flavor arg. #133
+* fix: Fixed android builder not supporting flavor as upper case. (#197)
+* feat: macOS builder support flavor arg. (#196)
+* [Linux] Add MimeType for appimage and metainfo file support (#195)
+* Support set track for playstore deployment (#185)
 
 ## 0.4.3
 

@@ -1,6 +1,7 @@
 ## 0.4.4
 
 * feat: macOS builder support flavor arg. #133
+* fix: Fixed android builder not supporting flavor as upper case. (#197)
 
 ## 0.4.2
 

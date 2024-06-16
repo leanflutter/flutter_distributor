@@ -1,6 +1,6 @@
 name: flutter_app_packager
 description: Package your Flutter app into OS-specific bundles (.dmg, .exe, etc.) via Dart or the command line.
-version: 0.4.3
+version: 0.4.4
 homepage: https://github.com/leanflutter/flutter_distributor
 
 environment:
@@ -20,3 +20,4 @@ dependencies:
 
 dev_dependencies:
   dependency_validator: ^3.0.0
+  mostly_reasonable_lints: ^0.1.2

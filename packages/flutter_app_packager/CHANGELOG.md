@@ -1,3 +1,7 @@
+## 0.4.4
+
+* [Linux] Add MimeType for appimage and metainfo file support (#195)
+
 ## 0.4.2
 
 * some fixes
