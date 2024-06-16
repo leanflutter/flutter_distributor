@@ -92,3 +92,37 @@ releases:
             flavor: prod
             dart-define:
               APP_ENV: prod
+  - name: dmg-profile
+    jobs:
+      - name: dev
+        package:
+          platform: macos
+          target: dmg
+          channel: dev
+          build_args:
+            profile: true
+            flavor: dev
+      - name: prod
+        package:
+          platform: macos
+          target: dmg
+          channel: prod
+          build_args:
+            profile: true
+            flavor: prod
+  - name: dmg-release
+    jobs:
+      - name: dev
+        package:
+          platform: macos
+          target: dmg
+          channel: dev
+          build_args:
+            flavor: dev
+      - name: prod
+        package:
+          platform: macos
+          target: dmg
+          channel: prod
+          build_args:
+            flavor: prod
