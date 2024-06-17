@@ -242,7 +242,7 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
         ..._postremoveScripts,
       ];
 
-  List<String>? get postupgradeScripts => _postupgradeScripts;
+  List<String> get postupgradeScripts => _postupgradeScripts;
 
   @override
   Map<String, dynamic> toJson() {
@@ -297,14 +297,15 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
               (e) => '${e.key}=${e.value}',
             ).join('\n')}\n';
     final installFileMap = {
-      "post_install": postinstallScripts.join('\n'),
-      "post_upgrade": postupgradeScripts?.join('\n'),
+      "post_install": postinstallScripts.join('\n\t'),
+      "post_upgrade":
+          postupgradeScripts.isNotEmpty ? postupgradeScripts.join('\n') : null,
       "post_remove": postuninstallScripts.join('\n'),
     }..removeWhere((key, value) => value == null);
 
     final installFile = installFileMap.entries
         .map(
-          (e) => '${e.key}() {\n${e.value}\n}',
+          (e) => '${e.key}() {\n\t${e.value}\n}',
         )
         .join('\n');
 
