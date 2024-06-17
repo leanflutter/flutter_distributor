@@ -247,7 +247,7 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'INSTALL': {
+      'PKGINFO': {
         'pkgname': packageName,
         'pkgver': appVersion.toString(),
         'pkgdesc': pubspec.description,
