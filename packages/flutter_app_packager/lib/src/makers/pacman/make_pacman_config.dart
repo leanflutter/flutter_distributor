@@ -161,6 +161,9 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
       postuninstallScripts: map['postuninstall_scripts'] != null
           ? List.castFrom<dynamic, String>(map['postuninstall_scripts'])
           : null,
+      postupgradeScripts: map['postupgrade_scripts'] != null
+          ? List.castFrom<dynamic, String>(map['postupgrade_scripts'])
+          : null,
       keywords: map['keywords'] != null
           ? List.castFrom<dynamic, String>(map['keywords'])
           : null,
