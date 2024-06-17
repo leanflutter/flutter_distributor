@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 
-// format of make_config for deb
+// Ported from https://gist.github.com/Earnestly/bebad057f40a662b5cc3
+// format of make_config for pacman
 /*
 # the name used to display in the OS. Specifically desktop
 # entry name
 display_name: Hola Amigos
 
-# package name for debian/apt repository
+# package name for arch repository
 # the name should be all lowercase with -+.
 package_name: hola-amigos
 
@@ -16,72 +17,34 @@ maintainer:
   name: Gamer Boy 69
   email: rickastley@gmail.lol
 
-co_authors:
-  - name: Mir Jafar
-    email: contributor@gmail.com
-
-# enum options -> required, important, standard, optional, extra
-# refer: https://www.debian.org/doc/debian-policy/ch-archive.html#s-priorities
-priority: optional
-
-# enum options: admin, cli-mono, comm, database, debug, devel, doc, editors, education, electronics, embedded, fonts, games, gnome, gnu-r, gnustep, graphics, hamradio, haskell, httpd, interpreters, introspection, java, javascript, kde, kernel, libdevel, libs, lisp, localization, mail, math, metapackages, misc, net, news, ocaml, oldlibs, otherosfs, perl, php, python, ruby, rust, science, shells, sound, tasks, tex, text, utils, vcs, video, web, x11, xfce, zope
-# refer: https://www.debian.org/doc/debian-policy/ch-archive.html#s-subsections
-section: x11
-
 # the size of binary in kilobyte
 installed_size: 24400
 
 # direct dependencies required by the application
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html
+# refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
 dependencies:
   - libkeybinder-3.0-0 (>= 0.3.2)
 
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html
-build_dependencies_indep:
-  - texinfo
-
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html
-build_dependencies:
-  - kernel-headers-2.2.10 [!hurd-i386]
-  - gnumach-dev [hurd-i386]
-  - libluajit5.1-dev [i386 amd64 kfreebsd-i386 armel armhf powerpc mips]
-
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html
-recommended_dependencies:
-  - neofetch
-
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html
-suggested_dependencies:
-  - libkeybinder-3.0-0 (>= 0.3.2)
-
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html
-enhances:
-  - spotube
-
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html
-pre_dependencies:
-  - libc6
-
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html#packages-which-break-other-packages-breaks
+# refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
 breaks:
   - libspotify (<< 3.0.0)
 
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html#conflicting-binary-packages-conflicts
+# refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
 conflicts:
   - spotify
 
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html#virtual-packages-provides
+# refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
 provides:
   - libx11
 
-# refer: https://www.debian.org/doc/debian-policy/ch-relationships.html#overwriting-files-and-replacing-packages-replaces
+# refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
 replaces:
   - spotify
 
-essential: false
-
 postinstall_scripts:
   - echo `Installed my awesome app`
+postupgrade_scripts:
+  - echo `Supercharger my awesome app`
 postuninstall_scripts:
   - echo `Surprised Pickachu face`
 
