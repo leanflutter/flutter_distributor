@@ -152,7 +152,6 @@ class AppPackageMakerPacman extends AppPackageMaker {
         '-',
         '.MTREE',
         '.PKGINFO',
-        '*',
       ],
       'xz',
       [
