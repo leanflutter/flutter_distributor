@@ -13,6 +13,9 @@ display_name: Hola Amigos
 # the name should be all lowercase with -+.
 package_name: hola-amigos
 
+licenses:
+  - MIT
+
 maintainer:
   name: Gamer Boy 69
   email: rickastley@gmail.lol
@@ -23,23 +26,32 @@ installed_size: 24400
 # direct dependencies required by the application
 # refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
 dependencies:
-  - libkeybinder-3.0-0 (>= 0.3.2)
+  - mysupercooldep
+
+# optional dependencies not so much required by the application
+# refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
+optional_dependencies:
+  - iamalwaysoptional
 
 # refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
-breaks:
-  - libspotify (<< 3.0.0)
+provides:
+  - whatsup
+
+# refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
+options:
+  - zipman
 
 # refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
 conflicts:
-  - spotify
+  - libwhatsup
+
+# refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
+replaces:
+  - yourdep
 
 # refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
 provides:
   - libx11
-
-# refer: https://man.archlinux.org/man/PKGBUILD.5#OPTIONS_AND_DIRECTIVES
-replaces:
-  - spotify
 
 postinstall_scripts:
   - echo `Installed my awesome app`
