@@ -125,12 +125,8 @@ class AppPackageMakerPacman extends AppPackageMaker {
 
     // MTREE Metadata using bsdtar and fakeroot
     ProcessResult mtreeResult = await $(
-      'fakeroot',
+      'bsdtar',
       [
-        '--',
-        'env',
-        'LANG=C',
-        'bsdtar',
         '-czf',
         '.MTREE',
         '--format=mtree',
@@ -138,6 +134,9 @@ class AppPackageMakerPacman extends AppPackageMaker {
         '.PKGINFO',
         '*',
       ],
+      environment: {
+        'LANG': 'C',
+      },
       workingDirectory: packagingDirectory.path,
     );
     if (mtreeResult.exitCode != 0) {
@@ -148,12 +147,8 @@ class AppPackageMakerPacman extends AppPackageMaker {
     // fakeroot -- env LANG=C bsdtar -cf - .MTREE .PKGINFO * | xz -c -z - > $pkgname-$pkgver-$pkgrel-$arch.tar.xz
 
     ProcessResult processResult = await $$(
-      'fakeroot',
+      'bsdtar',
       [
-        '--',
-        'env',
-        'LANG=C',
-        'bsdtar',
         '-cf',
         '-',
         '.MTREE',
@@ -168,6 +163,9 @@ class AppPackageMakerPacman extends AppPackageMaker {
         '>',
         makeConfig.outputFile.path,
       ],
+      environment: {
+        'LANG': 'C',
+      },
       workingDirectory: packagingDirectory.path,
     );
 
