@@ -150,7 +150,7 @@ class AppPackageMakerPacman extends AppPackageMaker {
       'bsdtar',
       [
         '-cf',
-        '${packagingDirectory.path}/temptar',
+        'temptar',
         '.MTREE',
         '.INSTALL',
         '.PKGINFO',
@@ -170,7 +170,7 @@ class AppPackageMakerPacman extends AppPackageMaker {
       [
         '-c',
         '-z',
-        '${packagingDirectory.path}/temptar',
+        'temptar',
         '>',
         makeConfig.outputFile.path,
       ],
