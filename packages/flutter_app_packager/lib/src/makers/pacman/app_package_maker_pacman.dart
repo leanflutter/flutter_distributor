@@ -146,27 +146,34 @@ class AppPackageMakerPacman extends AppPackageMaker {
     // create the pacman package using fakeroot and bsdtar
     // fakeroot -- env LANG=C bsdtar -cf - .MTREE .PKGINFO * | xz -c -z - > $pkgname-$pkgver-$pkgrel-$arch.tar.xz
 
-    ProcessResult processResult = await $$(
+    ProcessResult archiveResult = await $(
       'bsdtar',
       [
         '-cf',
-        '-',
+        '${packagingDirectory.path}/temptar',
         '.MTREE',
         '.INSTALL',
         '.PKGINFO',
         'usr',
       ],
+      environment: {
+        'LANG': 'C',
+      },
+      workingDirectory: packagingDirectory.path,
+    );
+    if (archiveResult.exitCode != 0) {
+      throw MakeError(archiveResult.stderr);
+    }
+
+    ProcessResult processResult = await $(
       'xz',
       [
         '-c',
         '-z',
-        '-',
+        '${packagingDirectory.path}/temptar',
         '>',
         makeConfig.outputFile.path,
       ],
-      environment: {
-        'LANG': 'C',
-      },
       workingDirectory: packagingDirectory.path,
     );
 
