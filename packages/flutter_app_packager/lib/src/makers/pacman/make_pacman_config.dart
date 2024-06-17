@@ -123,7 +123,7 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
   MakePacmanConfig({
     required this.displayName,
     required this.packageName,
-    required this.installedSize,
+    this.installedSize,
     required this.maintainer,
     this.packageRelease = 1,
     List<String>? postinstallScripts,
@@ -153,7 +153,7 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
     return MakePacmanConfig(
       displayName: map['display_name'],
       packageName: map['package_name'], //
-      packageRelease: int.tryParse(map['package_release']) ?? 1,
+      packageRelease: int.tryParse(map['package_release'] ?? '1') ?? 1,
       maintainer:
           "${map['maintainer']['name']} <${map['maintainer']['email']}>",
       dependencies: map['dependencies'] != null
@@ -210,7 +210,7 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
   String packageName;
   String maintainer;
   int packageRelease;
-  int installedSize;
+  int? installedSize;
   List<String> licenses;
   List<String> groups;
   String? icon;
