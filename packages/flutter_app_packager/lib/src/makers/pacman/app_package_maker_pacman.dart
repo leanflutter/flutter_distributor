@@ -125,16 +125,20 @@ class AppPackageMakerPacman extends AppPackageMaker {
 
     // MTREE Metadata using bsdtar and fakeroot
     ProcessResult mtreeResult = await $(
-      'ls',
+      'bsdtar',
       [
-        '*',
+        '-czf',
+        '.MTREE',
+        '--format=mtree',
+        '--options=!all,use-set,type,uid,gid,mode,time,size,md5,sha256,link',
+        '.PKGINFO',
       ],
       environment: {
         'LANG': 'C',
       },
       workingDirectory: packagingDirectory.path,
     );
-    if (true) {
+    if (mtreeResult.exitCode != 0) {
       throw MakeError(mtreeResult.stderr);
     }
 
