@@ -257,12 +257,14 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
         'groups': '(${groups.join(', ')})',
         'arch': '(${_getArchitecture()})',
         'url': pubspec.homepage,
-        'options': "(${options?.join(', ')})",
-        'depends': "(${dependencies?.join(', ')})",
-        'optdepends': "(${optDependencies?.join(', ')})",
-        'conflicts': "(${conflicts?.join(', ')})",
-        'replaces': "(${replaces?.join(', ')})",
-        'provides': "(${provides?.join(', ')})",
+        'options': options != null ? "(${options!.join(', ')})" : null,
+        'depends':
+            dependencies != null ? "(${dependencies!.join(', ')})" : null,
+        'optdepends':
+            optDependencies != null ? "(${optDependencies!.join(', ')})" : null,
+        'conflicts': conflicts != null ? "(${conflicts!.join(', ')})" : null,
+        'replaces': replaces != null ? "(${replaces!.join(', ')})" : null,
+        'provides': provides != null ? "(${provides!.join(', ')})" : null,
       }..removeWhere((key, value) => value == null),
       'DESKTOP': {
         'Type': 'Application',
@@ -292,7 +294,7 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
     final json = toJson();
     final pkginfoFile =
         '${(json['PKGINFO'] as Map<String, dynamic>).entries.map(
-              (e) => '${e.key}= ${e.value}',
+              (e) => '${e.key}=${e.value}',
             ).join('\n')}\n';
     final installFileMap = {
       "post_install": postinstallScripts.join('\n'),
