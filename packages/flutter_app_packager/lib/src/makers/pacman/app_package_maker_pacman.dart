@@ -168,11 +168,8 @@ class AppPackageMakerPacman extends AppPackageMaker {
     ProcessResult processResult = await $(
       'xz',
       [
-        '-c',
         '-z',
         'temptar',
-        '>',
-        makeConfig.outputFile.path,
       ],
       workingDirectory: packagingDirectory.path,
     );
@@ -180,6 +177,16 @@ class AppPackageMakerPacman extends AppPackageMaker {
     if (processResult.exitCode != 0) {
       throw MakeError(processResult.stderr);
     }
+
+    // copy file from temptar.xz to the makeConfig.outputFile.path
+    $(
+      'mv',
+      [
+        'temptar.xz',
+        makeConfig.outputFile.path,
+      ],
+      workingDirectory: packagingDirectory.path,
+    );
 
     packagingDirectory.deleteSync(recursive: true);
     return MakeResult(makeConfig);
