@@ -1,6 +1,6 @@
 output: dist/
 variables:
-  FLUTTER_ROOT: ~/fvm/versions/3.16.5
+#  FLUTTER_ROOT: ~/fvm/versions/3.16.5
   # PGYER_API_KEY: your api key
 releases:
   - name: dev-profile
@@ -36,6 +36,12 @@ releases:
         package:
           platform: linux
           target: deb
+          build_args:
+            profile: true
+      - name: linux-pacman
+        package:
+          platform: linux
+          target: pacman
           build_args:
             profile: true
       - name: linux-zip

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 import 'package:flutter_app_packager/src/makers/makers.dart';
+import 'package:flutter_app_packager/src/makers/pacman/app_package_maker_pacman.dart';
 
 class FlutterAppPackager {
   final List<AppPackageMaker> _makers = [
@@ -18,6 +19,7 @@ class FlutterAppPackager {
     AppPackageMakerMsix(),
     AppPackageMakerPkg(),
     AppPackageMakerRPM(),
+    AppPackageMakerPacman(),
     AppPackageMakerZip('linux'),
     AppPackageMakerZip('macos'),
     AppPackageMakerZip('windows'),
