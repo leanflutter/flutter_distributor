@@ -323,7 +323,7 @@ class MakePacmanConfigLoader extends DefaultMakeConfigLoader {
 String _getArchitecture() {
   final result = Process.runSync('uname', ['-m']);
   if ('${result.stdout}'.trim() == 'aarch64') {
-    return 'i686';
+    return 'aarch64';
   } else {
     return 'x86_64';
   }
