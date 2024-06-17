@@ -132,6 +132,7 @@ class AppPackageMakerPacman extends AppPackageMaker {
         '--format=mtree',
         '--options=!all,use-set,type,uid,gid,mode,time,size,md5,sha256,link',
         '.PKGINFO',
+        '.INSTALL',
       ],
       environment: {
         'LANG': 'C',
@@ -151,7 +152,9 @@ class AppPackageMakerPacman extends AppPackageMaker {
         '-cf',
         '-',
         '.MTREE',
+        '.INSTALL',
         '.PKGINFO',
+        'usr',
       ],
       'xz',
       [
