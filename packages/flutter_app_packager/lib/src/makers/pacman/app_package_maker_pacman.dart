@@ -141,7 +141,7 @@ class AppPackageMakerPacman extends AppPackageMaker {
       workingDirectory: packagingDirectory.path,
     );
     if (mtreeResult.exitCode != 0) {
-      throw MakeError();
+      throw MakeError(mtreeResult.stderr);
     }
 
     // create the pacman package using fakeroot and bsdtar
@@ -172,7 +172,7 @@ class AppPackageMakerPacman extends AppPackageMaker {
     );
 
     if (processResult.exitCode != 0) {
-      throw MakeError();
+      throw MakeError(processResult.stderr);
     }
 
     packagingDirectory.deleteSync(recursive: true);
