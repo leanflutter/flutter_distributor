@@ -182,10 +182,9 @@ class AppPackageMakerPacman extends AppPackageMaker {
     final copyResult = await $(
       'mv',
       [
-        'temptar.xz',
+        '${packagingDirectory.path}/temptar.xz',
         makeConfig.outputFile.path,
       ],
-      workingDirectory: packagingDirectory.path,
     );
     if (copyResult.exitCode != 0) {
       throw MakeError(copyResult.stderr);
