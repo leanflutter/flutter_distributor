@@ -179,7 +179,7 @@ class AppPackageMakerPacman extends AppPackageMaker {
     }
 
     // copy file from temptar.xz to the makeConfig.outputFile.path
-    $(
+    final copyResult = await $(
       'mv',
       [
         'temptar.xz',
@@ -187,6 +187,9 @@ class AppPackageMakerPacman extends AppPackageMaker {
       ],
       workingDirectory: packagingDirectory.path,
     );
+    if (copyResult.exitCode != 0) {
+      throw MakeError(copyResult.stderr);
+    }
 
     packagingDirectory.deleteSync(recursive: true);
     return MakeResult(makeConfig);
