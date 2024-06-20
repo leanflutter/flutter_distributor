@@ -133,6 +133,7 @@ class AppPackageMakerPacman extends AppPackageMaker {
         '--options=!all,use-set,type,uid,gid,mode,time,size,md5,sha256,link',
         '.PKGINFO',
         '.INSTALL',
+        'usr',
       ],
       environment: {
         'LANG': 'C',
