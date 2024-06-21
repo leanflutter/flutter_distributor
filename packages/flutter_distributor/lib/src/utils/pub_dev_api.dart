@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -11,7 +12,14 @@ class PubDevApi {
     final uri = Uri.parse(pubSite);
     try {
       final response = await Dio().get(uri.toString());
-      return response.data['latest']['version'] as String?;
+      Map<String, dynamic> data = {};
+      if (response.data is String) {
+        data = json.decode(response.data);
+      } else {
+        data = response.data;
+      }
+      if (data['latest'] == null) return null;
+      return data['latest']['version'] as String?;
     } catch (error) {
       rethrow;
     }
