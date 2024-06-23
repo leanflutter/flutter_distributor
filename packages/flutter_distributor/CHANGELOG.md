@@ -1,3 +1,10 @@
+## 0.4.5
+
+* bump `shell_executor` to 0.1.6
+* fix: don't block rpm build if metainfo not found (#202)
+* chore: Support third-party pub mirror sources #201
+* [FEAT] Add support for Pacman (Arch Linux) (#198)
+
 ## 0.4.4
 
 * fix: Fixed android builder not supporting flavor as upper case. (#197)

@@ -1,3 +1,8 @@
+## 0.4.5
+
+* bump `shell_executor` to 0.1.6
+* [FIX] Don't block rpm build if metainfo not found #202
+
 ## 0.4.4
 
 * [Linux] Add MimeType for appimage and metainfo file support (#195)

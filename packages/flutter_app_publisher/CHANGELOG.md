@@ -1,3 +1,8 @@
+## 0.4.5
+
+* bump `shell_executor` to 0.1.6
+* bump `parse_app_package` to 0.4.5
+
 ## 0.4.4
 
 * Support set track for playstore deployment (#185)

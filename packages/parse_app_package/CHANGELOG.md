@@ -1,3 +1,7 @@
+## 0.4.5
+
+* bump `shell_executor` to 0.1.6
+
 ## 0.4.0
 
 * fix failure to parse `Property List Binary` format
