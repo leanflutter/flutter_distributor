@@ -148,10 +148,10 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
           : null,
       licenses: map['licenses'] != null
           ? List.castFrom<dynamic, String>(map['licenses'])
-          : ["unknown"],
+          : ['unknown'],
       groups: map['groups'] != null
           ? List.castFrom<dynamic, String>(map['groups'])
-          : ["default"],
+          : ['default'],
       provides: map['provides'] != null
           ? List.castFrom<dynamic, String>(map['provides'])
           : null,
@@ -275,10 +275,10 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
               (e) => '${e.key}=${e.value}',
             ).join('\n')}\n';
     final installFileMap = {
-      "post_install": postinstallScripts.join('\n\t'),
-      "post_upgrade":
+      'post_install': postinstallScripts.join('\n\t'),
+      'post_upgrade':
           postupgradeScripts.isNotEmpty ? postupgradeScripts.join('\n') : null,
-      "post_remove": postuninstallScripts.join('\n'),
+      'post_remove': postuninstallScripts.join('\n'),
     }..removeWhere((key, value) => value == null);
 
     final installFile = installFileMap.entries

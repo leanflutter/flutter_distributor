@@ -13,8 +13,7 @@ dependencies:
   pub_semver: ^2.1.0
   pubspec_parse: ^1.1.0
   recase: ^4.1.0
-  shell_executor:
-    path: ../shell_executor
+  shell_executor: ^0.1.6
 
 dev_dependencies:
   dependency_validator: ^3.0.0
