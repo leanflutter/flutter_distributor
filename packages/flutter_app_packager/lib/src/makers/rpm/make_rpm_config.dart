@@ -56,7 +56,7 @@ class MakeRPMConfig extends MakeConfig {
       packagerEmail: json['packagerEmail'] as String?,
       license: json['license'] as String?,
       url: json['url'] as String?,
-      buildArch: json['build_arch'] as String?,
+      buildArch: json['build_arch'] as String? ?? _getArchitecture(),
       requires: (json['requires'] as List<dynamic>?)?.cast<String>(),
       buildRequires: (json['build_requires'] as List<dynamic>?)?.cast<String>(),
       description: json['description'] as String?,
@@ -121,7 +121,7 @@ class MakeRPMConfig extends MakeConfig {
           'URL': url,
           'Requires': requires?.join(', '),
           'BuildRequires': buildRequires?.join(', '),
-          'BuildArch': buildArch ?? 'x86_64',
+          'BuildArch': buildArch ?? _getArchitecture(),
         }..removeWhere((key, value) => value == null),
         'body': {
           '%description': description ?? pubspec.description,
@@ -226,5 +226,14 @@ class MakeRpmConfigLoader extends DefaultMakeConfigLoader {
       '$platform/packaging/$packageFormat/make_config.yaml',
     );
     return MakeRPMConfig.fromJson(map).copyWith(baseMakeConfig);
+  }
+}
+
+String _getArchitecture() {
+  final result = Process.runSync('uname', ['-m']);
+  if ('${result.stdout}'.trim() == 'aarch64') {
+    return 'aarch64';
+  } else {
+    return 'x86_64';
   }
 }
