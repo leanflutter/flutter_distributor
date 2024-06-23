@@ -11,7 +11,8 @@ dependencies:
   archive: ^3.4.10
   args: ^2.2.0
   plist_parser: ^0.0.11
-  shell_executor: ^0.1.5
+  shell_executor:
+    path: ../shell_executor
 
 executables:
   parse_app_package: main
