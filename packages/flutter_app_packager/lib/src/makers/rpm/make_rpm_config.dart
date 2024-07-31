@@ -37,7 +37,7 @@ class MakeRPMConfig extends MakeConfig {
     this.changelog,
 
     // RPM ln bug fix
-    this.packageName,
+    this.binName,
   });
 
   factory MakeRPMConfig.fromJson(Map<String, dynamic> json) {
@@ -71,7 +71,7 @@ class MakeRPMConfig extends MakeConfig {
       defattr: json['defattr'] as String?,
       attr: json['attr'] as String?,
       changelog: json['changelog'] as String?,
-      packageName: json['package_name'] as String?,
+      binName: json['bin_name'] as String?,
     );
   }
 
@@ -107,7 +107,7 @@ class MakeRPMConfig extends MakeConfig {
   String? attr;
   String? changelog;
   //RPM ln bug fix
-  String? packageName;
+  String? binName;
 
   @override
   Map<String, dynamic> toJson() {
@@ -138,7 +138,7 @@ class MakeRPMConfig extends MakeConfig {
             'mkdir -p %{buildroot}%{_datadir}/metainfo',
             'mkdir -p %{buildroot}%{_datadir}/pixmaps',
             'cp -r %{name}/* %{buildroot}%{_datadir}/%{name}',
-            'ln -s %{_datadir}/%{name}/${packageName ?? "%{name}"} %{buildroot}%{_bindir}/%{name}',
+            'ln -s %{_datadir}/%{name}/${binName ?? "%{name}"} %{buildroot}%{_bindir}/%{name}',
             'cp -r %{name}.desktop %{buildroot}%{_datadir}/applications',
             'cp -r %{name}.png %{buildroot}%{_datadir}/pixmaps',
             'cp -r %{name}*.xml %{buildroot}%{_datadir}/metainfo || :',
