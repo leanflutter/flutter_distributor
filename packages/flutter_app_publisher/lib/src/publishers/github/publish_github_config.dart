@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter_app_publisher/src/api/app_package_publisher.dart';
 
 const kEnvGithubToken = 'GITHUB_TOKEN';
+const kEnvGithubRepositoryOwner = 'GITHUB_REPOSITORY_OWNER';
+const kEnvGithubRepository = 'GITHUB_REPOSITORY';
 
 class PublishGithubConfig extends PublishConfig {
   PublishGithubConfig({
@@ -17,15 +19,31 @@ class PublishGithubConfig extends PublishConfig {
     Map<String, dynamic>? publishArguments,
   ) {
     String? token = (environment ?? Platform.environment)[kEnvGithubToken];
+    String? githubRepository = (environment ?? Platform.environment)[kEnvGithubRepository];
+    String? githubRepositoryOwner = (environment ?? Platform.environment)[kEnvGithubRepositoryOwner];
     if ((token ?? '').isEmpty) {
       throw PublishError('Missing `$kEnvGithubToken` environment variable.');
     }
     String? owner = publishArguments?['repo-owner'];
-    if ((owner ?? '').isEmpty) {
-      throw PublishError('<repo-owner> is null');
+    if ((owner ?? '').isEmpty && githubRepositoryOwner?.isNotEmpty == true) {
+      print("Using provided ${githubRepositoryOwner} from ENV ${kEnvGithubRepositoryOwner} as repo-owner");
+      owner = githubRepositoryOwner;
     }
 
     String? name = publishArguments?['repo-name'];
+    if ((owner ?? '').isEmpty && githubRepository?.isNotEmpty == true && githubRepository!.contains("/")) {
+      print("Extracting repo name from provided ${githubRepository} from ENV ${kEnvGithubRepository} as repo-name");
+      var parts = githubRepository.split("/");
+      if ((owner ?? '').isEmpty) {
+        owner = parts[0];
+      } else if (owner != parts[0]) {
+        throw PublishError('<repo-name> is mismatch error between ${githubRepository} from ENV ${kEnvGithubRepository} and ${githubRepositoryOwner} from ENV ${kEnvGithubRepositoryOwner}');
+      }
+      name = parts[1];
+    }
+    if ((owner ?? '').isEmpty) {
+      throw PublishError('<repo-owner> is null');
+    }
     if ((name ?? '').isEmpty) {
       throw PublishError('<repo-name> is null');
     }
