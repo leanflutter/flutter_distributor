@@ -12,7 +12,7 @@ class Release {
     if (json.containsKey('variables') && json['variables'] != null) {
       variables = Map<String, String>.from(json['variables']);
     }
-    List<ReleaseJob> jobs = (json['jobs'] as List)
+    List<ReleaseJob> jobs = (json['jobs'] as List? ?? [])
         .map((item) => ReleaseJob.fromJson(item))
         .toList();
     return Release(
