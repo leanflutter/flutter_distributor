@@ -96,7 +96,7 @@ class FlutterDistributor {
     return null;
   }
 
-  Future<void> checkVersion() async {
+  Future<bool> checkVersion() async {
     String? currentVersion = await _getCurrentVersion();
     String? latestVersion =
         await PubDevApi.getLatestVersionFromPackage('flutter_distributor');
@@ -113,8 +113,9 @@ class FlutterDistributor {
         '',
       ].join('\n');
       print(msg);
+      return Future.value(true);
     }
-    return Future.value();
+    return Future.value(false);
   }
 
   Future<String?> getCurrentVersion() async {
