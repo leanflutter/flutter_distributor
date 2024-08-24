@@ -145,3 +145,7 @@ releases:
         package:
           platform: web
           target: direct
+      - name: web-zip
+        package:
+          platform: web
+          target: zip
