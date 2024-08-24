@@ -270,6 +270,7 @@ class FlutterDistributor {
     } on Error catch (error) {
       logger.severe(error.toString().brightRed());
       logger.severe(error.stackTrace.toString().brightRed());
+      rethrow;
     }
     return publishResultList;
   }
@@ -367,6 +368,7 @@ class FlutterDistributor {
           stacktrace,
         ].join('\n'),
       );
+      rethrow;
     }
     return Future.value();
   }
