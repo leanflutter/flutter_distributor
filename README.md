@@ -25,14 +25,15 @@ The full documentation can be found on [distributor.leanflutter.dev](https://dis
 
 ### Makers
 
-- [apk](./packages/flutter_app_packager/lib/src/makers/apk/) - Create a `apk` package for your app.
 - [aab](./packages/flutter_app_packager/lib/src/makers/aab/) - Create a `aab` package for your app.
+- [apk](./packages/flutter_app_packager/lib/src/makers/apk/) - Create a `apk` package for your app.
 - [appimage](./packages/flutter_app_packager/lib/src/makers/appimage/) - Create a `AppImage` package for your app.
 - [deb](./packages/flutter_app_packager/lib/src/makers/deb/) - Create a `deb` package for your app.
 - [dmg](./packages/flutter_app_packager/lib/src/makers/dmg/) - Create a `dmg` package for your app.
 - [exe](./packages/flutter_app_packager/lib/src/makers/exe/) - Create a `exe` package for your app.
 - [ipa](./packages/flutter_app_packager/lib/src/makers/ipa/) - Create a `ipa` package for your app.
 - [msix](./packages/flutter_app_packager/lib/src/makers/msix/) - Create a `msix` package for your app.
+- [pacman](./packages/flutter_app_packager/lib/src/makers/pacman/) - Create a `pacman` package for your app.
 - [pkg](./packages/flutter_app_packager/lib/src/makers/pkg/) - Create a `pkg` package for your app.
 - [rpm](./packages/flutter_app_packager/lib/src/makers/rpm/) - Create a `rpm` package for your app.
 - [zip](./packages/flutter_app_packager/lib/src/makers/zip/) - Create a `zip` package for your app.
