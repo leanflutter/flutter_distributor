@@ -267,7 +267,8 @@ class AppPackageMakerAppImage extends AppPackageMaker {
         }),
       );
 
-      var outputMakeConfig = MakeConfig().copyWith(makeConfig)..packageFormat='AppImage';
+      var outputMakeConfig = MakeConfig().copyWith(makeConfig)
+        ..packageFormat = 'AppImage';
 
       await $(
         'appimagetool',
