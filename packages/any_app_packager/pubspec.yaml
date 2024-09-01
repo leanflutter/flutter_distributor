@@ -1,0 +1,18 @@
+name: any_app_packager
+description: Package your any app into OS-specific bundles (.dmg, .exe, etc.) via Dart or the command line.
+version: 0.1.0
+homepage: https://fastforge.dev/any_app_packager
+repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/any_app_packager
+
+environment:
+  sdk: ">=2.16.0 <4.0.0"
+
+dependencies:
+  flutter_app_packager: ^0.4.5
+
+dev_dependencies:
+  dependency_validator: ^3.0.0
+  mostly_reasonable_lints: ^0.1.2
+
+executables:
+  packageanyapp: main
