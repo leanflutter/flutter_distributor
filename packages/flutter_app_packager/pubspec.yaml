@@ -7,7 +7,7 @@ environment:
   sdk: ">=2.16.0 <4.0.0"
 
 dependencies:
-  archive: ^3.4.10
+  archive: ^3.6.1
   io: ^1.0.3
   liquid_engine: ^0.2.2
   msix: ^3.16.6

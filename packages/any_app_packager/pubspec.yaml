@@ -8,11 +8,15 @@ environment:
   sdk: ">=2.16.0 <4.0.0"
 
 dependencies:
+  args: ^2.2.0
+  flutter_app_builder: ^0.4.5
   flutter_app_packager: ^0.4.5
+  logging: ^1.0.2
+  pubspec_parse: ^1.1.0
 
 dev_dependencies:
   dependency_validator: ^3.0.0
   mostly_reasonable_lints: ^0.1.2
 
 executables:
-  packageanyapp: main
+  package-any-app: main
