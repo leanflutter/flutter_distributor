@@ -108,7 +108,7 @@ class MakeRPMConfig extends MakeConfig {
   String? changelog;
 
   @override
-  String get appName => packageName ?? pubspec.name;
+  String get appName => packageName ?? super.appName;
 
   @override
   Map<String, dynamic> toJson() {

@@ -69,7 +69,7 @@ class MakeAppImageConfig extends MakeConfig {
   }
 
   @override
-  String get appName => packageName ?? pubspec.name;
+  String get appName => packageName ?? super.appName;
 
   final String icon;
   final String? metainfo;
