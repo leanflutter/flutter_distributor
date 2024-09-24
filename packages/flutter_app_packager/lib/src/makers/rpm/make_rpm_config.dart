@@ -4,6 +4,7 @@ import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 
 class MakeRPMConfig extends MakeConfig {
   MakeRPMConfig({
+    this.packageName,
     // Desktop file
     required this.displayName,
     this.startupNotify = true,
@@ -39,6 +40,7 @@ class MakeRPMConfig extends MakeConfig {
 
   factory MakeRPMConfig.fromJson(Map<String, dynamic> json) {
     return MakeRPMConfig(
+      packageName: json['package_name'] as String?,
       displayName: json['display_name'] as String,
       icon: json['icon'] as String?,
       metainfo: json['metainfo'] as String?,
@@ -71,6 +73,8 @@ class MakeRPMConfig extends MakeConfig {
     );
   }
 
+  String? packageName;
+
   String displayName;
   String? icon;
   String? metainfo;
@@ -102,6 +106,9 @@ class MakeRPMConfig extends MakeConfig {
   String? defattr;
   String? attr;
   String? changelog;
+
+  @override
+  String get appName => packageName ?? pubspec.name;
 
   @override
   Map<String, dynamic> toJson() {
