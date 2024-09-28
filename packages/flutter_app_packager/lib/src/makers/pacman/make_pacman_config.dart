@@ -99,6 +99,7 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
     required this.displayName,
     required this.packageName,
     this.installedSize,
+    this.includeBuildNumber = true,
     required this.maintainer,
     this.packageRelease = 1,
     List<String>? postinstallScripts,
@@ -127,7 +128,8 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
   factory MakePacmanConfig.fromJson(Map<String, dynamic> map) {
     return MakePacmanConfig(
       displayName: map['display_name'],
-      packageName: map['package_name'], //
+      packageName: map['package_name'],
+      includeBuildNumber: map['include_build_number'] ?? true,
       packageRelease: int.tryParse(map['package_release'] ?? '1') ?? 1,
       maintainer:
           "${map['maintainer']['name']} <${map['maintainer']['email']}>",
@@ -187,6 +189,7 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
   String displayName;
   String packageName;
   String maintainer;
+  bool includeBuildNumber;
   int packageRelease;
   int? installedSize;
   List<String> licenses;
@@ -246,7 +249,7 @@ class MakePacmanConfig extends MakeLinuxPackageConfig {
       }..removeWhere((key, value) => value == null),
       'DESKTOP': {
         'Type': 'Application',
-        'Version': appVersion.toString(),
+        'Version': includeBuildNumber ? appVersion.toString() : appBuildName,
         'Name': displayName,
         'GenericName': genericName,
         'Icon': appBinaryName,
