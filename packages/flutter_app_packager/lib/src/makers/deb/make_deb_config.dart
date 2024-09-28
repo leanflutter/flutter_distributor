@@ -127,7 +127,7 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
     required this.installedSize,
     required this.maintainer,
     this.startupNotify = true,
-    this.includeBuildNumber = false,
+    this.includeBuildNumber = true,
     this.essential = false,
     List<String>? postinstallScripts,
     List<String>? postuninstallScripts,
@@ -157,7 +157,7 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
 
   factory MakeDebConfig.fromJson(Map<String, dynamic> map) {
     return MakeDebConfig(
-      includeBuildNumber: map['include_build_number'],
+      includeBuildNumber: map['include_build_number'] as bool? ?? true,
       displayName: map['display_name'],
       packageName: map['package_name'],
       maintainer:
