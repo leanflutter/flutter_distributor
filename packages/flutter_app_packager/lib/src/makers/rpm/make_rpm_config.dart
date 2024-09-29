@@ -164,7 +164,6 @@ class MakeRPMConfig extends MakeConfig {
       },
       'DESKTOP': {
         'Type': 'Application',
-        'Version': includeBuildNumber ? appVersion.toString() : appBuildName,
         'Name': displayName,
         'GenericName': genericName,
         'Icon': appName,

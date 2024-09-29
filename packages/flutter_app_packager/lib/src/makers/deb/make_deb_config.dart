@@ -299,7 +299,6 @@ class MakeDebConfig extends MakeLinuxPackageConfig {
       }..removeWhere((key, value) => value == null),
       'DESKTOP': {
         'Type': 'Application',
-        'Version': includeBuildNumber ? appVersion.toString() : appBuildName,
         'Name': displayName,
         'GenericName': genericName,
         'Icon': appBinaryName,
