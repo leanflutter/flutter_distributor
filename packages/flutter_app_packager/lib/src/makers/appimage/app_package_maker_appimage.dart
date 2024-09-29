@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_app_packager/src/api/app_package_maker.dart';
 import 'package:flutter_app_packager/src/makers/appimage/make_appimage_config.dart';
+import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
 import 'package:shell_executor/shell_executor.dart';
 
@@ -135,19 +136,23 @@ class AppPackageMakerAppImage extends AppPackageMaker {
         }
       });
 
-      await iconFile.copy(
-        path.join(
-          icon128x128,
-          '${makeConfig.appName}${path.extension(makeConfig.icon)}',
-        ),
+      final icon128 = img.copyResize(
+        img.decodeImage(iconFile.readAsBytesSync())!,
+        width: 128,
+        height: 128,
       );
+      final icon128File =
+          File(path.join(icon128x128, '${makeConfig.appBinaryName}.png'));
+      await icon128File.writeAsBytes(img.encodePng(icon128));
 
-      await iconFile.copy(
-        path.join(
-          icon256x256,
-          '${makeConfig.appName}${path.extension(makeConfig.icon)}',
-        ),
+      final icon256 = img.copyResize(
+        img.decodeImage(iconFile.readAsBytesSync())!,
+        width: 128,
+        height: 128,
       );
+      final icon256File =
+          File(path.join(icon256x256, '${makeConfig.appBinaryName}.png'));
+      await icon256File.writeAsBytes(img.encodePng(icon256));
 
       if (makeConfig.metainfo != null) {
         final metainfoDir = path.join(
