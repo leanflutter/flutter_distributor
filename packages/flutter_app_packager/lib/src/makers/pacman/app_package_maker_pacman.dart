@@ -49,14 +49,7 @@ class AppPackageMakerPacman extends AppPackageMaker {
 
     final applicationsDir =
         path.join(packagingDirectory.path, 'usr/share/applications');
-    final icon128Dir = path.join(
-      packagingDirectory.path,
-      'usr/share/icons/hicolor/128x128/apps',
-    );
-    final icon256Dir = path.join(
-      packagingDirectory.path,
-      'usr/share/icons/hicolor/256x256/apps',
-    );
+
     final metainfoDir =
         path.join(packagingDirectory.path, 'usr/share/metainfo');
     final mkdirProcessResult = await $('mkdir', [
