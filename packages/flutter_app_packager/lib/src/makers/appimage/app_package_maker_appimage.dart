@@ -117,42 +117,28 @@ class AppPackageMakerAppImage extends AppPackageMaker {
         ),
       );
 
-      final icon256x256 = path.join(
-        makeConfig.packagingDirectory.path,
-        '${makeConfig.appName}.AppDir/usr/share/icons/hicolor/256x256/apps',
-      );
-      final icon128x128 = path.join(
-        makeConfig.packagingDirectory.path,
-        '${makeConfig.appName}.AppDir/usr/share/icons/hicolor/128x128/apps',
-      );
+      for (final size in [128, 256, 512]) {
+        final iconDir = path.join(
+          makeConfig.packagingDirectory.path,
+          '${makeConfig.appName}.AppDir/usr/share/icons/hicolor/${size}x$size/apps',
+        );
+        final mkdirProcessRes = await $('mkdir', [
+          '-p',
+          iconDir,
+        ]);
 
-      await $('mkdir', [
-        '-p',
-        icon128x128,
-        icon256x256,
-      ]).then((value) {
-        if (value.exitCode != 0) {
-          throw MakeError(value.stderr as String);
-        }
-      });
+        if (mkdirProcessRes.exitCode != 0) throw MakeError();
 
-      final icon128 = img.copyResize(
-        img.decodeImage(iconFile.readAsBytesSync())!,
-        width: 128,
-        height: 128,
-      );
-      final icon128File =
-          File(path.join(icon128x128, '${makeConfig.appBinaryName}.png'));
-      await icon128File.writeAsBytes(img.encodePng(icon128));
-
-      final icon256 = img.copyResize(
-        img.decodeImage(iconFile.readAsBytesSync())!,
-        width: 128,
-        height: 128,
-      );
-      final icon256File =
-          File(path.join(icon256x256, '${makeConfig.appBinaryName}.png'));
-      await icon256File.writeAsBytes(img.encodePng(icon256));
+        final icon = img.copyResize(
+          img.decodeImage(iconFile.readAsBytesSync())!,
+          width: size,
+          height: size,
+          interpolation: img.Interpolation.average,
+        );
+        final newIconFile =
+            File(path.join(iconDir, '${makeConfig.appBinaryName}.png'));
+        await newIconFile.writeAsBytes(img.encodePng(icon));
+      }
 
       if (makeConfig.metainfo != null) {
         final metainfoDir = path.join(

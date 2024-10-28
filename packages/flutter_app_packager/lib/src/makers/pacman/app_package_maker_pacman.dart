@@ -64,7 +64,6 @@ class AppPackageMakerPacman extends AppPackageMaker {
       path.join(packagingDirectory.path, 'usr/share', makeConfig.appBinaryName),
       applicationsDir,
       if (makeConfig.metainfo != null) metainfoDir,
-      if (makeConfig.icon != null) ...[icon128Dir, icon256Dir],
     ]);
 
     if (mkdirProcessResult.exitCode != 0) throw MakeError();
@@ -75,23 +74,28 @@ class AppPackageMakerPacman extends AppPackageMaker {
         throw MakeError("provided icon ${makeConfig.icon} path wasn't found");
       }
 
-      final icon128 = img.copyResize(
-        img.decodeImage(iconFile.readAsBytesSync())!,
-        width: 128,
-        height: 128,
-      );
-      final icon128File =
-          File(path.join(icon128Dir, '${makeConfig.appBinaryName}.png'));
-      await icon128File.writeAsBytes(img.encodePng(icon128));
+      for (final size in [128, 256, 512]) {
+        final iconDir = path.join(
+          packagingDirectory.path,
+          'usr/share/icons/hicolor/${size}x$size/apps',
+        );
+        final mkdirProcessRes = await $('mkdir', [
+          '-p',
+          iconDir,
+        ]);
 
-      final icon256 = img.copyResize(
-        img.decodeImage(iconFile.readAsBytesSync())!,
-        width: 128,
-        height: 128,
-      );
-      final icon256File =
-          File(path.join(icon256Dir, '${makeConfig.appBinaryName}.png'));
-      await icon256File.writeAsBytes(img.encodePng(icon256));
+        if (mkdirProcessRes.exitCode != 0) throw MakeError();
+
+        final icon = img.copyResize(
+          img.decodeImage(iconFile.readAsBytesSync())!,
+          width: size,
+          height: size,
+          interpolation: img.Interpolation.average,
+        );
+        final newIconFile =
+            File(path.join(iconDir, '${makeConfig.appBinaryName}.png'));
+        await newIconFile.writeAsBytes(img.encodePng(icon));
+      }
     }
     if (makeConfig.metainfo != null) {
       final metainfoPath =
