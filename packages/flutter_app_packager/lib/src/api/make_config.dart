@@ -6,9 +6,9 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 const _kArtifactName =
-    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{build_name}}+{{build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}';
+    '{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}';
 const _kArtifactNameWithChannel =
-    '{{name}}-{{channel}}-{{build_name}}+{{build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}';
+    '{{name}}-{{channel}}-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}';
 
 class MakeConfig {
   late bool isInstaller = false;
@@ -28,7 +28,10 @@ class MakeConfig {
   String get appBinaryName => pubspec.name;
   Version get appVersion => pubspec.version!;
   String get appBuildName => appVersion.toString().split('+').first;
-  String get appBuildNumber => appVersion.toString().split('+').last;
+  String? get appBuildNumber {
+    final parts = appVersion.toString().split('+');
+    return parts.length > 1 ? parts.last : null;
+  }
 
   Pubspec? _pubspec;
   Directory? _packagingDirectory;
@@ -61,6 +64,7 @@ class MakeConfig {
     Map<String, dynamic> variables = {
       'is_installer': isInstaller,
       'is_profile': buildMode == 'profile',
+      'has_build_number': appBuildNumber != null,
       'name': appName,
       'version': appVersion.toString(),
       'build_name': appBuildName,
