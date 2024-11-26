@@ -119,6 +119,10 @@ class MakeConfig {
     return _pubspec!;
   }
 
+  set pubspec(Pubspec pubspec) {
+    _pubspec = pubspec;
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'isInstaller': isInstaller,
