@@ -105,7 +105,6 @@ class MakeRPMConfig extends MakeConfig {
 
   @override
   Map<String, dynamic> toJson() {
-    final currentDate = DateTime.now();
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('EEE MMM dd yyyy').format(now);
     final rpmVersion = appVersion.toString();
