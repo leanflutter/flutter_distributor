@@ -12,7 +12,7 @@ title: AppImage
   ```
 - [appimagetool](https://github.com/AppImage/appimagetool)
 
-To install Appimage Builder, run:
+To install appimagetool, run:
 
 ```bash
 wget -O appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
