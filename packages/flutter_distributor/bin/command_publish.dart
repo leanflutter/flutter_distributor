@@ -221,10 +221,12 @@ class CommandPublish extends Command {
             ? Directory(path)
             : File(path);
 
-    return distributor.publish(
+    distributor.publish(
       fileSystemEntity,
       targets,
       publishArguments: publishArguments,
     );
+
+    return null;
   }
 }

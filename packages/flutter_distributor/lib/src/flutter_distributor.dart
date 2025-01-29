@@ -274,7 +274,7 @@ class FlutterDistributor {
     return publishResultList;
   }
 
-  Future<void> release(
+  Future<dynamic> release(
     String name, {
     required List<String> jobNameList,
     required List<String> skipJobNameList,
@@ -367,15 +367,16 @@ class FlutterDistributor {
           stacktrace,
         ].join('\n'),
       );
+      return error;
     }
-    return Future.value();
+    return null;
   }
 
-  Future<void> upgrade() async {
+  Future<dynamic> upgrade() async {
     await $(
       'dart',
       ['pub', 'global', 'activate', 'flutter_distributor'],
     );
-    return Future.value();
+    return null;
   }
 }

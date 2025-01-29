@@ -129,7 +129,7 @@ class CommandPackage extends Command {
       exit(1);
     }
 
-    return distributor.package(
+    distributor.package(
       platform,
       targets,
       channel: channel,
@@ -137,6 +137,8 @@ class CommandPackage extends Command {
       cleanBeforeBuild: !isSkipClean,
       buildArguments: buildArguments,
     );
+
+    return null;
   }
 
   Map<String, dynamic> _generateBuildArgs(String? flutterBuildArgs) {
