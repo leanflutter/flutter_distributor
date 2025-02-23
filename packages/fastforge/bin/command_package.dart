@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'package:any_app_packager/src/any_app_packager.dart';
-import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
+import 'package:fastforge/fastforge.dart';
+import 'package:fastforge/src/extensions/extensions.dart';
 
 /// Package an application bundle for a specific platform and target
 ///
 /// This command wrapper defines, parses and transforms all passed arguments,
-/// so that they may be passed to `flutter_distributor`. The distributor will
+/// so that they may be passed to `fastforge`. The fastforge will
 /// then build an application bundle using `flutter_app_packager`.
-class PackageCommand extends Command {
-  PackageCommand(this.appPackager) {
+class CommandPackage extends Command {
+  CommandPackage(this.fastforge) {
     argParser.addOption(
       'platform',
       valueHelp: [
@@ -91,7 +91,7 @@ class PackageCommand extends Command {
     );
   }
 
-  final AnyAppPackager appPackager;
+  final Fastforge fastforge;
 
   @override
   String get name => 'package';
@@ -120,16 +120,16 @@ class PackageCommand extends Command {
 
     // At least `platform` and one `targets` is required for flutter build
     if (platform == null) {
-      print('\nThe \'platform\' options is mandatory!');
+      print('\nThe \'platform\' options is mandatory!'.red(bold: true));
       exit(1);
     }
 
     if (targets.isEmpty) {
-      print('\nAt least one \'target\' must be specified!');
+      print('\nAt least one \'target\' must be specified!'.red(bold: true));
       exit(1);
     }
 
-    return appPackager.package(
+    return fastforge.package(
       platform,
       targets,
       channel: channel,
@@ -181,30 +181,4 @@ class PackageCommand extends Command {
 
     return buildArguments;
   }
-}
-
-Future<void> main(List<String> args) async {
-  final AnyAppPackager appPackager = AnyAppPackager();
-
-  final runner = CommandRunner(
-    'any_app_packager',
-    'Package your any app into OS-specific bundles (.dmg, .exe, etc.) via Dart or the command line.',
-  );
-  runner.argParser
-    ..addFlag(
-      'version',
-      help: 'Reports the version of this tool.',
-      negatable: false,
-    )
-    ..addFlag(
-      'version-check',
-      help: 'Check for updates when this command runs.',
-      defaultsTo: true,
-      negatable: true,
-    );
-
-  runner.addCommand(PackageCommand(appPackager));
-
-  ArgResults argResults = runner.parse(['package', ...args]);
-  return runner.runCommand(argResults);
 }
