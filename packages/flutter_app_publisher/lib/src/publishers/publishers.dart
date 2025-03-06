@@ -1,3 +1,4 @@
+export 'appbolt/app_package_publisher_appbolt.dart';
 export 'appcenter/app_package_publisher_appcenter.dart';
 export 'appstore/app_package_publisher_appstore.dart';
 export 'fir/app_package_publisher_fir.dart';
