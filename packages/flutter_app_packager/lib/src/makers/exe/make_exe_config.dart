@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 
 class MakeExeConfig extends MakeConfig {
   MakeExeConfig({
+    this.packageName,
     this.scriptTemplate,
     required this.appId,
     this.executableName,
@@ -34,6 +35,7 @@ class MakeExeConfig extends MakeConfig {
     MakeExeConfig makeExeConfig = MakeExeConfig(
       scriptTemplate: json['script_template'],
       appId: json['app_id'] ?? json['appId'],
+      packageName: json['package_name'],
       executableName: json['executable_name'],
       displayName: json['display_name'],
       publisherName: json['publisher_name'] ?? json['appPublisher'],
@@ -48,6 +50,10 @@ class MakeExeConfig extends MakeConfig {
     return makeExeConfig;
   }
 
+  @override
+  String get appName => packageName ?? super.appName;
+
+  String? packageName;
   String? scriptTemplate;
   final String appId;
   String? executableName;
@@ -83,6 +89,7 @@ class MakeExeConfig extends MakeConfig {
       'app_id': appId,
       'app_name': appName,
       'app_version': appVersion.toString(),
+      'package_name': packageName,
       'executable_name': executableName,
       'display_name': displayName,
       'publisher_name': publisherName,
