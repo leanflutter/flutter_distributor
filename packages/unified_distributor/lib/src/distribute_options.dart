@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_distributor/src/release.dart';
+import 'package:unified_distributor/src/release.dart';
 
 class DistributeOptions {
   DistributeOptions({

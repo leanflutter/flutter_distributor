@@ -1,16 +1,16 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:fastforge/fastforge.dart';
-import 'package:fastforge/src/extensions/extensions.dart';
+import 'package:unified_distributor/src/extensions/string.dart';
+import 'package:unified_distributor/src/unified_distributor.dart';
 
 /// Package an application bundle for a specific platform and target
 ///
 /// This command wrapper defines, parses and transforms all passed arguments,
-/// so that they may be passed to `fastforge`. The fastforge will
+/// so that they may be passed to `unified_distributor`. The distributor will
 /// then build an application bundle using `flutter_app_packager`.
 class CommandPackage extends Command {
-  CommandPackage(this.fastforge) {
+  CommandPackage(this.distributor) {
     argParser.addOption(
       'platform',
       valueHelp: [
@@ -91,17 +91,17 @@ class CommandPackage extends Command {
     );
   }
 
-  final Fastforge fastforge;
+  final UnifiedDistributor distributor;
 
   @override
   String get name => 'package';
 
   @override
   String get description => [
-        'Package the current Flutter application',
+        'Package the current Flutter application for distribution',
         '',
-        'Options named --build-* are passed to \'flutter build\' as is',
-        'Please consult the \'flutter build\' CLI help for more informations.',
+        'Options prefixed with --build- are passed directly to \'flutter build\'',
+        'For more details on build options, refer to the \'flutter build\' documentation.',
       ].join('\n');
 
   @override
@@ -129,7 +129,7 @@ class CommandPackage extends Command {
       exit(1);
     }
 
-    return fastforge.package(
+    return distributor.package(
       platform,
       targets,
       channel: channel,

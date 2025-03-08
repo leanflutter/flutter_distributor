@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:flutter_distributor/flutter_distributor.dart';
-import 'package:flutter_distributor/src/extensions/extensions.dart';
+import 'package:unified_distributor/src/extensions/string.dart';
+import 'package:unified_distributor/src/unified_distributor.dart';
 
 /// Release (package and publish) an application based on the config
 ///
 /// This command wrapper defines, parses and transforms all passed arguments,
-/// so that they may be passed to `flutter_distributor`. The distributor will
+/// so that they may be passed to `unified_distributor`. The distributor will
 /// then use the `distribute_options.yaml` file in the Flutter project root
 /// to run a release with one or multiple release jobs.
 ///
@@ -39,7 +39,7 @@ class CommandRelease extends Command {
     );
   }
 
-  final FlutterDistributor distributor;
+  final UnifiedDistributor distributor;
 
   @override
   String get name => 'release';

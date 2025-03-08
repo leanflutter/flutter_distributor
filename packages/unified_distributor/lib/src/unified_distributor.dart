@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:fastforge/src/extensions/extensions.dart';
-import 'package:fastforge/src/utils/utils.dart';
 import 'package:flutter_app_builder/flutter_app_builder.dart';
 import 'package:flutter_app_packager/flutter_app_packager.dart';
 import 'package:flutter_app_publisher/flutter_app_publisher.dart';
@@ -10,12 +8,26 @@ import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:shell_executor/shell_executor.dart';
 import 'package:shell_uikit/shell_uikit.dart';
+import 'package:unified_distributor/src/check_version_result.dart';
+import 'package:unified_distributor/src/distribute_options.dart';
+import 'package:unified_distributor/src/extensions/string.dart';
+import 'package:unified_distributor/src/release.dart';
+import 'package:unified_distributor/src/release_job.dart';
+import 'package:unified_distributor/src/utils/default_shell_executor.dart';
+import 'package:unified_distributor/src/utils/logger.dart';
+import 'package:unified_distributor/src/utils/pub_dev_api.dart';
 import 'package:yaml/yaml.dart';
 
-class Fastforge {
-  Fastforge() {
+class UnifiedDistributor {
+  UnifiedDistributor(
+    this.packageName,
+    this.displayName,
+  ) {
     ShellExecutor.global = DefaultShellExecutor();
   }
+
+  final String packageName;
+  final String displayName;
 
   final FlutterAppBuilder _builder = FlutterAppBuilder();
   final FlutterAppPackager _packager = FlutterAppPackager();
@@ -39,8 +51,35 @@ class Fastforge {
           _globalVariables[key] = value!;
         }
       }
+      List<String> keys = distributeOptions.variables?.keys.toList() ?? [];
+      for (String key in keys) {
+        String? value = distributeOptions.variables?[key];
+        if ((value ?? '').isNotEmpty) {
+          _globalVariables[key] = value!;
+        }
+      }
     }
     return _globalVariables;
+  }
+
+  DistributeOptions? _distributeOptions;
+  DistributeOptions get distributeOptions {
+    if (_distributeOptions == null) {
+      File file = File('distribute_options.yaml');
+      if (file.existsSync()) {
+        final yamlString = File('distribute_options.yaml').readAsStringSync();
+        final yamlDoc = loadYaml(yamlString);
+        _distributeOptions = DistributeOptions.fromJson(
+          json.decode(json.encode(yamlDoc)),
+        );
+      } else {
+        _distributeOptions = DistributeOptions(
+          output: 'dist/',
+          releases: [],
+        );
+      }
+    }
+    return _distributeOptions!;
   }
 
   Future<String?> _getCurrentVersion() async {
@@ -55,43 +94,32 @@ class Fastforge {
 
       if (pubSpecLockFile.existsSync()) {
         var yamlDoc = loadYaml(await pubSpecLockFile.readAsString());
-        if (yamlDoc['packages']['fastforge'] == null) {
+        if (yamlDoc['packages'][packageName] == null) {
           var yamlDoc = loadYaml(await pubSpecYamlFile.readAsString());
           return yamlDoc['version'];
         }
 
-        return yamlDoc['packages']['fastforge']['version'];
+        return yamlDoc['packages'][packageName]['version'];
       }
     } catch (_) {}
     return null;
   }
 
-  Future<bool> checkVersion() async {
+  Future<CheckVersionResult> checkVersion() async {
     String? currentVersion = await _getCurrentVersion();
     String? latestVersion =
-        await PubDevApi.getLatestVersionFromPackage('fastforge');
-
-    if (currentVersion != null &&
-        latestVersion != null &&
-        currentVersion.compareTo(latestVersion) < 0) {
-      String msg = [
-        '╔════════════════════════════════════════════════════════════════════════════╗',
-        '║ A new version of Fastforge is available!                                 ║',
-        '║                                                                            ║',
-        '║ To update to the latest version, run "fastforge upgrade".                   ║',
-        '╚════════════════════════════════════════════════════════════════════════════╝',
-        '',
-      ].join('\n');
-      print(msg);
-      return Future.value(true);
-    }
-    return Future.value(false);
+        await PubDevApi.getLatestVersionFromPackage(packageName);
+    return CheckVersionResult(
+      currentVersion: currentVersion,
+      latestVersion: latestVersion,
+    );
   }
 
   Future<String?> getCurrentVersion() async {
     return await _getCurrentVersion();
   }
 
+  /// Package an application for a specific platform and target
   Future<List<MakeResult>> package(
     String platform,
     List<String> targets, {
@@ -104,7 +132,7 @@ class Fastforge {
     List<MakeResult> makeResultList = [];
 
     try {
-      Directory outputDirectory = Directory('dist/');
+      Directory outputDirectory = distributeOptions.outputDirectory;
       if (!outputDirectory.existsSync()) {
         outputDirectory.createSync(recursive: true);
       }
@@ -179,6 +207,7 @@ class Fastforge {
     return makeResultList;
   }
 
+  /// Publish an application to a third party provider
   Future<List<PublishResult>> publish(
     FileSystemEntity fileSystemEntity,
     List<String> targets, {
@@ -246,10 +275,109 @@ class Fastforge {
     return publishResultList;
   }
 
+  Future<void> release(
+    String name, {
+    required List<String> jobNameList,
+    required List<String> skipJobNameList,
+    required bool cleanBeforeBuild,
+  }) async {
+    final time = Stopwatch()..start();
+
+    try {
+      Directory outputDirectory = distributeOptions.outputDirectory;
+      if (!outputDirectory.existsSync()) {
+        outputDirectory.createSync(recursive: true);
+      }
+
+      List<Release> releases = [];
+
+      if (name.isNotEmpty) {
+        releases =
+            distributeOptions.releases.where((e) => e.name == name).toList();
+      }
+
+      if (releases.isEmpty) {
+        throw Exception('Missing/incomplete `distribute_options.yaml` file.');
+      }
+
+      for (Release release in releases) {
+        List<ReleaseJob> filteredJobs = release.jobs.where((e) {
+          if (jobNameList.isNotEmpty) {
+            return jobNameList.contains(e.name);
+          }
+          if (skipJobNameList.isNotEmpty) {
+            return !skipJobNameList.contains(e.name);
+          }
+          return true;
+        }).toList();
+        if (filteredJobs.isEmpty) {
+          throw Exception('No available jobs found in ${release.name}.');
+        }
+
+        bool needCleanBeforeBuild = cleanBeforeBuild;
+
+        for (ReleaseJob job in filteredJobs) {
+          logger.info('');
+          logger.info(
+            '${'===>'.blue()} ${'Releasing'.white(bold: true)} $name:${job.name.green(bold: true)}',
+          );
+
+          Map<String, String> variables = {}
+            ..addAll(globalVariables)
+            ..addAll(release.variables ?? {})
+            ..addAll(job.variables ?? {});
+
+          List<MakeResult> makeResultList = await package(
+            job.package.platform,
+            [job.package.target],
+            channel: job.package.channel,
+            artifactName: distributeOptions.artifactName,
+            cleanBeforeBuild: needCleanBeforeBuild,
+            buildArguments: job.package.buildArgs ?? {},
+            variables: variables,
+          );
+          // Clean only once
+          needCleanBeforeBuild = false;
+
+          if (job.publish != null || job.publishTo != null) {
+            String? publishTarget = job.publishTo ?? job.publish?.target;
+            MakeResult makeResult = makeResultList.first;
+            FileSystemEntity artifact = makeResult.artifacts.first;
+            await publish(
+              artifact,
+              [publishTarget!],
+              publishArguments: job.publish?.args,
+              variables: variables,
+            );
+          }
+        }
+      }
+
+      time.stop();
+      logger.info('');
+      logger.info(
+        'RELEASE SUCCESSFUL in ${time.elapsed.inSeconds}s'.green(bold: true),
+      );
+    } catch (error, stacktrace) {
+      time.stop();
+      logger.info('');
+      logger.severe(
+        [
+          'RELEASE FAILED in ${time.elapsed.inSeconds}s'.red(bold: true),
+          error.toString().red(),
+          stacktrace,
+        ].join('\n'),
+      );
+      rethrow;
+    }
+    return Future.value();
+  }
+
+  /// Upgrade the package to the latest version
   Future<void> upgrade() async {
     await $(
       'dart',
-      ['pub', 'global', 'activate', 'fastforge'],
+      ['pub', 'global', 'activate', packageName],
     );
     return Future.value();
   }

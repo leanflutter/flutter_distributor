@@ -1,4 +1,7 @@
 library flutter_distributor;
 
-export 'src/distribute_options.dart';
-export 'src/flutter_distributor.dart';
+import 'package:unified_distributor/unified_distributor.dart';
+
+class FlutterDistributor extends UnifiedDistributor {
+  FlutterDistributor() : super('flutter_distributor', 'Flutter Distributor');
+}

@@ -1,4 +1,4 @@
-import 'package:flutter_distributor/src/release_job.dart';
+import 'package:unified_distributor/src/release_job.dart';
 
 class Release {
   Release({

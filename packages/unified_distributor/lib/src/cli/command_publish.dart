@@ -1,16 +1,16 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:fastforge/fastforge.dart';
-import 'package:fastforge/src/extensions/extensions.dart';
+import 'package:unified_distributor/src/extensions/string.dart';
+import 'package:unified_distributor/src/unified_distributor.dart';
 
 /// Publish an application to a third party provider
 ///
 /// This command wrapper defines, parses and transforms all passed arguments,
-/// so that they may be passed to `fastforge`. The fastforge will
+/// so that they may be passed to `unified_distributor`. The distributor will
 /// then publish an application bundle using `flutter_app_publisher`.
 class CommandPublish extends Command {
-  CommandPublish(this.fastforge) {
+  CommandPublish(this.distributor) {
     argParser.addOption(
       'path',
       valueHelp: '',
@@ -155,13 +155,18 @@ class CommandPublish extends Command {
     argParser.addOption('vercel-project-id', valueHelp: '');
   }
 
-  final Fastforge fastforge;
+  final UnifiedDistributor distributor;
 
   @override
   String get name => 'publish';
 
   @override
-  String get description => 'Publish the current Flutter application';
+  String get description => [
+        'Publish the built Flutter application artifacts to distribution platforms',
+        '',
+        'This command uploads your application bundle to specified target providers',
+        'Use --targets to specify one or more distribution platforms',
+      ].join('\n');
 
   @override
   Future run() async {
@@ -221,7 +226,7 @@ class CommandPublish extends Command {
             ? Directory(path)
             : File(path);
 
-    return fastforge.publish(
+    return distributor.publish(
       fileSystemEntity,
       targets,
       publishArguments: publishArguments,
