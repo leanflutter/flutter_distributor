@@ -1,3 +1,7 @@
+## 0.4.6
+
+* chore: Bump version to 0.4.6 to match main package
+
 ## 0.4.5
 
 * bump `shell_executor` to 0.1.6

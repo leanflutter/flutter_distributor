@@ -1,3 +1,14 @@
+## 0.4.6
+
+* fix: fix build rpm on linux arm64 error (#204)
+* feat: Use GitHub Actions environment variables as fallback when custom variables are not defined (#217)
+* fix: Resolve GooglePlay publishing error (status: 400, message: "This edit has already been committed") (#214)
+* feat: Show version check progress in CLI (#218)
+* fix: AppImage release fails due to incorrect filename case (should be AppImage not appimage) (#221)
+* feat: `artifact_name` template now supports `has_build_number` variable (#232)
+* fix: AppImage mimetype is null (#248)
+* fix: can not set icon file when packaging windows exe (#246)
+
 ## 0.4.5
 
 * bump `shell_executor` to 0.1.6
