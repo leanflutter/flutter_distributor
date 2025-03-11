@@ -1,6 +1,6 @@
 name: shell_uikit
 description: A simple shell ui kit.
-version: 0.1.1
+version: 0.2.0
 homepage: https://distributor.leanflutter.dev
 repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/shell_uikit
 

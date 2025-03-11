@@ -1,6 +1,6 @@
 name: flutter_distributor
 description: A powerful and efficient tool for packaging and publishing your applications with ease.
-version: 0.4.6
+version: 0.5.0
 homepage: https://distributor.leanflutter.dev
 repository: https://github.com/leanflutter/flutter_distributor/tree/main/packages/flutter_distributor
 issue_tracker: https://github.com/leanflutter/flutter_distributor/issues
