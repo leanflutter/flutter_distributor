@@ -26,16 +26,16 @@ class ProgressBar {
 
   /// The format string for the progress bar.
   final String format;
-  
+
   /// The character used for completed portions of the bar.
   final String barCompleteChar;
-  
+
   /// The character used for incomplete portions of the bar.
   final String barIncompleteChar;
-  
+
   /// The total width of the progress bar in characters.
   final int barSize;
-  
+
   /// How frequently the progress bar should update on screen.
   final Duration updateInterval;
 
@@ -75,7 +75,8 @@ class ProgressBar {
   /// Gets the estimated time remaining in seconds.
   double get eta {
     if (_startTime == null || _value <= 0 || _value >= _total) return 0;
-    final elapsed = DateTime.now().difference(_startTime!).inMilliseconds / 1000;
+    final elapsed =
+        DateTime.now().difference(_startTime!).inMilliseconds / 1000;
     final rate = _value / elapsed;
     return rate > 0 ? (_total - _value) / rate : 0;
   }
@@ -89,11 +90,11 @@ class ProgressBar {
     if (totalValue < 0) {
       throw ArgumentError('Total value must be non-negative');
     }
-    
+
     if (startValue != null && (startValue < 0 || startValue > totalValue)) {
       throw ArgumentError('Start value must be between 0 and total value');
     }
-    
+
     // Set initial values
     _value = startValue ?? 0;
     _total = totalValue;
@@ -109,7 +110,7 @@ class ProgressBar {
 
     // Cancel existing timer if any
     _timer?.cancel();
-    
+
     // Start new timer
     _timer = Timer.periodic(updateInterval, (_) {
       render();
@@ -119,7 +120,7 @@ class ProgressBar {
         stdout.writeln();
       }
     });
-    
+
     // Initial render
     render();
   }
@@ -131,11 +132,11 @@ class ProgressBar {
     if (!_isActive) {
       return;
     }
-    
+
     if (currentValue < 0) {
       throw ArgumentError('Current value must be non-negative');
     }
-    
+
     if (_value == currentValue) return;
     _value = currentValue;
 
@@ -157,11 +158,11 @@ class ProgressBar {
     if (totalValue < 0) {
       throw ArgumentError('Total value must be non-negative');
     }
-    
+
     if (totalValue < _value) {
       throw ArgumentError('New total cannot be less than current value');
     }
-    
+
     _total = totalValue;
   }
 
@@ -172,7 +173,7 @@ class ProgressBar {
 
     // Store stop timestamp to get total duration
     _stopTime = DateTime.now();
-    
+
     // Final render to show 100% completion
     render();
   }
@@ -180,11 +181,12 @@ class ProgressBar {
   /// Renders the current state of the progress bar to stdout.
   void render() {
     // Calculate the bar complete size
-    final barCompleteSize = ((_value / _total) * barSize).round().clamp(0, barSize);
-    
-    final bar = barCompleteChar * barCompleteSize + 
-                barIncompleteChar * (barSize - barCompleteSize);
-    
+    final barCompleteSize =
+        ((_value / _total) * barSize).round().clamp(0, barSize);
+
+    final bar = barCompleteChar * barCompleteSize +
+        barIncompleteChar * (barSize - barCompleteSize);
+
     final percentage = (_value * 100 / _total).toStringAsFixed(1);
     final durationStr = duration.toStringAsFixed(1);
     final etaStr = eta.toStringAsFixed(1);
@@ -200,7 +202,7 @@ class ProgressBar {
           .replaceAll('{eta}', etaStr),
     );
   }
-  
+
   /// Disposes of resources used by the progress bar.
   void dispose() {
     _timer?.cancel();

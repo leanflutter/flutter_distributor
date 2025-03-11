@@ -16,7 +16,7 @@ class Spinner {
 
   /// The text displayed next to the spinner.
   String _text;
-  
+
   /// Gets the current spinner text.
   String get text => _text;
 
@@ -41,10 +41,10 @@ class Spinner {
 
     // Record the start time
     _frameIndex = 0;
-    
+
     // Clear the current line
     stdout.write('\r');
-    
+
     // Start the animation timer
     _timer = Timer.periodic(interval, (_) {
       _draw();
@@ -55,7 +55,7 @@ class Spinner {
   void stop() {
     _timer?.cancel();
     _timer = null;
-    
+
     // Clear the spinner line
     _clearLine();
   }
@@ -107,10 +107,10 @@ class Spinner {
   void _draw() {
     final frames = _getFrames();
     final frame = frames[_frameIndex % frames.length];
-    
+
     // Clear the current line and write the new frame
     stdout.write('\r$frame $_text');
-    
+
     // Move to the next frame
     _frameIndex++;
   }
@@ -147,25 +147,25 @@ class Spinner {
 enum SpinnerType {
   /// Braille dots animation (default)
   dots,
-  
+
   /// Simple line animation
   line,
-  
+
   /// Growing vertical bar
   growVertical,
-  
+
   /// Growing horizontal bar
   growHorizontal,
-  
+
   /// Circle animation
   circle,
-  
+
   /// Simple dots animation
   dots2,
-  
+
   /// Bouncing animation
   bounce,
-  
+
   /// Rotating arrows
   arrows,
 }
