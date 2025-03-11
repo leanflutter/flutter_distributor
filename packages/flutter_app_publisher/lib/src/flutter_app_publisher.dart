@@ -5,6 +5,7 @@ import 'package:flutter_app_publisher/src/publishers/publishers.dart';
 
 class FlutterAppPublisher {
   final List<AppPackagePublisher> _publishers = [
+    AppPackagePublisherAppBolt(),
     AppPackagePublisherAppCenter(),
     AppPackagePublisherAppStore(),
     AppPackagePublisherFir(),

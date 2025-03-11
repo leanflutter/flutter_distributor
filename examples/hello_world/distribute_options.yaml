@@ -1,7 +1,8 @@
 output: dist/
 variables:
-#  FLUTTER_ROOT: ~/fvm/versions/3.16.5
-  # PGYER_API_KEY: your api key
+  # FLUTTER_ROOT: ~/fvm/versions/3.16.5
+  PGYER_API_KEY: your api key
+  APPBOLT_API_TOKEN: your api token
 releases:
   - name: dev-profile
     jobs:
@@ -149,3 +150,19 @@ releases:
         package:
           platform: web
           target: zip
+  - name: dev-appbolt
+    jobs:
+      - name: android-apk
+        package:
+          platform: android
+          target: apk
+          build_args:
+            target-platform: android-arm,android-arm64
+            build-name: "1.2.1"
+            build-number: "2"
+        publish:
+          target: appbolt
+          args:
+            api-url: http://localhost:3000/api
+            org-id: my-org
+            app-id: hello-world
