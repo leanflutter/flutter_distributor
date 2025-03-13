@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'dart:io' show FileSystemEntity;
+import 'dart:io' as io;
 
 import 'package:appbolt/appbolt.dart';
 import 'package:collection/collection.dart';
@@ -38,7 +39,7 @@ class AppPackagePublisherAppBolt extends AppPackagePublisher {
     Map<String, dynamic>? publishArguments,
     PublishProgressCallback? onPublishProgress,
   }) async {
-    File file = fileSystemEntity as File;
+    io.File file = fileSystemEntity as io.File;
     PublishAppBoltConfig publishConfig = PublishAppBoltConfig.parse(
       environment,
       publishArguments,
@@ -67,11 +68,16 @@ class AppPackagePublisherAppBolt extends AppPackagePublisher {
         '${appPackage.version}+${appPackage.buildNumber}',
       );
 
+      final createFileResult = await client.createAppFile(
+        appId,
+        file: file,
+      );
+
       final result = await client.createReleaseBinary(
         appId,
         release.id,
         appIdentifierId: appIdentifier.id,
-        signature: 'xxx',
+        binaryFileId: createFileResult.data.id,
       );
       if (!result.success) {
         throw PublishError('Create release failed');
