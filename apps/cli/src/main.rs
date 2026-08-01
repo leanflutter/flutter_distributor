@@ -48,8 +48,30 @@ enum Commands {
     GooglePlay(GooglePlayConsoleArgs),
 }
 
+/// Prints the rename notice when the binary is invoked under the legacy
+/// `flutter_distributor` name (mirrors the Dart CLI's banner).
+fn print_rename_notice_if_needed() {
+    let invoked_as = std::env::args()
+        .next()
+        .map(std::path::PathBuf::from)
+        .and_then(|p| p.file_stem().map(|s| s.to_string_lossy().to_string()))
+        .unwrap_or_default();
+    if invoked_as.starts_with("flutter_distributor") {
+        eprintln!(
+            "\x1b[1;33m╔════════════════════════════════════════════════════════════════════════════╗\n\
+             ║ Important Notice: flutter_distributor has been renamed to fastforge.       ║\n\
+             ║ You can continue to use flutter_distributor, but we recommend migrating to ║\n\
+             ║ fastforge for the latest features and updates.                             ║\n\
+             ║                                                                            ║\n\
+             ║ Please visit https://fastforge.dev for more information.                   ║\n\
+             ╚════════════════════════════════════════════════════════════════════════════╝\x1b[0m\n"
+        );
+    }
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    print_rename_notice_if_needed();
     let cli = Cli::parse();
 
     match &cli.command {
