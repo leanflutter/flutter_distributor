@@ -17,7 +17,7 @@ Top-level commands:
 
 | Command         | Description                                        |
 | --------------- | -------------------------------------------------- |
-| `analyze`       | Analyze an app package or bundle                   |
+| `analyze`       | Analyze app packages, or a directory of them       |
 | `build`         | Build a project with Flutter Builder               |
 | `package`       | Build and package a project                        |
 | `publish`       | Publish an existing artifact                       |
@@ -32,17 +32,19 @@ Top-level commands:
 ## `analyze`
 
 ```text
-fastforge analyze [OPTIONS] <PATH>
+fastforge analyze [OPTIONS] <PATH>...
 ```
 
-| Option                  | Required | Description                                          |
-| ----------------------- | :------: | ---------------------------------------------------- |
-| `<PATH>`                |   Yes    | Path to an `.apk`, `.aab`, `.ipa`, `.dmg`, or `.app` |
-| `-o, --output <OUTPUT>` |    No    | Write JSON to a file; otherwise write to stdout      |
+| Option                  | Required | Description                                                                    |
+| ----------------------- | :------: | ------------------------------------------------------------------------------ |
+| `<PATH>...`             |   Yes    | One or more `.apk`, `.aab`, `.ipa`, `.dmg` or `.app` paths, or directories to scan |
+| `-o, --output <OUTPUT>` |    No    | Write the report to a file; otherwise write to stdout                          |
+| `--format <FORMAT>`     |    No    | `json` or `html`. Defaults to the format implied by `--output`, else `json`    |
 
 ```bash
 fastforge analyze dist/app.apk
 fastforge analyze dist/app.ipa --output app-info.json
+fastforge analyze dist --output report.html
 ```
 
 See [App Package Analysis](tools/analyze.md) for format dependencies and output details.

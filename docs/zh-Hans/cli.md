@@ -17,7 +17,7 @@ fastforge <COMMAND>
 
 | 命令            | 说明                          |
 | --------------- | ----------------------------- |
-| `analyze`       | 分析应用包或 bundle           |
+| `analyze`       | 分析应用包，或整个目录        |
 | `build`         | 使用 Flutter Builder 构建项目 |
 | `package`       | 构建并打包项目                |
 | `publish`       | 发布现有产物                  |
@@ -32,17 +32,19 @@ fastforge <COMMAND>
 ## `analyze`
 
 ```text
-fastforge analyze [OPTIONS] <PATH>
+fastforge analyze [OPTIONS] <PATH>...
 ```
 
-| 参数                    | 必填 | 说明                                          |
-| ----------------------- | :--: | --------------------------------------------- |
-| `<PATH>`                |  是  | `.apk`、`.aab`、`.ipa`、`.dmg` 或 `.app` 路径 |
-| `-o, --output <OUTPUT>` |  否  | 把 JSON 写入文件；省略时输出到 stdout         |
+| 参数                    | 必填 | 说明                                                              |
+| ----------------------- | :--: | ----------------------------------------------------------------- |
+| `<PATH>...`             |  是  | 一个或多个 `.apk`、`.aab`、`.ipa`、`.dmg`、`.app` 路径，或待扫描的目录 |
+| `-o, --output <OUTPUT>` |  否  | 把报告写入文件；省略时输出到 stdout                               |
+| `--format <FORMAT>`     |  否  | `json` 或 `html`；默认取 `--output` 隐含的格式，否则为 `json`     |
 
 ```bash
 fastforge analyze dist/app.apk
 fastforge analyze dist/app.ipa --output app-info.json
+fastforge analyze dist --output report.html
 ```
 
 格式依赖和输出说明见[应用包分析](tools/analyze.md)。
