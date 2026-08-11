@@ -69,9 +69,23 @@ fn print_rename_notice_if_needed() {
     }
 }
 
+/// Prints a one-line notice when the binary was not produced by the GitHub
+/// Actions release pipeline, i.e. it was built/installed locally from source.
+///
+/// `GITHUB_ACTIONS` is set in every GitHub Actions step and captured here at
+/// compile time, so official (Actions-built) binaries stay silent.
+fn print_local_build_notice_if_needed() {
+    if option_env!("GITHUB_ACTIONS").is_none() {
+        eprintln!(
+            "\x1b[1;30;43m ⚠ UNOFFICIAL BUILD \x1b[0m \x1b[1;33mbuilt locally; official releases: https://fastforge.dev\x1b[0m\n"
+        );
+    }
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     print_rename_notice_if_needed();
+    print_local_build_notice_if_needed();
     let cli = Cli::parse();
 
     match &cli.command {

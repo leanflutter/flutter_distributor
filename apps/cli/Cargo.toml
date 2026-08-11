@@ -10,12 +10,6 @@ license.workspace = true
 name = "fastforge"
 path = "src/main.rs"
 
-# Compatibility alias: flutter_distributor was renamed to fastforge.
-# Same binary; shows a rename notice when invoked under the old name.
-[[bin]]
-name = "flutter_distributor"
-path = "src/main.rs"
-
 [dependencies]
 fastforge_core = { path = "../../crates/core" }
 fastforge_app_analyzer = { path = "../../crates/app_analyzer" }
