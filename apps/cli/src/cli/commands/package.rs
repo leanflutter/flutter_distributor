@@ -20,6 +20,8 @@ use std::str::FromStr;
 
 #[derive(Args)]
 pub struct PackageArgs {
+    /// Target platform (auto-detected from the targets and project layout
+    /// when omitted).
     #[arg(short, long = "platform")]
     pub platform: Option<String>,
     /// Comma-separated list of bundle types to build (e.g. `apk`, `dmg,zip`).
@@ -118,10 +120,6 @@ impl PackageArgs {
 
 pub async fn execute(args: &PackageArgs) -> Result<()> {
     log::info!("Executing package command");
-    let platform = args
-        .platform
-        .as_deref()
-        .ok_or_else(|| anyhow!("The 'platform' option is mandatory!"))?;
     let targets: Vec<&str> = args
         .targets
         .as_deref()
@@ -133,6 +131,13 @@ pub async fn execute(args: &PackageArgs) -> Result<()> {
     if targets.is_empty() {
         return Err(anyhow!("At least one 'target' must be specified!"));
     }
+    let platform = match args.platform.as_deref() {
+        Some(platform) => platform.to_string(),
+        None => super::platform_infer::infer_platform(&targets)?
+            .as_str()
+            .to_string(),
+    };
+    let platform = platform.as_str();
 
     // Build hooks map from CLI args
     let hooks: Option<HashMap<String, serde_yaml::Value>> = {
