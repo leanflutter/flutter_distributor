@@ -1,15 +1,19 @@
 # Android packaging (APK / AAB)
 
-## Native Gradle projects — `fastforge package`
+Both project types package end-to-end:
 
 ```bash
-fastforge package --platform android --target apk
-fastforge package --platform android --target aab
+fastforge package --targets apk,aab      # --platform android optional (inferred)
 ```
 
-Gradle Builder prefers the project's Gradle Wrapper, falling back to `gradle`
-from `PATH`. Default variant is Release; the task is derived from
-target + flavor + module:
+- **Flutter projects** (`pubspec.yaml` present) route through Flutter Builder,
+  then the APK/AAB packager prepares the artifact into `dist/`.
+- **Native Gradle projects** route through Gradle Builder.
+
+## Gradle Builder details (native projects)
+
+Prefers the project's Gradle Wrapper, falling back to `gradle` from `PATH`.
+Default variant is Release; the task is derived from target + flavor + module:
 
 | Target | No flavor | `dev` flavor |
 | --- | --- | --- |
@@ -18,8 +22,8 @@ target + flavor + module:
 
 With a module: `:androidApp:assembleDevRelease`.
 
-Flavor, module, and Gradle properties can only be passed through the package
-action's `build-args` (a JSON object string):
+Flavor, module, and Gradle properties are passed through the package action's
+`build-args` (a JSON object string):
 
 ```yaml
 - name: Package Android APK
@@ -39,45 +43,45 @@ action's `build-args` (a JSON object string):
 | `gradle-property` | JSON object → `-Pkey=value` |
 | `system-property` | JSON object → `-Dkey=value` |
 
-Artifact search paths: APK `app/build/outputs/apk/`, AAB
+Gradle artifact search paths: APK `app/build/outputs/apk/`, AAB
 `app/build/outputs/bundle/`. A successful Gradle run with no matching file is
 treated as a build failure.
 
-## Flutter projects — `fastforge build`
+## Flutter Builder details
 
-The Android packager is not connected for Flutter projects; `fastforge
-package --platform android` builds and then fails. Generate the raw artifact
-instead:
+On the CLI, flavor and friends are first-class flags:
 
 ```bash
-fastforge build --platform android --target apk
-fastforge build --platform android --target aab
+fastforge package --targets apk \
+  --build-flavor dev \
+  --build-dart-define APP_ENV=dev \
+  --build-target-platform android-arm,android-arm64
 ```
-
-Common Flutter build options (all also apply to other Flutter platforms):
 
 | Option | Effect |
 | --- | --- |
-| `--clean` | Clean before building |
+| `--clean` / `--skip-clean` | Clean (or don't) before building |
 | `--build-flavor <flavor>` | Product flavor |
 | `--build-target <path>` | Entry point (e.g. `lib/main_prod.dart`) |
-| `--build-target-platform android-arm,android-arm64` | Target ABIs |
+| `--build-target-platform` | Target ABIs |
 | `--build-dart-define KEY=VALUE` | Compile-time variable, repeatable |
-| `--build-obfuscate` + `--build-split-debug-info <dir>` | Obfuscation |
-| `--build-tree-shake-icons` | Icon tree shaking |
-| `--build-profile` | Profile mode |
+| `--build-obfuscate` + `--build-split-debug-info <dir>` | Obfuscation (build command) |
+| `--build-tree-shake-icons` | Icon tree shaking (build command) |
+| `--build-profile` | Profile mode (build command) |
 | `--flutter-build-args a,b=c` | Anything else, comma-separated (no commas in values); entries without `=` are boolean switches |
 
 Version name/number come from `pubspec.yaml` `version` via
 `FLUTTER_BUILD_NAME` / `FLUTTER_BUILD_NUMBER`.
 
-Artifacts: APK `build/app/outputs/flutter-apk/`, AAB
-`build/app/outputs/bundle/`.
+Raw-artifact-only alternative (`fastforge build --platform android --target
+apk|aab`) skips the packaging stage; outputs land in
+`build/app/outputs/flutter-apk/` and `build/app/outputs/bundle/`.
 
 ## Requirements & follow-ups
 
 - Android SDK + working Gradle toolchain. APK/AAB *analysis* additionally
   needs `aapt2` under `ANDROID_HOME` (AAB: or `BUNDLETOOL`).
-- Upload to Google Play goes through `fastforge googleplay bundle upload`
-  (fastforge-stores skill) — there is **no** `playstore` publish target.
-- fir.im / Firebase / S3 distribution of the APK: fastforge-publish skill.
+- Upload options: `fastforge publish --target playstore` for a straight
+  AAB-to-track upload, or `fastforge googleplay` for full edit/track/rollout
+  control (fastforge-stores skill). fir.im / pgyer / Firebase / S3
+  distribution: fastforge-publish skill.

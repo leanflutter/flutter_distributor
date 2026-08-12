@@ -56,7 +56,9 @@ iwr https://raw.githubusercontent.com/fastforgedev/fastforge/main/install.ps1 | 
 ```
 
 From source: `cargo install --path apps/cli` inside a clone of
-`https://github.com/fastforgedev/fastforge`.
+`https://github.com/fastforgedev/fastforge`. Locally built binaries print a
+startup warning to distinguish them from official release builds — expected,
+not an error.
 
 Verify with `fastforge --version`. If the shell cannot find the command, check
 that the install directory is in `PATH`.
@@ -135,5 +137,6 @@ dependencies, and CI usage before interpreting or scripting analysis output.
   network.
 - `fastforge release` exists only for legacy compatibility — steer users to
   workflows.
-- Packaging coverage is uneven across project types; do not guess. The
-  `fastforge-package` skill has the authoritative support matrix.
+- The `fastforge-package` skill has the authoritative platform/format matrix;
+  `--platform` is optional on `package`/`build` (inferred from targets and
+  project layout when unambiguous).

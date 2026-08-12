@@ -35,18 +35,18 @@ The build has two stages: `xcodebuild archive` → `.xcarchive`, then
 
 Provide at least one of `export-options-plist` / `export-method`.
 
-## Flutter projects — `fastforge build`
+## Flutter projects — `fastforge package` (or `build`)
 
-The iOS packager is not connected for Flutter projects (`package` builds then
-fails). Build the IPA directly; export configuration is required:
+Flutter projects package IPAs end-to-end; export configuration is required:
 
 ```bash
-fastforge build --platform ios --target ipa \
+fastforge package --targets ipa \
   --build-export-options-plist ios/ExportOptions.plist
-# or
-fastforge build --platform ios --target ipa \
-  --build-export-method app-store
 ```
+
+`fastforge build --platform ios --target ipa` produces the raw IPA without
+the packaging stage (`--build-export-method app-store` works as the plist
+alternative on the build command).
 
 Other Flutter build options (flavor, dart-define, obfuscation…) are listed in
 [android.md](android.md) and apply here too. Artifacts land in

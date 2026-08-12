@@ -1,7 +1,9 @@
 # Publisher reference
 
 Credentials always come from process environment variables. `--publish-arg`
-is for non-sensitive parameters only.
+is for non-sensitive parameters only. Every argument key may also be written
+with a `<target>-` prefix (`github-repo`, `playstore-track`) — handy when one
+command publishes to multiple comma-separated targets.
 
 ## S3-compatible storage (`s3` / `minio`, `qiniu`, `oss`, `cos`)
 
@@ -20,7 +22,8 @@ fastforge publish --path dist/app.zip --target s3 \
 ```
 
 Standard AWS variables also work: `AWS_REGION`, `AWS_ACCESS_KEY_ID`,
-`AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`.
+`AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` — as do `MINIO_*` variables and
+Dart-style `minio-*` argument keys when targeting `minio`.
 
 ### `qiniu`
 
@@ -47,6 +50,40 @@ fastforge publish --path dist/app.apk --target fir \
 
 `bundle_id` is **required**. Optional: `app_name`, `version`, `build_number`.
 Platform is inferred from the `.apk`/`.ipa` extension only.
+
+## `pgyer` — 蒲公英
+
+```bash
+export PGYER_API_KEY=…
+fastforge publish --path dist/app.apk --target pgyer
+```
+
+Platform inferred from the `.apk`/`.ipa` extension. Optional args mirror the
+PGYER API: `oversea`, `install-type`, `password`, `description`,
+`update-description`, `install-date`, `install-start-date`,
+`install-end-date`, `channel-shortcut`. The result message is the app's
+`http://www.pgyer.com/<build-key>` URL.
+
+## `playstore` — Google Play upload
+
+AAB only. Requires a service-account JSON with Play Developer API access:
+
+```bash
+export PLAYSTORE_CREDENTIALS="$PWD/service-account.json"
+fastforge publish --path dist/app-release.aab --target playstore \
+  --publish-arg package-name=com.example.app \
+  --publish-arg track=internal
+```
+
+| Arg | Required | Meaning |
+| --- | :-: | --- |
+| `package-name` | yes | Play package name |
+| `credentials-file` | no | Overrides `PLAYSTORE_CREDENTIALS` |
+| `track` | no | Assigns the uploaded version to a track |
+
+Creates an edit, uploads the bundle, optionally updates the track, and
+commits. For staged rollouts, release notes, or track inspection use
+`fastforge googleplay` (fastforge-stores skill).
 
 ## `firebase` — Firebase App Distribution
 

@@ -7,15 +7,13 @@ the selected packager.
 ## Flutter projects — direct CLI
 
 ```bash
-fastforge package --platform macos --target dmg
-fastforge package --platform macos --target pkg
-fastforge package --platform macos --target zip
+fastforge package --targets dmg,pkg,zip   # --platform macos inferred; one build, three artifacts
 ```
 
-This is currently the *only* platform where a Flutter project can use
-`fastforge package` end-to-end. Flavors, dart-defines, and custom entry
-points use the same `--build-*` options listed in [android.md](android.md);
-artifacts are written to `dist/`.
+Non-Android platforms build once and reuse the `.app` across all requested
+targets. Flavors, dart-defines, and custom entry points use the same
+`--build-*` options listed in [android.md](android.md); artifacts are written
+to `dist/`.
 
 ## Native Xcode projects — package action only
 
@@ -44,8 +42,11 @@ Pass the project through `build-args` in a workflow:
 
 ## Format notes
 
-- **DMG** — uses the built-in DMG maker; the old global `appdmg` Node tool is
-  no longer required.
+- **DMG** — uses the built-in DMG maker (no `appdmg` Node tool needed). It
+  prefers an appdmg-style spec from `macos/packaging/dmg/make_config.yaml`
+  when present (window layout, background, icon positions; assets are
+  resolved relative to `macos/packaging/dmg/`), falling back to a sensible
+  default layout otherwise.
 - **PKG** — reads `macos/packaging/pkg/make_config.yaml` and **fails if the
   file is missing or invalid**; create it before the first PKG run. A PKG can
   be uploaded to the Mac App Store: `fastforge publish --path dist/MyApp.pkg

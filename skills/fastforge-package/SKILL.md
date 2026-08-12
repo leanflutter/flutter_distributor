@@ -1,27 +1,26 @@
 ---
 name: fastforge-package
 description: >-
-  Build and package apps with Fastforge: producing APK/AAB for Android, IPA for
-  iOS, DMG/PKG/ZIP for macOS, and raw Flutter builds for Windows/Linux/Web/
-  OpenHarmony. Use this skill whenever the user wants to build, package, or
+  Build and package apps with Fastforge: APK/AAB for Android, IPA for iOS,
+  DMG/PKG/ZIP for macOS, EXE/MSIX for Windows, AppImage/DEB/RPM/Pacman for
+  Linux, HAP/APP for OpenHarmony, web bundles, and script-driven custom
+  packaging. Use this skill whenever the user wants to build, package, or
   "打包" an app with fastforge — "package my app as a dmg", "build an apk with
   the dev flavor", "create an installer", "fastforge package fails" — even if
   they don't name a command. Covers fastforge build, fastforge package, the
   fastforge/package workflow action, builder routing (Gradle/Xcode/Flutter),
-  flavors, dart-define, hooks, and artifact locations. Not for uploading
-  artifacts (fastforge-publish) or store review/tracks (fastforge-stores).
+  flavors, channels, artifact-name templates, dart-define, hooks, make_config
+  files, and artifact locations. Not for uploading artifacts
+  (fastforge-publish) or store review/tracks (fastforge-stores).
 ---
 
 # Fastforge Package
 
-Turn a project into a distributable artifact. The single most important thing
-this skill encodes: **coverage is uneven across project types**, and the right
-command depends on what kind of project you are in. Check the matrix before
-suggesting anything.
+Turn a project into a distributable artifact.
 
 ## Step 1 — Identify the project type
 
-Routing is decided by `pubspec.yaml` in the project root plus `--platform`:
+Routing is decided by `pubspec.yaml` in the project root plus the platform:
 
 1. No `pubspec.yaml`, platform `macos`/`ios` → **Xcode Builder**
 2. No `pubspec.yaml`, platform `android` → **Gradle Builder**
@@ -30,57 +29,74 @@ Routing is decided by `pubspec.yaml` in the project root plus `--platform`:
 Always run fastforge from the actual project root — detection is intentionally
 simple and a wrong cwd selects the wrong builder.
 
-## Step 2 — Pick the entry point from the support matrix
+## Step 2 — Know the format matrix
 
-| Project | Platform → format | What works today |
-| --- | --- | --- |
-| Native Android (Gradle) | `android` → `apk`, `aab` | `fastforge package` CLI or package action |
-| Native iOS (Xcode) | `ios` → `ipa` | **package action only** (needs `project`/`scheme` in `build-args`) |
-| Native macOS (Xcode) | `macos` → `dmg`, `pkg`, `zip` | **package action only** (same reason) |
-| Flutter | `macos` → `dmg`, `pkg`, `zip` | `fastforge package` CLI or package action |
-| Flutter | `android`, `ios`, `windows`, `linux`, `web`, `ohos` | **`fastforge build` only** — raw artifact, no packager connected |
+`fastforge package` routes every platform/format pair; an unsupported pair
+fails fast **before** building:
 
-Two consequences worth stating to users before they hit them:
+| Platform | Targets |
+| --- | --- |
+| `android` | `aab`, `apk` |
+| `ios` | `ipa` |
+| `macos` | `dmg`, `pkg`, `zip` |
+| `windows` | `exe`, `msix`, `zip`, `direct` |
+| `linux` | `appimage`, `deb`, `rpm`, `pacman`, `zip`, `direct` |
+| `web` | `zip`, `direct` |
+| `ohos` | `hap`, `app` |
+| every platform | `custom` (script-driven — see [references/other-platforms.md](references/other-platforms.md)) |
 
-- In a Flutter project, `fastforge package --platform android|ios` completes
-  the build and then fails with `Unsupported package target`, because those
-  packagers are not connected yet. Use `fastforge build` for the raw
-  APK/AAB/IPA — it lands in the standard Flutter output directories and is
-  perfectly publishable.
-- The top-level `fastforge package` command cannot express Xcode's required
-  `project`/`scheme` arguments, so native iOS/macOS packaging must go through
-  a workflow's `fastforge/package` action with `build-args`.
+`direct` copies the raw build output without wrapping it in an archive or
+installer. Host restrictions still apply: iOS/macOS need macOS, Windows needs
+Windows, Linux needs Linux.
 
-Linux/Windows/Web/OpenHarmony packagers and the Custom/Gradle-Multiplatform
-builders exist in the codebase but have no CLI entry point — for those, run
-the project's own build commands (optionally as shell steps in a workflow) and
-don't invent flags like `--platform custom`.
+One remaining exception: native Xcode projects (no `pubspec.yaml`) require
+`project`/`scheme` arguments that the top-level CLI does not expose — package
+them through a workflow's `fastforge/package` action with `build-args`
+([references/ios.md](references/ios.md), [references/macos.md](references/macos.md)).
 
 ## Step 3 — Run it
 
-One-off, single target, exploratory → run the CLI directly:
+`--platform` is optional: unambiguous targets resolve it alone (`apk` →
+android, `dmg` → macos), while ambiguous ones (`zip`, `direct`, `custom`) fall
+back to project layout and host OS. `--targets` takes a comma-separated list
+(`--target` is an alias); non-Android platforms build once and reuse the
+output across targets, and cleaning happens at most once per invocation.
 
 ```bash
-fastforge package --platform android --target apk        # native Gradle project
-fastforge package --platform macos --target dmg          # Flutter project
-fastforge build --platform android --target aab          # Flutter raw artifact
+fastforge package --targets apk,aab                      # platform inferred: android
+fastforge package --platform macos --targets dmg,zip     # multi-target, one build
+fastforge build --platform android --target aab          # raw artifact only, no packaging
 ```
 
-Repeatable, multi-target, flavor matrix, CI-bound, native Xcode, or the user
-says they'll need it again → generate a workflow in `.fastforge/workflows/`
-and run it with `fastforge workflow run`. Read
+Useful options:
+
+- `--channel <name>` — distribution channel; recorded in artifact naming and
+  exposed to hooks/custom scripts as `CHANNEL`.
+- `--artifact-name <template>` — mustache template with `{{name}}`,
+  `{{version}}`, `{{build_name}}`, `{{build_number}}`, `{{platform}}`,
+  `{{ext}}` and section tags like `{{#flavor}}-{{flavor}}{{/flavor}}`.
+- `--build-flavor`, `--build-target-platform`, repeatable
+  `--build-dart-define KEY=VALUE`, `--build-export-options-plist`,
+  `--flutter-build-args a,b=c`, `--build-target lib/main_prod.dart`.
+- `--skip-clean` reuses the build cache.
+
+Each packaged target prints a JSON result summary; default output directory is
+`dist/`.
+
+When to write a workflow instead of running the CLI: repeatable releases,
+flavor/target matrices, CI, native Xcode projects, or the user says they'll
+need it again. Generate `.fastforge/workflows/<name>.yml`, validate with
+`fastforge workflow validate`, and leave the file as a deliverable — read
 [../fastforge/references/workflow.md](../fastforge/references/workflow.md)
-for syntax before writing one, validate it with `fastforge workflow validate`,
-and leave the file in the project as a deliverable. This is also the only way
-to set a custom output directory or `artifact-name` — the bare CLI always
-writes to `dist/`.
+first. The package action accepts the same coverage plus a `channel` input.
 
 Platform specifics (Gradle tasks and flavors, Xcode two-stage IPA export,
-PKG config file, artifact search paths, `build` command options):
+make_config files, artifact search paths):
 
 - Android → [references/android.md](references/android.md)
 - iOS → [references/ios.md](references/ios.md)
 - macOS → [references/macos.md](references/macos.md)
+- Windows / Linux / Web / OpenHarmony / custom → [references/other-platforms.md](references/other-platforms.md)
 
 ## The packaging lifecycle
 
@@ -92,22 +108,28 @@ exit fails the run immediately. Hooks receive `PLATFORM`, `PACKAGE_FORMAT`,
 notarization, or artifact verification:
 
 ```bash
-fastforge package --platform macos --target zip \
+fastforge package --targets zip \
   --hook-pre './scripts/before.sh' --hook-post './scripts/after.sh'
 ```
 
-Useful CLI options: `--skip-clean` reuses the build cache; `--build-target
-lib/main_production.dart` selects a Flutter entry point.
+`fastforge build` (raw artifact, no packaging step) prints a JSON result
+(`config`, `platform`, `outputDirectory`, `outputFiles`, `duration`). A build
+that succeeds but yields no artifact in the expected directory is reported as
+a **failure** — deliberate, so later steps never consume an empty directory.
 
-`fastforge build` prints a JSON result (`config`, `platform`,
-`outputDirectory`, `outputFiles`, `duration`). A build that succeeds but
-yields no artifact in the expected directory is reported as a **failure** —
-that's deliberate, so later steps never consume an empty directory.
+## Format configuration (`make_config.yaml`)
+
+Several packagers read an optional (PKG: required) config file at
+`<platform>/packaging/<format>/make_config.yaml` — e.g.
+`macos/packaging/dmg/make_config.yaml` (appdmg-style layout),
+`linux/packaging/deb/make_config.yaml`, `windows/packaging/msix/make_config.yaml`.
+Details per platform in the references above.
 
 ## After packaging
 
 - Inspect the artifact (size, tech stack, signing): `fastforge analyze` — see
   the `fastforge` skill.
-- Upload it: the `fastforge-publish` skill.
-- Google Play uploads are not part of packaging or publishing — they go
-  through `fastforge googleplay` (the `fastforge-stores` skill).
+- Upload it: the `fastforge-publish` skill (including `playstore`/`pgyer`
+  targets).
+- Review, TestFlight, staged rollouts, store metadata: the `fastforge-stores`
+  skill.

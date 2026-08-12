@@ -59,4 +59,4 @@ After installing, start a new session and ask something a skill should catch —
 
 ## Scope and source of truth
 
-Content is distilled from the Fastforge CLI documentation ([`fastforge/docs/en`](../fastforge/docs/en/)) as of CLI 0.7.x, including current implementation limits (e.g. Flutter projects package only macOS formats today; `pgyer`/`playstore` are not publish targets). When the CLI and these skills disagree, trust `fastforge <command> --help` and update the skill.
+Content is distilled from the Fastforge CLI documentation ([`fastforge/docs/en`](../fastforge/docs/en/)) and the CLI implementation as of 0.7.x (August 2026), including the full platform/format packaging matrix, optional `--platform` inference, and the `playstore`/`pgyer` publish targets. When the CLI and these skills disagree, trust `fastforge <command> --help` and update the skill.

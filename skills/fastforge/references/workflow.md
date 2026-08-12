@@ -65,6 +65,7 @@ Required: `platform`, `target`.
 | `skip-clean` | Skip cleaning when the string is `true` |
 | `build-target` | Flutter Builder entry point (e.g. `lib/main_prod.dart`) |
 | `build-args` | **JSON object string** — fields depend on the active builder |
+| `channel` | Distribution channel (flows into artifact naming and hook/custom-script env) |
 | `hook-pre` / `hook-post` | Shell command before/after packaging |
 
 Outputs: `artifact-count`, `artifact-paths` (comma-separated).

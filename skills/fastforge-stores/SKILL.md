@@ -99,8 +99,10 @@ with `--help` (e.g. `fastforge appstore submission create --help`).
 ## Boundaries
 
 - Building the IPA/AAB: fastforge-package skill.
-- One-shot uploads without review/track semantics (fir, Firebase, S3, GitHub
-  Releases, plain `--target appstore` upload): fastforge-publish skill.
+- One-shot uploads without full store semantics (fir, pgyer, Firebase, S3,
+  GitHub Releases, plain `--target appstore` upload, `--target playstore`
+  AAB-to-track upload): fastforge-publish skill. Come back here for staged
+  rollouts, release notes, review, and metadata.
 - Escape hatch for API endpoints without typed commands: `fastforge appstore
   api …` / `fastforge googleplay api …` — prefer typed commands in
   automation.
