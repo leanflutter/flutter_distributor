@@ -25,6 +25,7 @@ Top-level commands:
 | `store`         | Manage aggregated store configuration and catalogs |
 | `workflow`      | Run local workflows                                |
 | `appstore`      | Operate App Store Connect                          |
+| `appgallery`    | Operate Huawei AppGallery Connect                  |
 | `googleplay`    | Operate Google Play Console                        |
 | `upgrade`       | Reserved upgrade command                           |
 | `version-check` | Print the current version                          |
@@ -179,6 +180,21 @@ Global options:
 - `--debug`
 - `--no-color`
 
+## `appgallery`
+
+```text
+fastforge appgallery [GLOBAL OPTIONS] <COMMAND>
+```
+
+| Command group | Subcommands                             |
+| ------------- | --------------------------------------- |
+| `app`         | `resolve`, `view`                       |
+| `package`     | `list`, `status`                        |
+| `release`     | submit an app for review                |
+| `api`         | `get`, `post`, `put`, `patch`, `delete` |
+
+See [AppGallery Connect](stores/appgallery.md) for authentication and examples.
+
 ## `googleplay`
 
 ```text
@@ -207,6 +223,7 @@ Store subcommands have many options. Use help at each command level to inspect t
 ```bash
 fastforge appstore build upload --help
 fastforge appstore submission create --help
+fastforge appgallery app resolve --help
 fastforge googleplay bundle upload --help
 fastforge googleplay track update --help
 ```

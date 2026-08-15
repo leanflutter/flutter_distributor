@@ -684,6 +684,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "fastforge_app_gallery_connect"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bytes",
+ "chrono",
+ "clap",
+ "futures-core",
+ "jsonwebtoken 9.3.1",
+ "progenitor-client",
+ "reqwest 0.13.4",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "tokio",
+ "unicode-width",
+]
+
+[[package]]
 name = "fastforge_app_packager"
 version = "0.1.0"
 dependencies = [
@@ -743,6 +762,7 @@ dependencies = [
  "clap",
  "fastforge_app_analyzer",
  "fastforge_app_builder",
+ "fastforge_app_gallery_connect",
  "fastforge_app_packager",
  "fastforge_app_publisher",
  "fastforge_app_store_connect",

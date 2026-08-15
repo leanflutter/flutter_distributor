@@ -25,6 +25,7 @@ fastforge <COMMAND>
 | `store`         | 管理聚合商店配置与 catalog    |
 | `workflow`      | 运行本地工作流                |
 | `appstore`      | 操作 App Store Connect        |
+| `appgallery`    | 操作华为 AppGallery Connect   |
 | `googleplay`    | 操作 Google Play Console      |
 | `upgrade`       | 预留的升级命令                |
 | `version-check` | 输出当前版本                  |
@@ -179,6 +180,21 @@ fastforge appstore [GLOBAL OPTIONS] <COMMAND>
 - `--debug`
 - `--no-color`
 
+## `appgallery`
+
+```text
+fastforge appgallery [GLOBAL OPTIONS] <COMMAND>
+```
+
+| 命令组    | 子命令                                  |
+| --------- | --------------------------------------- |
+| `app`     | `resolve`、`view`                       |
+| `package` | `list`、`status`                        |
+| `release` | 提交应用审核                            |
+| `api`     | `get`、`post`、`put`、`patch`、`delete` |
+
+认证和示例见 [AppGallery Connect](stores/appgallery.md)。
+
 ## `googleplay`
 
 ```text
@@ -207,6 +223,7 @@ fastforge googleplay [GLOBAL OPTIONS] <COMMAND>
 ```bash
 fastforge appstore build upload --help
 fastforge appstore submission create --help
+fastforge appgallery app resolve --help
 fastforge googleplay bundle upload --help
 fastforge googleplay track update --help
 ```

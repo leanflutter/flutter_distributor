@@ -7,6 +7,7 @@ use cli::{
     AnalyzeArgs, BuildArgs, PackageArgs, PublishArgs, ReleaseArgs, StoreArgs, UpgradeArgs,
     VersionCheckArgs, WorkflowArgs,
 };
+use fastforge_app_gallery_connect::cli::AppGalleryConnectArgs;
 use fastforge_app_store_connect::cli::AppStoreConnectArgs;
 use fastforge_google_play_console::cli::GooglePlayConsoleArgs;
 
@@ -44,6 +45,8 @@ enum Commands {
     Workflow(WorkflowArgs),
     #[command(name = "appstore", about = "Use App Store Connect")]
     AppStore(AppStoreConnectArgs),
+    #[command(name = "appgallery", about = "Use Huawei AppGallery Connect")]
+    AppGallery(AppGalleryConnectArgs),
     #[command(name = "googleplay", about = "Use Google Play Console")]
     GooglePlay(GooglePlayConsoleArgs),
 }
@@ -118,6 +121,9 @@ async fn main() -> anyhow::Result<()> {
         }
         Commands::AppStore(args) => {
             fastforge_app_store_connect::cli::execute(args).await?;
+        }
+        Commands::AppGallery(args) => {
+            fastforge_app_gallery_connect::cli::execute(args).await?;
         }
         Commands::GooglePlay(args) => {
             fastforge_google_play_console::cli::execute(args).await?;
