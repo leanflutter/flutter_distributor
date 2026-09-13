@@ -13,6 +13,8 @@ fastforge --help
 
 Run commands from the project root, and install the SDKs, build tools, and signing tools required by the target platform in advance.
 
+Each command first checks GitHub for a newer Fastforge release and prints a hint to stderr; run `fastforge upgrade` to update, or pass `--no-version-check` to skip the check (for example in CI).
+
 ## 2. Choose a Platform and Format
 
 `package` builds the platform project and prepares a distributable artifact. Availability depends on the project type.
@@ -24,13 +26,14 @@ fastforge package --platform android --target apk
 fastforge package --platform android --target aab
 ```
 
-Flutter projects currently support only macOS packaging formats:
+Flutter projects (with `pubspec.yaml`) build through Flutter Builder and can package every platform/format pair the packagers support, for example:
 
 ```bash
 fastforge package --platform macos --target dmg
+fastforge package --target apk   # --platform is inferred when the target is unambiguous
 ```
 
-For Android, iOS, and other Flutter targets, generate the artifact separately with `fastforge build`; see [Building](building.md). iOS and macOS Xcode projects must pass project parameters through a workflow; see [Xcode Builder](builders/xcode.md). Before running a command, review the [builder overview](builders/README.md) and [packager overview](packagers/README.md) to confirm current coverage.
+Projects without `pubspec.yaml` can package only Android (Gradle Builder), iOS, and macOS (Xcode Builder). Xcode projects need `project` and `scheme`: pass them with `--flutter-build-args project=...,scheme=...` or a workflow's `build-args`; see [Xcode Builder](builders/xcode.md). Before running a command, review the [builder overview](builders/README.md) and [packager overview](packagers/README.md) to confirm current coverage.
 
 ## 3. Publish an Existing Artifact
 

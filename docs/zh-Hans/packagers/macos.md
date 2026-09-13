@@ -6,65 +6,76 @@ Fastforge 支持把 macOS 应用打包为 [DMG](#dmg)、[PKG](#pkg) 或 [ZIP](#z
 
 ## 当前状态
 
-| 构建系统        | `package` 状态                       |
-| --------------- | ------------------------------------ |
-| Xcode           | DMG、PKG、ZIP 已通过 action 接入     |
-| Flutter Builder | DMG、PKG、ZIP 已通过 CLI/action 接入 |
+| 构建系统        | `package` 状态                         |
+| --------------- | -------------------------------------- |
+| Xcode           | DMG、PKG、ZIP；推荐使用 package action |
+| Flutter Builder | DMG、PKG、ZIP 已通过 CLI/action 接入   |
 
-Fastforge 根据项目文件选择 Xcode Builder 或 Flutter Builder，随后把生成的 `.app` 交给对应 packager。Flutter 项目可以直接使用 `fastforge package`；Xcode 项目的工程参数需要通过工作流 `build-args` 传入，见 [Xcode Builder](../builders/xcode.md#macos)。
+Fastforge 根据项目文件选择 Xcode Builder 或 Flutter Builder，随后把生成的 `.app` 交给对应打包器。Flutter 项目可以直接使用 `fastforge package`，并且多个格式只构建一次：
+
+```bash
+fastforge package --targets dmg,pkg,zip
+```
+
+Xcode 项目的工程参数建议通过工作流 `build-args` 传入，见 [Xcode Builder](../builders/xcode.md#macos)。产物写入 `dist/<version>/`。
 
 ## 环境要求
 
 - macOS
 - Xcode 命令行工具
 - 项目自身需要的 SDK 和构建工具
+- ZIP 需要 `PATH` 中有 `7z`
 
 ## DMG
 
 DMG 是 macOS 常用的磁盘映像分发格式。当前版本使用内置 DMG maker，不再要求全局安装 `appdmg` Node.js 工具。
 
-Flutter 项目直接执行：
-
 ```bash
-fastforge package --platform macos --target dmg
+fastforge package --targets dmg
 ```
 
-签名、公证等额外流程可以通过 `package.hooks.post` 执行。
+`macos/packaging/dmg/` 中的内容（背景图、图标等）会被复制到 `.app` 旁边。如果存在 `macos/packaging/dmg/make_config.yaml`，它会作为 appdmg 风格的规格使用（`title`、`icon`、`background`、`icon-size`、`window`、`contents` 等），路径相对于该目录；否则使用默认布局：应用和 `/Applications` 链接，存在 `background.png` 时一并使用。
+
+签名、公证等额外流程可以通过 post-package 钩子执行（`--hook-post`，或 release job 中的 `package.hooks.post`）。
 
 ## PKG
 
-PKG 是 macOS 安装器包格式。PKG packager 会读取以下配置文件，文件缺失或无效时打包会失败：
+PKG 是 macOS 安装器包格式。Fastforge 使用 `xcrun productbuild` 和 `pkgutil` 生成 PKG。PKG 打包器会读取以下可选配置文件：
 
 ```text
 macos/packaging/pkg/make_config.yaml
 ```
 
-Flutter 项目直接执行：
+| 键              | 说明                                                |
+| --------------- | --------------------------------------------------- |
+| `install-path`  | 安装位置，默认 `/Applications/`                     |
+| `sign-identity` | 安装包签名身份，通过 `xcrun productsign` 签名       |
+| `scripts`       | 包含安装前/后脚本的目录                             |
+
+文件不存在时使用默认值；文件无法解析时打包失败。
 
 ```bash
-fastforge package --platform macos --target pkg
+fastforge package --targets pkg
 ```
 
 需要上传到 App Store 时：
 
 ```bash
-fastforge publish --path dist/MyApp.pkg --target appstore
+fastforge publish --path dist/<version>/<artifact>.pkg --targets appstore
 ```
 
 ## ZIP
 
-ZIP 将 macOS `.app` bundle 压缩为便于下载和发布的归档文件。
-
-Flutter 项目直接执行：
+ZIP 使用 `7z` 将 macOS `.app` bundle 压缩为便于下载和发布的归档文件。
 
 ```bash
-fastforge package --platform macos --target zip
+fastforge package --platform macos --targets zip
 ```
 
 打包后可以直接发布，适合 GitHub Releases、S3 兼容存储或自定义下载服务：
 
 ```bash
-fastforge publish --path dist/MyApp.zip --target github \
+fastforge publish --path dist/<version>/<artifact>.zip --targets github \
   --publish-arg repo=owner/repository \
   --publish-arg release-tag=v1.0.0
 ```

@@ -7,7 +7,7 @@ The `appstore` target uses macOS `xcrun altool` to upload an IPA or PKG to App S
 ## Requirements
 
 - macOS and Xcode command-line tools
-- A correctly signed `.ipa` or `.pkg`
+- A correctly signed `.ipa` or `.pkg` (`.ipa` is uploaded as `ios`; other files as `osx`)
 - One of the following authentication methods
 
 ## API Key Authentication
@@ -18,7 +18,9 @@ export APP_STORE_CONNECT_ISSUER_ID=00000000-0000-0000-0000-000000000000
 export APP_STORE_CONNECT_KEY_PATH="$PWD/AuthKey_ABC123DEFG.p8"
 ```
 
-Compatible variables: `APPSTORE_APIKEY` and `APPSTORE_APIISSUER`. When using an API key, the key ID, issuer ID, and key path must all be present.
+The key ID and issuer ID are required together. Compatible variables `APPSTORE_APIKEY` and `APPSTORE_APIISSUER` are read first.
+
+`APP_STORE_CONNECT_KEY_PATH` is optional. Without it, `altool` looks for `AuthKey_<key id>.p8` in its default `private_keys` folders. With it, Fastforge copies the key into a temporary `private_keys` folder for the upload.
 
 ## Username Authentication
 
@@ -27,13 +29,15 @@ export APPSTORE_USERNAME=user@example.com
 export APPSTORE_PASSWORD=app-specific-password
 ```
 
+The username and app-specific password are required together.
+
 ## Upload
 
 ```bash
 fastforge publish --path dist/MyApp.ipa --target appstore
 ```
 
-Do not pass sensitive credentials through `--publish-arg` or place them in command history.
+The publisher also accepts the `key-id` (or `api-key`), `issuer-id` (or `api-issuer`), `key-path`, `username`, and `password` arguments. Avoid passing sensitive credentials this way, since they end up in command history.
 
 ## Subsequent Management
 

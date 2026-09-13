@@ -2,20 +2,31 @@
 
 [English](../../en/packagers/ios.md) | 简体中文
 
-Fastforge 通过 Xcode 构建并整理 iOS 应用产物，输出格式为 [IPA](#ipa)。所有 iOS 操作都需要 macOS 与 Xcode。
+Fastforge 构建并整理 iOS 应用产物，输出格式为 [IPA](#ipa)。构建 iOS 产物需要 macOS 与 Xcode。
 
 ## 当前状态
 
-| 构建系统        | `package` 状态                 |
-| --------------- | ------------------------------ |
-| Xcode           | IPA 已通过 package action 接入 |
-| Flutter Builder | 暂未接通 iOS packager          |
+| 构建系统        | 适用项目            | `package` 状态                        |
+| --------------- | ------------------- | ------------------------------------- |
+| Xcode           | 不含 `pubspec.yaml` | IPA 已支持；推荐使用 package action   |
+| Flutter Builder | 含 `pubspec.yaml`   | IPA 已通过 CLI 和 package action 支持 |
 
-Xcode Builder 需要 `project`、`scheme` 和导出配置，当前通过工作流 package action 的 `build-args` 传入。Flutter 项目执行 `fastforge package --platform ios` 会在构建完成后因 iOS packager 未接通而失败，目前请改用 `fastforge build` 生成 IPA。
+两条路径都需要导出配置。Xcode Builder 还需要 `project` 和 `scheme`，推荐通过工作流 package action 的 `build-args` 传入。打包后的 IPA 会复制到 `dist/<version>/`。
 
 ## IPA
 
-IPA 是 iOS 应用的归档分发格式。Xcode 项目通过工作流打包：
+IPA 是 iOS 应用的归档分发格式。
+
+Flutter 项目需要提供 export options plist：
+
+```bash
+fastforge package --targets ipa \
+  --build-export-options-plist ios/ExportOptions.plist
+```
+
+也可以通过 `--flutter-build-args export-method=app-store` 指定导出方式。完整参数见 [Flutter Builder](../builders/flutter.md)。
+
+Xcode 项目通过工作流打包：
 
 ```yaml
 - name: Package IPA
@@ -29,16 +40,7 @@ IPA 是 iOS 应用的归档分发格式。Xcode 项目通过工作流打包：
 
 完整参数见 [Xcode Builder](../builders/xcode.md#ios)。
 
-Flutter 项目单独构建 IPA 时，必须提供 export options plist：
-
-```bash
-fastforge build \
-  --platform ios \
-  --target ipa \
-  --build-export-options-plist ios/ExportOptions.plist
-```
-
-或使用 export method：
+Flutter 项目只需要原始 IPA 时：
 
 ```bash
 fastforge build \
@@ -47,12 +49,10 @@ fastforge build \
   --build-export-method app-store
 ```
 
-完整参数见 [Flutter Builder](../builders/flutter.md)。
-
 ### 发布到 App Store
 
 ```bash
-fastforge publish --path dist/MyApp.ipa --target appstore
+fastforge publish --path dist/<version>/<artifact>.ipa --targets appstore
 ```
 
 凭证、上传和审核流程见 [App Store 发布器](../publishers/appstore.md)与 [App Store Connect](../stores/appstore.md)。

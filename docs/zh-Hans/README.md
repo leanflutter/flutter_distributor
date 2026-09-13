@@ -33,17 +33,18 @@
 - [Android](packagers/android.md)：[APK](packagers/android.md#apk) · [AAB](packagers/android.md#aab)
 - [iOS](packagers/ios.md)：[IPA](packagers/ios.md#ipa)
 - [macOS](packagers/macos.md)：[DMG](packagers/macos.md#dmg) · [PKG](packagers/macos.md#pkg) · [ZIP](packagers/macos.md#zip)
+- [Windows](packagers/windows.md) · [Linux](packagers/linux.md) · [Web](packagers/web.md) · [OpenHarmony](packagers/ohos.md)
 
 ### 发布目标
 
 - [发布器总览](publishers/README.md)
-- [S3 兼容存储](publishers/s3.md) · [fir.im](publishers/fir.md) · [Firebase](publishers/firebase.md)
-- [GitHub](publishers/github.md) · [App Store](publishers/appstore.md) · [AppGallery](publishers/appgallery.md)
+- [对象存储](publishers/s3.md) · [fir.im](publishers/fir.md) · [蒲公英](publishers/pgyer.md) · [Firebase](publishers/firebase.md)
+- [GitHub](publishers/github.md) · [App Store](publishers/appstore.md) · [Google Play](publishers/playstore.md) · [AppGallery](publishers/appgallery.md)
 - [Vercel](publishers/vercel.md) · [Custom](publishers/custom.md)
 
 ### 商店与工具
 
-- [商店管理](stores/README.md)：App Store Connect、Google Play 和 catalog 同步
+- [商店管理](stores/README.md)：App Store Connect、AppGallery Connect、Google Play 和 catalog 同步
 - [应用包分析](tools/analyze.md)：APK、AAB、IPA、DMG 与 `.app`
 
 ## 当前能力概览
@@ -51,14 +52,16 @@
 | 能力                     | 状态           | 入口                                |
 | ------------------------ | -------------- | ----------------------------------- |
 | 应用包分析               | 已实现         | [Analyze](tools/analyze.md)         |
-| Android、iOS、macOS 打包 | 部分实现       | [打包器总览](packagers/README.md)   |
+| 多平台打包               | 已实现         | [打包器总览](packagers/README.md)   |
 | 构建器                   | 部分实现       | [构建器总览](builders/README.md)    |
 | 产物发布                 | 已实现多个目标 | [发布器总览](publishers/README.md)  |
 | 本地工作流               | 已实现         | [本地工作流](workflows.md)          |
 | App Store Connect        | 已实现         | [App Store](stores/appstore.md)     |
+| AppGallery Connect       | 已实现         | [AppGallery](stores/appgallery.md)  |
 | Google Play Console      | 已实现         | [Google Play](stores/googleplay.md) |
 | 多商店 catalog 同步      | 已实现         | [Catalog](stores/catalog.md)        |
-| 自动升级                 | 已实现         | `fastforge upgrade`                 |
+| Studio（本地 Web 界面）  | 已实现         | [`fastforge studio`](cli.md#studio) |
+| 自动升级                 | 已实现         | [`fastforge upgrade`](installation.md#升级) |
 | 在线版本检查             | 已实现         | 每次运行命令前，或 `fastforge version-check` |
 
 ## 获取当前版本信息

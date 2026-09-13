@@ -76,7 +76,7 @@ fastforge build [OPTIONS]
 
 | 参数                                  | 说明                       |
 | ------------------------------------- | -------------------------- |
-| `-p, --platform <PLATFORM>`           | 目标平台；执行时必填       |
+| `-p, --platform <PLATFORM>`           | 目标平台；省略时根据 target 和项目结构推断 |
 | `-t, --target <TARGET>`               | 构建 target                |
 | `--clean`                             | 构建前执行清理             |
 | `--flutter-build-args <ARGS>`         | Flutter Builder 的额外参数 |
@@ -173,6 +173,8 @@ fastforge workflow run [OPTIONS]
 | `-w, --workspace <WORKSPACE>` | 工作目录，默认当前目录             |
 | `-i, --input <KEY=VALUE>`     | input；可重复                      |
 
+未指定 `--file` 时，会在工作目录的 `.fastforge/workflows/`、`.minact/workflows/` 和 `.github/workflows/` 中发现工作流，且只有恰好找到一个时才会运行。详见[本地工作流](workflows.md#发现工作流)。
+
 ### List
 
 ```text
@@ -189,6 +191,8 @@ fastforge workflow list [OPTIONS]
 ```text
 fastforge workflow validate <FILE>
 ```
+
+检查 YAML 语法和结构（至少一个 job、每个 job 都有 step、每个 step 只能有 `uses` 或 `run` 之一），无效时以非零状态退出。action 的 input 要到运行时才会检查。
 
 ## `appstore`
 

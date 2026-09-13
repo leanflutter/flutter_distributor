@@ -2,7 +2,7 @@
 
 English | [简体中文](../zh-Hans/workflows.md)
 
-`fastforge workflow` discovers, validates, and runs YAML workflows under `.fastforge/workflows/`. Use it to organize build, package, publish, and ordinary shell steps into repeatable tasks.
+`fastforge workflow` discovers, validates, and runs YAML workflows, conventionally kept under `.fastforge/workflows/`. Use it to organize build, package, publish, and ordinary shell steps into repeatable tasks.
 
 ## Directory Structure
 
@@ -48,23 +48,31 @@ fastforge workflow list --verbose
 fastforge workflow list --dir /path/to/project
 ```
 
+Discovery reads `*.yml` and `*.yaml` files from three directories under the project (or `--workspace` for `run`), in this order:
+
+1. `.fastforge/workflows/`
+2. `.minact/workflows/`
+3. `.github/workflows/`
+
+GitHub Actions files therefore count too: a project with CI workflows usually needs `--file`, and a bare `fastforge workflow run` in a project whose only workflow is under `.github/workflows/` runs that file locally. Files that fail to parse are skipped with a warning and do not appear in `list`; run `validate` on them to see the error.
+
 ## Validate a Workflow
 
 ```bash
 fastforge workflow validate .fastforge/workflows/release.yml
 ```
 
-Validation parses only the workflow structure. It does not run commands or actions.
+Validation parses the YAML and checks the workflow structure: at least one job, every job has steps, and each step has exactly one of `uses` or `run`. It exits with a nonzero status when the file is invalid. It does not run commands or actions, and action inputs (such as the required `platform`/`target`, or whether `build-args` is valid JSON) are only checked at run time.
 
 ## Run a Workflow
 
-When the directory contains only one workflow:
+When discovery finds exactly one workflow:
 
 ```bash
 fastforge workflow run
 ```
 
-When multiple workflows exist, select a file explicitly:
+When several workflows are found, select a file explicitly (the path is relative to the current directory):
 
 ```bash
 fastforge workflow run --file .fastforge/workflows/release.yml
@@ -104,10 +112,13 @@ Optional inputs:
 | `output`        | Output directory; defaults to `dist/`   |
 | `artifact-name` | Artifact name template                  |
 | `skip-clean`    | Skip cleaning when the string is `true` |
+| `channel`       | Channel name used in the artifact name  |
 | `build-target`  | Flutter Builder entry point             |
 | `build-args`    | JSON object string                      |
 | `hook-pre`      | Shell command to run before packaging   |
 | `hook-post`     | Shell command to run after packaging    |
+
+`skip-clean` and `channel` only affect Flutter projects; native Gradle and Xcode projects ignore them. Unlike `fastforge package`, the action does not read `distribute_options.yaml`: the output directory comes from `output` and variables from the process environment.
 
 The active builder determines the fields accepted by `build-args`. See [Gradle Builder](builders/gradle.md), [Xcode Builder](builders/xcode.md), and [Flutter Builder](builders/flutter.md).
 
@@ -139,7 +150,7 @@ Required inputs:
 | `path`   | File or directory to publish |
 | `target` | Publishing target            |
 
-Publishing parameters can be grouped in JSON:
+Publishing parameters can be grouped in a JSON object whose values are all strings (numbers and booleans must be quoted, e.g. `"draft":"true"`):
 
 ```yaml
 - name: Publish
@@ -163,6 +174,16 @@ If `publish-args` is omitted, every other `with` field except `path` and `target
 ```
 
 The action outputs `message`.
+
+## Supported Syntax
+
+The engine follows GitHub Actions syntax. Besides the two Fastforge actions it supports:
+
+- `run` steps (with `shell`, `working-directory`, `env`), plus `if`, `continue-on-error`, and `timeout-minutes` on steps
+- job `needs`, `if`, `outputs`, and `strategy.matrix`; `${{ }}` expressions over `inputs`, `env`, `steps`, `needs`, `matrix`, and `github`
+- `uses:` resolves, in order, to a built-in action (`fastforge/package`, `fastforge/publish`, `actions/checkout`, `actions/cache`, `actions/upload-artifact`, `actions/download-artifact`), a local `./path` action with an `action.yml`, a `docker://image`, or a remote `owner/repo@ref` action. Remote actions are fetched over the network and cached in `~/.minact/actions`.
+
+A build system Fastforge does not integrate can run as a `run` step, with its artifact path passed to a `fastforge/publish` step.
 
 ## Execution Result
 

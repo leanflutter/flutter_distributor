@@ -11,7 +11,7 @@
 | `fastforge appstore`   | App Store Connect API、构建与审核 | [App Store Connect](appstore.md) |
 | `fastforge appgallery` | 华为应用、软件包与提交审核        | [AppGallery Connect](appgallery.md) |
 | `fastforge googleplay` | Google Play edit、AAB 与 track    | [Google Play](googleplay.md)     |
-| `fastforge store`      | 批量处理配置中的多个商店应用      | [统一 Catalog](catalog.md)       |
+| `fastforge store`      | 列出配置的应用；App Store 与 Google Play catalog | [统一 Catalog](catalog.md)       |
 
 ## 项目配置
 
@@ -44,9 +44,8 @@ fastforge store list
 `appstore`、`appgallery` 与 `googleplay` 命令支持：
 
 - `--json <FIELDS>`
-- `--limit <LIMIT>`
 - `--verbose`
 - `--debug`
 - `--no-color`
 
-App Store 额外支持 `--paginate`。
+`appstore` 与 `googleplay` 还支持 `--limit <LIMIT>`；`appgallery` 只有 `package list` 自带 `--limit` 和 `--offset`。`appstore` 接受 `--paginate`，但该选项目前不起作用。

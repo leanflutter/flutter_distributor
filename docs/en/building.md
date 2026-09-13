@@ -6,10 +6,10 @@ Building invokes the build system used by the project and locates its raw artifa
 
 ## Building vs. Packaging
 
-| Operation | Primary responsibility                               | Common outputs                                         |
-| --------- | ---------------------------------------------------- | ------------------------------------------------------ |
-| Build     | Compile the project and locate raw artifacts         | APK, AAB, IPA, `.app`, desktop bundle, web directory   |
-| Package   | Invoke a builder, then prepare a distribution format | DMG, PKG, ZIP, or prepared APK, AAB, and IPA artifacts |
+| Operation | Primary responsibility                               | Common outputs                                                    |
+| --------- | ---------------------------------------------------- | ----------------------------------------------------------------- |
+| Build     | Compile the project and locate raw artifacts         | APK, AAB, IPA, `.app`, desktop bundle, web directory, HAP/APP     |
+| Package   | Invoke a builder, then prepare a distribution format | APK, AAB, IPA, DMG, PKG, ZIP, EXE, MSIX, AppImage, DEB, RPM, etc. |
 
 If you only need the final distributable file, use `fastforge package` directly. The packaging process invokes the appropriate builder automatically, so you do not need to run `fastforge build` first.
 
@@ -19,21 +19,19 @@ Fastforge includes Gradle, Xcode, Flutter, and Custom builders, but they are exp
 
 | Builder              | Current entry point                             | Status                             |
 | -------------------- | ----------------------------------------------- | ---------------------------------- |
+| Flutter Builder      | `fastforge build`, `fastforge package`, action  | All Flutter platforms connected    |
 | Gradle Android       | `fastforge package`, `fastforge/package` action | APK and AAB are connected          |
-| Xcode iOS / macOS    | `fastforge/package` action                      | IPA and macOS `.app` are connected |
-| Flutter Builder      | `fastforge build`; `package` for macOS only     | Multiple platforms connected       |
+| Xcode iOS / macOS    | `fastforge/package` action, `fastforge package` | IPA and macOS `.app` are connected |
 | Gradle Multiplatform | No top-level command                            | Build module only                  |
 | Custom Builder       | No top-level command                            | Build module only                  |
 
 > [!IMPORTANT]
-> `fastforge build` is not currently a unified entry point for every builder. Do not use it to infer whether Gradle, Xcode, or Custom Builder is available; see the [builder overview](builders/README.md) for the current status.
+> `fastforge build` always uses Flutter Builder and requires a Flutter project. Gradle and Xcode Builder are reached only through `fastforge package` or the `fastforge/package` action; see the [builder overview](builders/README.md).
 
 ## Run a Build Separately
 
-The current top-level build command is:
-
 ```bash
-fastforge build --platform <platform> [--target <target>]
+fastforge build [--platform <platform>] [--target <target>]
 ```
 
 For example:
@@ -41,31 +39,33 @@ For example:
 ```bash
 fastforge build --platform android --target apk
 fastforge build --platform web
+fastforge build --target ipa --build-export-method app-store
 ```
 
-`--platform` is required when the command runs, and some platforms also require `--target`. See [Flutter Builder](builders/flutter.md) for supported platforms, targets, build arguments, artifact locations, and host restrictions.
+When `--platform` is omitted, it is inferred from `--target` (for example `apk` → `android`, `dmg` → `macos`). Without a target, or with an ambiguous one such as `zip`, Fastforge uses the platform directories in the project and what the current host can build, preferring the host platform; if that is still ambiguous, pass `--platform`. Some platforms require `--target` (`apk`/`aab` for Android, `hap`/`app` for OpenHarmony). `build` does not run `flutter clean` unless `--clean` is given.
+
+See [Flutter Builder](builders/flutter.md) for supported platforms, targets, build arguments, artifact locations, and host restrictions.
 
 ## Build Results
 
 After a successful build, `fastforge build` writes JSON to standard output containing:
 
-- `config`: build mode and effective arguments
-- `platform`: target platform
+- `config`: build mode, flavor, and effective arguments
 - `outputDirectory`: build output directory
-- `outputFiles`: detected artifact paths
+- `outputFiles`: detected artifact paths (empty for directory builds such as Windows, Linux, and Web)
 - `duration`: build duration in milliseconds
 
-If the build command succeeds but no artifact is found in the expected directory, Fastforge still reports a failure. This prevents later packaging or publishing steps from using an empty directory.
+If the build command succeeds but no artifact is found in the expected directory (or, for directory builds, the output directory does not exist), Fastforge still reports a failure. This prevents later packaging or publishing steps from using an empty directory.
 
 ## Build During Packaging
 
-Gradle and Xcode Builder are currently used mainly through `package`:
+Gradle and Xcode Builder are used through `package` in projects without `pubspec.yaml`:
 
 ```bash
-fastforge package --platform android --target apk
+fastforge package --platform android --targets apk
 ```
 
-Xcode builds require arguments such as `project` and `scheme`. Pass them through a workflow action's `build-args`; see [Xcode Builder](builders/xcode.md) for a complete example.
+Xcode builds require arguments such as `project` and `scheme`. The CLI has no dedicated flags for them; pass them through a workflow action's `build-args` (recommended), or as string values through `--flutter-build-args project=...,scheme=...`. See [Xcode Builder](builders/xcode.md) for a complete example.
 
 ## Next Steps
 

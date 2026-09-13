@@ -20,3 +20,5 @@ Custom Builder 允许调用任意命令，并通过 glob 规则收集产物。�
 ## 当前使用建议
 
 在顶层 CLI 接入完成前，请在本地工作流中使用普通 shell 步骤执行自定义构建，再把产物路径交给 `fastforge publish`。不要尝试使用尚不存在的 `--platform custom` 命令。
+
+Custom Builder 与 `custom` 打包格式不同。`fastforge package --targets custom` 仍使用 Flutter Builder（原生 macOS 项目为 Xcode Builder）构建，然后运行你的打包脚本，详见[打包](../packaging.md#自定义格式)。

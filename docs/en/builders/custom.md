@@ -20,3 +20,5 @@ The build fails if the command returns a nonzero exit status or if it succeeds w
 ## Current Recommendation
 
 Until the top-level CLI integration is complete, run custom builds as ordinary shell steps in a local workflow, then pass the artifact path to `fastforge publish`. Do not try to use a nonexistent `--platform custom` option.
+
+Custom Builder is different from the `custom` package format. `fastforge package --targets custom` still builds with Flutter Builder (or Xcode Builder for native macOS) and then runs your packaging script; see [Packaging](../packaging.md#custom-format).

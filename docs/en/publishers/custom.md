@@ -19,8 +19,8 @@ macOS and Linux use `sh -c`; Windows uses `cmd /C`.
 The custom command can read:
 
 - `ARTIFACT_PATH`: current artifact path
-- `PUBLISH_ARG_<KEY>`: publishing arguments other than `command`
+- `PUBLISH_ARG_<KEY>`: publishing arguments other than `command`, including `app-version` and the defaults of `fastforge publish` provider options (such as `PUBLISH_ARG_GITHUB_RELEASE_DRAFT`)
 
 Argument keys are converted to uppercase and non-alphanumeric characters are replaced with underscores. For example, `release-channel` becomes `PUBLISH_ARG_RELEASE_CHANNEL`.
 
-Publishing fails if the command exits with a nonzero status. On success, standard output becomes the publishing result's `message`.
+The command's output is captured rather than streamed. Publishing fails if the command exits with a nonzero status, and the error includes its standard output and standard error. On success, the trimmed standard output becomes the publishing result's `message`.

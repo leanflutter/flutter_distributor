@@ -6,10 +6,10 @@ Agent skills for the [Fastforge CLI](../README.md) — they teach Claude (Claude
 
 | Skill | Covers | Typical requests |
 | --- | --- | --- |
-| [`fastforge`](fastforge/) | Installation, `.fastforge/config.yaml`, workflow file syntax and troubleshooting, `fastforge analyze` reports, general usage; fallback router to the skills below | "install fastforge", "my workflow won't validate", "analyze this apk", "why does `fastforge upgrade` do nothing" |
+| [`fastforge`](fastforge/) | Installation and upgrades, `.fastforge/config.yaml`, workflow file syntax and troubleshooting, `fastforge analyze` reports, `fastforge studio`, general usage; fallback router to the skills below | "install fastforge", "update fastforge to the latest version", "my workflow won't validate", "analyze this apk" |
 | [`fastforge-package`](fastforge-package/) | `fastforge build` / `fastforge package` / the `fastforge/package` action; builder routing (Gradle / Xcode / Flutter), flavors, hooks, artifact locations, the platform support matrix | "package my app as a dmg", "build an apk with the dev flavor" |
 | [`fastforge-publish`](fastforge-publish/) | `fastforge publish` and every publisher target (S3/MinIO/Qiniu/OSS/COS, fir.im, Firebase, GitHub Releases, App Store upload, AppGallery, Vercel, custom); end-to-end package-then-publish release workflows | "upload this zip to GitHub Releases", "send the apk to testers", "set up a release pipeline" |
-| [`fastforge-stores`](fastforge-stores/) | `fastforge appstore` / `googleplay` / `store`: build uploads, TestFlight processing, versions, review submissions, Play edits and tracks, catalog (listings/screenshots) sync | "submit for review", "push the aab to the internal track", "pull our store screenshots" |
+| [`fastforge-stores`](fastforge-stores/) | `fastforge appstore` / `appgallery` / `googleplay` / `store`: build uploads, TestFlight processing, versions, review submissions, AppGallery app/package/release operations, Play edits and tracks, catalog (listings/screenshots) sync | "submit for review", "push the aab to the internal track", "pull our store screenshots" |
 
 ## Organization
 
@@ -32,7 +32,7 @@ skills/
 │   └── references/publishers.md
 └── fastforge-stores/
     ├── SKILL.md
-    └── references/{appstore,googleplay,catalog}.md
+    └── references/{appstore,googleplay,appgallery,catalog}.md
 ```
 
 ## Installing

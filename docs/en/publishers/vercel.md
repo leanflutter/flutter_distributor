@@ -25,4 +25,4 @@ Fastforge generates `.vercel/project.json` in the target directory, then runs:
 vercel --prod
 ```
 
-You can override the environment variables with `org-id` and `project-id` publishing arguments.
+Both IDs are required. You can override the environment variables with the `org-id` and `project-id` publishing arguments, or the `--vercel-org-id` and `--vercel-project-id` options. The publishing result is the `Production:` URL printed by the CLI.

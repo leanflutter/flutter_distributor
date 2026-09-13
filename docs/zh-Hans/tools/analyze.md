@@ -13,8 +13,8 @@
 
 | 格式          | 平台限制       | 依赖                                                              |
 | ------------- | -------------- | ----------------------------------------------------------------- |
-| APK           | 无固定宿主限制 | `ANDROID_HOME` 中的 `aapt2`；可选 `apksigner`                     |
-| AAB           | 无固定宿主限制 | `aapt2`，或 `BUNDLETOOL`                                          |
+| APK           | 无固定宿主限制 | `ANDROID_HOME` 或 `ANDROID_SDK_ROOT` 中的 `aapt2`；可选 `apksigner` |
+| AAB           | 无固定宿主限制 | `aapt2`，或 bundletool（`BUNDLETOOL` 或 `PATH` 中的 `bundletool`） |
 | IPA           | 无固定宿主限制 | 无外部工具                                                        |
 | DMG           | 仅 macOS       | `hdiutil`、`diskutil`；可选 `codesign`、`spctl`、`xcrun stapler`  |
 | `.app` bundle | 仅 macOS       | 本地 `Info.plist`；可选 `codesign`、`spctl`、`xcrun stapler`      |
@@ -50,8 +50,9 @@ fastforge analyze dist/app-release.apk \
 
 ## 一次分析多个产物
 
-每个参数要么是产物，要么是待扫描的目录。目录会被递归遍历，跳过隐藏项且不跟随符号
-链接；`.app` bundle 被当作产物而不是继续深入的目录。
+每个参数要么是产物，要么是待扫描的目录。目录会被递归遍历（最多 16 层），跳过隐藏项；`.app` bundle
+被当作产物而不是继续深入的目录。指向产物的符号链接会被分析，但不会进入符号链接指向的目录。
+分析多个产物时会并行执行，进度行（`[n/total] path`）输出到 stderr。
 
 ```bash
 fastforge analyze dist
@@ -229,7 +230,7 @@ AAB 还记录了构建时解析出的完整依赖图，比 APK 携带的版本�
 
 ## AAB 的 bundletool 回退
 
-找不到可用 `aapt2` 时，可以通过 `BUNDLETOOL` 指向 bundletool JAR：
+找不到可用 `aapt2` 时，分析器会改用 bundletool。`BUNDLETOOL` 可以指向 bundletool JAR（通过 `java -jar` 运行）或可执行文件；未设置时使用 `PATH` 中的 `bundletool`：
 
 ```bash
 export BUNDLETOOL=/path/to/bundletool.jar

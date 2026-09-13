@@ -76,7 +76,7 @@ fastforge build [OPTIONS]
 
 | Option                                | Description                          |
 | ------------------------------------- | ------------------------------------ |
-| `-p, --platform <PLATFORM>`           | Target platform; required at runtime |
+| `-p, --platform <PLATFORM>`           | Target platform; inferred from the target and project when omitted |
 | `-t, --target <TARGET>`               | Build target                         |
 | `--clean`                             | Clean before building                |
 | `--flutter-build-args <ARGS>`         | Additional Flutter Builder arguments |
@@ -173,6 +173,8 @@ fastforge workflow run [OPTIONS]
 | `-w, --workspace <WORKSPACE>` | Working directory; defaults to the current directory |
 | `-i, --input <KEY=VALUE>`     | Input; repeatable                                    |
 
+Without `--file`, workflows are discovered in `.fastforge/workflows/`, `.minact/workflows/` and `.github/workflows/` under the workspace; the command runs only when exactly one is found. See [Local Workflows](workflows.md#discover-workflows).
+
 ### List
 
 ```text
@@ -189,6 +191,8 @@ fastforge workflow list [OPTIONS]
 ```text
 fastforge workflow validate <FILE>
 ```
+
+Checks the YAML and its structure (at least one job, every job has steps, each step has exactly one of `uses` or `run`) and exits nonzero when invalid. Action inputs are not checked until the workflow runs.
 
 ## `appstore`
 

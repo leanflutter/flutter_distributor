@@ -25,4 +25,4 @@ Fastforge 会在目标目录生成 `.vercel/project.json`，然后运行：
 vercel --prod
 ```
 
-也可以通过 `org-id`、`project-id` 发布参数覆盖环境变量。
+两个 ID 均为必填。也可以通过 `org-id`、`project-id` 发布参数，或 `--vercel-org-id`、`--vercel-project-id` 选项覆盖环境变量。发布结果为 CLI 输出的 `Production:` 地址。

@@ -13,6 +13,8 @@ fastforge --help
 
 请在项目根目录运行命令，并提前安装目标平台所需的 SDK、构建工具和签名工具。
 
+每个命令运行前都会查询 GitHub 上是否有新的 Fastforge 版本，并在 stderr 打印提示；可运行 `fastforge upgrade` 升级，或传入 `--no-version-check` 跳过检查（例如在 CI 中）。
+
 ## 2. 选择平台和格式
 
 `package` 会执行平台构建并整理出可分发产物，可用范围取决于项目类型。
@@ -24,13 +26,14 @@ fastforge package --platform android --target apk
 fastforge package --platform android --target aab
 ```
 
-Flutter 项目当前只接通了 macOS 格式：
+Flutter 项目（含 `pubspec.yaml`）通过 Flutter Builder 构建，可以打包打包器支持的所有平台与格式组合，例如：
 
 ```bash
 fastforge package --platform macos --target dmg
+fastforge package --target apk   # target 无歧义时可省略 --platform
 ```
 
-Flutter 项目的 Android、iOS 等其他平台产物，先用 `fastforge build` 单独生成，见[构建](building.md)。iOS 和 macOS Xcode 项目需要通过工作流传入工程参数，示例见 [Xcode Builder](builders/xcode.md)。执行前可先查看[构建器总览](builders/README.md)和[打包器总览](packagers/README.md)确认覆盖范围。
+没有 `pubspec.yaml` 的项目只能打包 Android（Gradle Builder）、iOS 和 macOS（Xcode Builder）。Xcode 项目需要 `project` 和 `scheme`，可通过 `--flutter-build-args project=...,scheme=...` 或工作流的 `build-args` 传入，详见 [Xcode Builder](builders/xcode.md)。执行前可先查看[构建器总览](builders/README.md)和[打包器总览](packagers/README.md)确认覆盖范围。
 
 ## 3. 发布已有产物
 

@@ -2,16 +2,18 @@
 
 English | [简体中文](../../zh-Hans/builders/xcode.md)
 
-Xcode Builder supports iOS and macOS projects and runs only on macOS with the Xcode command-line tools installed.
+Xcode Builder supports native iOS and macOS projects (projects without `pubspec.yaml`) and runs only on macOS with the Xcode command-line tools installed.
 
 ## Current Integration
 
 | Platform | Build result      | Subsequent packaging        |
 | -------- | ----------------- | --------------------------- |
 | iOS      | `.xcarchive`, IPA | IPA packager                |
-| macOS    | `.app`            | DMG, PKG, and ZIP packagers |
+| macOS    | `.app`            | DMG, PKG, ZIP, and `custom` packagers |
 
-Xcode Builder is connected to the package process, but the top-level `fastforge package` command does not yet expose required arguments such as `project` and `scheme`. Use it through a local workflow's `build-args` for now.
+Xcode Builder is connected to the package process. The top-level `fastforge package` command has no dedicated flags for required arguments such as `project` and `scheme`, so the recommended entry point is a local workflow's `build-args`. String arguments can also be passed from the CLI through `--flutter-build-args`, for example `fastforge package --platform macos --targets zip --flutter-build-args project=MyApp.xcodeproj,scheme=MyApp,derived-data-path=build`; array arguments such as `extra-flags` require `build-args`.
+
+For native projects, each target runs its own build, `flutter clean` is not run, the app name and version in the artifact name come from the app's `Info.plist`, and channel and flavor are not used.
 
 ## macOS
 
@@ -22,10 +24,15 @@ Xcode Builder is connected to the package process, but the top-level `fastforge 
     platform: macos
     target: zip
     output: artifacts/
-    build-args: '{"project":"macos/MyApp.xcodeproj","scheme":"MyApp","configuration":"Release","product-name":"MyApp"}'
+    build-args: '{"project":"MyApp.xcodeproj","scheme":"MyApp","configuration":"Release","derived-data-path":"build"}'
 ```
 
-The builder runs `xcodebuild`, then searches the build products directory for an `.app`.
+The builder runs `xcodebuild`, then searches the build products directory for an `.app`:
+
+- With `derived-data-path`: `<derived-data-path>/Build/Products/<configuration>/`
+- Without it: `<directory containing the project>/build/<configuration>/`
+
+Set `derived-data-path` so the products location is explicit. The package format is validated only after the build, so an unsupported macOS format fails after `xcodebuild` finishes.
 
 | Argument            | Required | Description                   |
 | ------------------- | :------: | ----------------------------- |
@@ -33,7 +40,7 @@ The builder runs `xcodebuild`, then searches the build products directory for an
 | `scheme`            |   Yes    | Xcode scheme                  |
 | `configuration`     |    No    | Defaults to `Release`         |
 | `derived-data-path` |    No    | Derived Data output directory |
-| `product-name`      |    No    | `.app` name to match          |
+| `product-name`      |    No    | `.app` name to match; otherwise any `.app` |
 | `sdk`               |    No    | Passed to `xcodebuild -sdk`   |
 | `xcconfig-override` |    No    | Additional xcconfig file      |
 | `extra-flags`       |    No    | Array of additional arguments |
@@ -53,19 +60,21 @@ The builder runs `xcodebuild`, then searches the build products directory for an
 An iOS build has two stages:
 
 1. Run `xcodebuild archive` to produce an `.xcarchive`.
-2. Run `xcodebuild -exportArchive` to export the IPA.
+2. Run `xcodebuild -exportArchive` to export the IPA. Fastforge uses the newest `.ipa` in `export-path`.
+
+Only the `ipa` format is supported for native iOS projects; other formats are rejected before building.
 
 | Argument               |   Required   | Description                                                       |
 | ---------------------- | :----------: | ----------------------------------------------------------------- |
 | `project`              |     Yes      | Path to `.xcodeproj`                                              |
 | `scheme`               |     Yes      | Xcode scheme                                                      |
 | `configuration`        |      No      | Defaults to `Release`                                             |
-| `export-options-plist` | One required | Path to an ExportOptions plist                                    |
-| `export-method`        | One required | Generate temporary export configuration when no plist is supplied |
+| `export-options-plist` | One required | Path to an ExportOptions plist; takes precedence                  |
+| `export-method`        | One required | Generate temporary export configuration (automatic signing) when no plist is supplied |
 | `archive-path`         |      No      | Defaults to `ios/build/Runner.xcarchive`                          |
 | `export-path`          |      No      | Defaults to `ios/build/ipa`                                       |
-| `derived-data-path`    |      No      | Derived Data output directory                                     |
-| `xcconfig-override`    |      No      | Additional xcconfig file                                          |
-| `extra-flags`          |      No      | Array of additional arguments                                     |
+| `derived-data-path`    |      No      | Derived Data output directory (archive step)                      |
+| `xcconfig-override`    |      No      | Additional xcconfig file (archive step)                           |
+| `extra-flags`          |      No      | Array of additional `xcodebuild archive` arguments                |
 
-Provide at least one of `export-options-plist` and `export-method`.
+Provide at least one of `export-options-plist` and `export-method`. `project` is passed as `-project`; `.xcworkspace` is not supported.

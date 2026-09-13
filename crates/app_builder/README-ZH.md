@@ -7,7 +7,7 @@
 - 与 Dart 版本一致的构建参数编码规则
 - 与 Dart 版本一致的构建结果 JSON 结构
 - 多平台 builder 注册与路由
-- 从 `pubspec.yaml` 自动注入 `FLUTTER_BUILD_NAME` / `FLUTTER_BUILD_NUMBER`
+- 根据 `pubspec.yaml` 的版本自动追加 `--build-name` / `--build-number` 参数（显式传入时不覆盖）
 - 支持 `FLUTTER_ROOT`
 
 ## 支持的构建目标

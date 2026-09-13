@@ -21,6 +21,8 @@ fastforge googleplay app view com.example.myapp
 fastforge googleplay app check com.example.myapp
 ```
 
+`app view` prints the package name and Play Console URL without calling the API. `app check` verifies access by creating and deleting an edit.
+
 ## Edit Workflow
 
 Most write operations take place within an edit:
@@ -56,6 +58,11 @@ fastforge googleplay bundle upload dist/app-release.aab \
   --commit
 ```
 
+- Only `.aab` files are accepted.
+- Without `--edit-id`, a new edit is created. Without `--commit`, that edit stays uncommitted; the output includes its edit ID.
+- Without `--track`, the bundle is uploaded but not assigned to a track.
+- `--status` defaults to `completed`. `--release-name` defaults to the AAB file name.
+
 ## Tracks
 
 ```bash
@@ -72,7 +79,15 @@ fastforge googleplay track update internal \
   --edit-id <edit-id> \
   --version-code 1 \
   --status completed
+
+fastforge googleplay edit commit \
+  --package-name com.example.myapp \
+  --edit-id <edit-id>
 ```
+
+Track names include `internal`, `alpha`, `beta`, `production`, and custom tracks. `track update` never commits the edit, so always follow it with `edit commit`.
+
+`track update` and `bundle upload --track` replace the track's releases with a single release that contains only the release name, version code, and status. `--release-name` defaults to `release <version-code>` for `track update`. There are no options for a rollout fraction (`userFraction`) or release notes, so staged rollouts and release notes require `fastforge googleplay api` or a track YAML file pushed through the [catalog](catalog.md).
 
 ## Catalog and Raw API
 

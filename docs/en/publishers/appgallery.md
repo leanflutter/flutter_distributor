@@ -13,7 +13,7 @@ export APP_GALLERY_CLIENT_SECRET=client-secret
 
 ## Publish
 
-`app-id` is a required publishing argument:
+`app-id` is a required publishing argument, also available as the `--appgallery-app-id` option:
 
 ```bash
 fastforge publish --path dist/app.aab --target appgallery \

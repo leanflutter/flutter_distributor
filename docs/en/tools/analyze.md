@@ -15,8 +15,8 @@ report.
 
 | Format        | Platform restrictions | Dependencies                                                              |
 | ------------- | --------------------- | ------------------------------------------------------------------------- |
-| APK           | No fixed host         | `aapt2` under `ANDROID_HOME`; optionally `apksigner`                      |
-| AAB           | No fixed host         | `aapt2`, or `BUNDLETOOL`                                                  |
+| APK           | No fixed host         | `aapt2` under `ANDROID_HOME` or `ANDROID_SDK_ROOT`; optionally `apksigner` |
+| AAB           | No fixed host         | `aapt2`, or bundletool (`BUNDLETOOL` or `bundletool` in `PATH`)           |
 | IPA           | No fixed host         | No external tool                                                          |
 | DMG           | macOS only            | `hdiutil`, `diskutil`; optionally `codesign`, `spctl`, `xcrun stapler`    |
 | `.app` bundle | macOS only            | Local `Info.plist`; optionally `codesign`, `spctl`, `xcrun stapler`       |
@@ -54,9 +54,11 @@ fastforge analyze dist/app-release.apk \
 ## Several Artifacts at Once
 
 Every argument is either an artifact or a directory to scan. Directories are
-walked recursively, skipping hidden entries and never following symlinks; a
-`.app` bundle is treated as an artifact rather than a directory to descend
-into.
+walked recursively (up to 16 levels), skipping hidden entries; a `.app` bundle
+is treated as an artifact rather than a directory to descend into. A symlink
+that points to an artifact is analyzed, but symlinked directories are never
+descended into. With several artifacts, analyses run in parallel and progress
+lines (`[n/total] path`) go to stderr.
 
 ```bash
 fastforge analyze dist
@@ -245,7 +247,9 @@ costs; `largestEntries` reports both compressed and uncompressed.
 
 ## bundletool Fallback for AAB
 
-If no working `aapt2` can be found, point `BUNDLETOOL` to a bundletool JAR:
+If no working `aapt2` can be found, the analyzer runs bundletool instead.
+`BUNDLETOOL` may point to a bundletool JAR (run with `java -jar`) or an
+executable; when it is unset, `bundletool` from `PATH` is used:
 
 ```bash
 export BUNDLETOOL=/path/to/bundletool.jar

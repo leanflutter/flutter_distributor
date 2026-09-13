@@ -21,6 +21,8 @@ fastforge googleplay app view com.example.myapp
 fastforge googleplay app check com.example.myapp
 ```
 
+`app view` 只输出 package name 和 Play Console 链接，不调用 API。`app check` 通过创建并删除一个 edit 来校验访问权限。
+
 ## Edit 工作流
 
 大多数写操作发生在 edit 中：
@@ -56,6 +58,11 @@ fastforge googleplay bundle upload dist/app-release.aab \
   --commit
 ```
 
+- 只接受 `.aab` 文件。
+- 未指定 `--edit-id` 时会新建 edit；未指定 `--commit` 时该 edit 保持未提交状态，输出中会包含 edit ID。
+- 未指定 `--track` 时只上传 bundle，不会分配到任何 track。
+- `--status` 默认 `completed`；`--release-name` 默认使用 AAB 文件名。
+
 ## Track
 
 ```bash
@@ -72,7 +79,15 @@ fastforge googleplay track update internal \
   --edit-id <edit-id> \
   --version-code 1 \
   --status completed
+
+fastforge googleplay edit commit \
+  --package-name com.example.myapp \
+  --edit-id <edit-id>
 ```
+
+Track 名称包括 `internal`、`alpha`、`beta`、`production` 以及自定义 track。`track update` 不会提交 edit，之后务必执行 `edit commit`。
+
+`track update` 与 `bundle upload --track` 会用单个 release 替换该 track 的全部 release，其中只包含 release 名称、version code 和状态。`track update` 的 `--release-name` 默认为 `release <version-code>`。命令没有设置发布比例（`userFraction`）或更新说明的选项，分阶段发布和更新说明需要使用 `fastforge googleplay api`，或通过 [catalog](catalog.md) 推送 track YAML 文件。
 
 ## Catalog 与原始 API
 

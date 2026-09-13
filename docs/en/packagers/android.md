@@ -2,32 +2,38 @@
 
 English | [简体中文](../../zh-Hans/packagers/android.md)
 
-Fastforge builds and prepares Android application artifacts through Gradle, supporting [APK](#apk) and [AAB](#aab).
+Fastforge builds and prepares Android application artifacts, supporting [APK](#apk) and [AAB](#aab).
 
 ## Current Status
 
-| Build system    | `package` status                   |
-| --------------- | ---------------------------------- |
-| Gradle          | APK and AAB supported              |
-| Flutter Builder | Android packager not yet connected |
+| Build system    | Project type            | `package` status      |
+| --------------- | ----------------------- | --------------------- |
+| Gradle          | No `pubspec.yaml`       | APK and AAB supported |
+| Flutter Builder | Contains `pubspec.yaml` | APK and AAB supported |
 
-`fastforge package --platform android` applies only to native Gradle projects without `pubspec.yaml`. In a Flutter project, the command completes the build and then fails because the Android packager is not connected. Use `fastforge build` to generate the raw artifact for now.
+The packager copies the built APK or AAB to `dist/<version>/` with the configured artifact name. Android builds are not reused across targets: `--targets apk,aab` runs two builds. Native Gradle projects have additional limitations; see [Gradle Builder](../builders/gradle.md#limitations).
 
 ## Requirements
 
 - Android SDK
-- A working Gradle and Android toolchain
+- A working Gradle and Android toolchain (plus the Flutter SDK for Flutter projects)
 - For APK/AAB analysis, configure `ANDROID_HOME` and `aapt2`
 
 ## APK
 
-An APK is an Android application package that can be installed directly. For a native Gradle project, run:
+An APK is an Android application package that can be installed directly:
 
 ```bash
-fastforge package --platform android --target apk
+fastforge package --targets apk
 ```
 
-Fastforge uses Gradle Builder and places the final APK in `dist/`.
+In a Flutter project, Flutter build options apply, for example:
+
+```bash
+fastforge package --targets apk \
+  --build-flavor dev \
+  --build-dart-define APP_ENV=dev
+```
 
 Workflow example:
 
@@ -40,37 +46,34 @@ Workflow example:
     output: artifacts/
 ```
 
-A Flutter project can generate an APK separately:
-
-```bash
-fastforge build --platform android --target apk
-```
-
-See [Flutter Builder](../builders/flutter.md) for all options.
+To generate only the raw Flutter artifact, run `fastforge build --platform android --target apk`. See [Flutter Builder](../builders/flutter.md) for all options.
 
 ## AAB
 
-An AAB (Android App Bundle) is used for Google Play distribution. For a native Gradle project, run:
+An AAB (Android App Bundle) is used for Google Play distribution:
 
 ```bash
-fastforge package --platform android --target aab
+fastforge package --targets aab
 ```
 
-A Flutter project can generate an AAB separately:
-
-```bash
-fastforge build --platform android --target aab
-```
+To generate only the raw Flutter artifact, run `fastforge build --platform android --target aab`.
 
 ### Upload to Google Play
 
-The general `fastforge publish` command does not currently provide a `playstore` target. Use these commands for uploads and track management:
+For a direct upload of an AAB to a track, use the `playstore` publisher (it reads a service account key from `PLAYSTORE_CREDENTIALS`):
+
+```bash
+fastforge publish --path dist/<version>/<artifact>.aab --targets playstore \
+  --playstore-package-name com.example.app --playstore-track internal
+```
+
+For edits, track updates, and rollouts, use the Google Play commands:
 
 ```bash
 fastforge googleplay bundle upload --help
 fastforge googleplay track update --help
 ```
 
-See [Google Play](../stores/googleplay.md) for authentication and command details.
+See the [Play Store publisher](../publishers/playstore.md) and [Google Play](../stores/googleplay.md) for authentication and command details.
 
 Return to the [packager overview](README.md).

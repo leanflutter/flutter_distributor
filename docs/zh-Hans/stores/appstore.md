@@ -4,6 +4,8 @@
 
 `fastforge appstore` 直接调用 App Store Connect API，覆盖应用查询、构建上传、版本提交、审核 submission 和 catalog。
 
+支持的平台为 `IOS`、`MAC_OS`、`TV_OS` 和 `VISION_OS`。带 `--platform` 选项的命令均接受这些值；`catalog pull` 默认使用 `IOS`。
+
 ## 认证
 
 ```bash
@@ -45,12 +47,18 @@ fastforge appstore build upload dist/MyApp.ipa \
   --app com.example.myapp \
   --wait
 
-fastforge appstore build list --app com.example.myapp
+fastforge appstore build upload dist/MyApp.pkg \
+  --app com.example.myapp
+
+fastforge appstore build list --app com.example.myapp --version 1.0.0
 fastforge appstore build view <build-id>
 fastforge appstore build wait <build-id> --timeout 30m
 ```
 
-上传依赖 macOS `xcrun`。`wait` 会等待 App Store 完成构建处理。
+- 上传通过 `xcrun altool` 执行，因此需要 macOS。`.pkg` 文件按 macOS 应用上传，其他文件按 iOS 应用上传。
+- `build wait` 每 30 秒轮询一次，直到处理状态为 `VALID`；遇到 `FAILED`、`INVALID` 或超时则失败。`--timeout` 默认 `30m`，支持 `m` 或 `s` 后缀。
+- `build upload --wait` 使用固定的 30 分钟超时，并等待该应用最近上传的构建。如果新构建尚未出现在列表中，可能会选中旧构建；需要确定时，请先 `build list`，再执行 `build wait <build-id>`。
+- Fastforge 没有 TestFlight 命令（beta 群组、测试员、beta 审核），请使用 App Store Connect 或原始 API。
 
 ## 版本
 
@@ -63,12 +71,18 @@ fastforge appstore version submit 1.0.0 \
   --wait
 ```
 
-`version submit` 会关联构建、创建审核 submission、添加版本 item 并提交审核。
+`version submit` 会关联构建、按版本所属平台创建审核 submission、添加版本 item 并提交审核。
+
+- 版本必须已在 App Store Connect 中存在；Fastforge 没有创建版本的命令。
+- `--build latest` 会选择该版本号下最新的构建。
+- 命令不会检查构建处理状态，请先等待构建处理完成。
+- `--wait` 使用固定的 30 分钟超时，submission 进入 `WAITING_FOR_REVIEW`、`IN_REVIEW`、`COMPLETING` 或 `COMPLETE` 后即返回，不会等待 App Review 审核通过。
 
 ## 审核 submission
 
 ```bash
 fastforge appstore submission list --app com.example.myapp
+fastforge appstore submission view <submission-id>
 fastforge appstore submission create \
   --app com.example.myapp \
   --platform IOS
@@ -76,11 +90,14 @@ fastforge appstore submission items <submission-id>
 fastforge appstore submission add-item <submission-id> \
   --item-type appStoreVersions \
   --item-id <version-id>
-fastforge appstore submission submit <submission-id> --wait
+fastforge appstore submission remove-item <item-id>
+fastforge appstore submission submit <submission-id> --wait --timeout 30m
 fastforge appstore submission cancel <submission-id>
 ```
 
-`list` 可以按 `--platform` 和 `--state` 筛选。具体可审核资源类型使用 `add-item --help` 查看。
+- `list` 可以按 `--platform` 和 `--state` 筛选。状态包括 `READY_FOR_REVIEW`、`WAITING_FOR_REVIEW`、`IN_REVIEW`、`UNRESOLVED_ISSUES`、`CANCELING`、`COMPLETING`、`COMPLETE`。
+- `remove-item` 接受 `items` 列出的 submission item ID。
+- `add-item --item-type` 支持 `appStoreVersions`、`appCustomProductPageVersions`、`appStoreVersionExperiments`、`appStoreVersionExperimentsV2`、`appEvents`、`backgroundAssetVersions`、`gameCenterAchievementVersions`、`gameCenterActivityVersions`、`gameCenterChallengeVersions`、`gameCenterLeaderboardSetVersions` 和 `gameCenterLeaderboardVersions`。
 
 ## Catalog
 

@@ -2,7 +2,7 @@
 
 [English](../en/workflows.md) | 简体中文
 
-`fastforge workflow` 在本地发现、校验和运行 `.fastforge/workflows/` 下的 YAML 工作流。它适合把构建、打包、发布和普通 shell 步骤组织成可重复执行的任务。
+`fastforge workflow` 在本地发现、校验和运行 YAML 工作流，约定放在 `.fastforge/workflows/` 下。它适合把构建、打包、发布和普通 shell 步骤组织成可重复执行的任务。
 
 ## 目录结构
 
@@ -48,23 +48,31 @@ fastforge workflow list --verbose
 fastforge workflow list --dir /path/to/project
 ```
 
+发现过程会依次读取项目（`run` 命令为 `--workspace`）下三个目录中的 `*.yml` 和 `*.yaml` 文件：
+
+1. `.fastforge/workflows/`
+2. `.minact/workflows/`
+3. `.github/workflows/`
+
+因此 GitHub Actions 文件也会被计入：已有 CI 工作流的项目通常需要 `--file`；如果项目中唯一的工作流位于 `.github/workflows/`，直接执行 `fastforge workflow run` 会在本地运行该文件。解析失败的文件会被跳过并输出警告，不会出现在 `list` 结果中；可以对其运行 `validate` 查看错误。
+
 ## 校验工作流
 
 ```bash
 fastforge workflow validate .fastforge/workflows/release.yml
 ```
 
-校验只解析工作流结构，不执行其中的命令或 action。
+校验会解析 YAML 并检查工作流结构：至少包含一个 job、每个 job 都有 step、每个 step 只能有 `uses` 或 `run` 之一。文件无效时以非零状态退出。校验不执行命令或 action，action 的 input（例如必填的 `platform`/`target`，或 `build-args` 是否为有效 JSON）要到运行时才会检查。
 
 ## 运行工作流
 
-当目录中只有一个工作流时：
+发现过程恰好找到一个工作流时：
 
 ```bash
 fastforge workflow run
 ```
 
-存在多个工作流时必须指定文件：
+找到多个工作流时必须指定文件（路径相对于当前目录）：
 
 ```bash
 fastforge workflow run --file .fastforge/workflows/release.yml
@@ -104,10 +112,13 @@ fastforge workflow run \
 | `output`        | 输出目录，默认 `dist/`         |
 | `artifact-name` | 产物名称模板                   |
 | `skip-clean`    | 字符串 `true` 时跳过构建前清理 |
+| `channel`       | 用于产物名称的渠道名           |
 | `build-target`  | Flutter Builder 的入口文件     |
 | `build-args`    | JSON object 字符串             |
 | `hook-pre`      | 打包前 shell 命令              |
 | `hook-post`     | 打包后 shell 命令              |
+
+`skip-clean` 和 `channel` 只对 Flutter 项目生效，原生 Gradle 和 Xcode 项目会忽略它们。与 `fastforge package` 不同，该 action 不读取 `distribute_options.yaml`：输出目录来自 `output`，变量来自进程环境变量。
 
 `build-args` 的字段由实际构建器决定，分别见 [Gradle Builder](builders/gradle.md)、[Xcode Builder](builders/xcode.md)和 [Flutter Builder](builders/flutter.md)。
 
@@ -139,7 +150,7 @@ Action 输出：
 | `path`   | 要发布的文件或目录 |
 | `target` | 发布目标           |
 
-可以把发布参数集中写成 JSON：
+可以把发布参数集中写成 JSON object，其中所有值都必须是字符串（数字和布尔值也要加引号，例如 `"draft":"true"`）：
 
 ```yaml
 - name: Publish
@@ -163,6 +174,16 @@ Action 输出：
 ```
 
 Action 输出为 `message`。
+
+## 支持的语法
+
+引擎遵循 GitHub Actions 语法。除两个 Fastforge action 外，还支持：
+
+- `run` step（支持 `shell`、`working-directory`、`env`），以及 step 上的 `if`、`continue-on-error` 和 `timeout-minutes`
+- job 的 `needs`、`if`、`outputs` 和 `strategy.matrix`；`${{ }}` 表达式可访问 `inputs`、`env`、`steps`、`needs`、`matrix` 和 `github`
+- `uses:` 依次解析为内置 action（`fastforge/package`、`fastforge/publish`、`actions/checkout`、`actions/cache`、`actions/upload-artifact`、`actions/download-artifact`）、带 `action.yml` 的本地 `./path` action、`docker://image`，或远程 `owner/repo@ref` action。远程 action 需要联网获取，并缓存在 `~/.minact/actions`。
+
+Fastforge 尚未集成的构建系统可以作为 `run` step 执行，再把产物路径交给 `fastforge/publish` step。
 
 ## 执行结果
 

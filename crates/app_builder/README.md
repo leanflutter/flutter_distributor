@@ -7,7 +7,7 @@ A Rust implementation of Fastforge's Flutter build orchestration layer.
 - Dart-compatible build argument encoding
 - Dart-compatible build result JSON shape
 - Multi-platform builder registry
-- Automatic `FLUTTER_BUILD_NAME` and `FLUTTER_BUILD_NUMBER` injection from `pubspec.yaml`
+- Automatic `--build-name` and `--build-number` arguments from the `pubspec.yaml` version (unless passed explicitly)
 - `FLUTTER_ROOT` support
 
 ## Supported Build Targets

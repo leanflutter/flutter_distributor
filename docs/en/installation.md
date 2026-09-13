@@ -12,7 +12,7 @@ The Fastforge CLI runs as a standalone binary. The CLI does not bundle platform 
 curl -fsSL https://raw.githubusercontent.com/fastforgedev/fastforge/main/install.sh | sh
 ```
 
-The default installation path is `/usr/local/bin/fastforge`. You can specify an installation directory or version:
+The default installation path is `/usr/local/bin/fastforge`. You can specify an installation directory or version (without a leading `v`). Set the variables on the `sh` side of the pipe:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/fastforgedev/fastforge/main/install.sh \
@@ -27,7 +27,7 @@ The installation script supports:
 - macOS: Apple Silicon and Intel
 - Linux: AArch64 and x86_64 (GNU libc)
 
-If the target directory is not writable, the script requests `sudo` access.
+If the target directory is not writable, the script requests `sudo` access. Set `GITHUB_TOKEN` to avoid GitHub API rate limits when the script looks up the latest release.
 
 ### Windows
 
@@ -37,7 +37,7 @@ Run the following in PowerShell:
 iwr https://raw.githubusercontent.com/fastforgedev/fastforge/main/install.ps1 | iex
 ```
 
-The default installation path is `%LOCALAPPDATA%\fastforge\bin`, which is added to the current user's `PATH`. You can specify a version or directory with environment variables:
+The script supports x86_64 and ARM64. The default installation path is `%LOCALAPPDATA%\fastforge\bin`, which is added to the current user's `PATH`. You can specify a version or directory with environment variables:
 
 ```powershell
 $env:FASTFORGE_VERSION = "0.7.0"
@@ -70,13 +70,26 @@ fastforge --help
 
 If your shell cannot find the command, confirm that the installation directory is in `PATH`.
 
+Binaries built from source print an `UNOFFICIAL BUILD` notice on stderr at startup; official release binaries do not.
+
+## Upgrade
+
+```bash
+fastforge upgrade
+fastforge upgrade --force   # reinstall the latest release even if already up to date
+```
+
+`upgrade` downloads the latest release archive for the current platform and replaces the running binary in place. If the binary is in a directory you cannot write to (for example `/usr/local/bin`), re-run it with `sudo` (or an elevated terminal on Windows), or re-run the installation script. To install a specific version, re-run the installation script with `FASTFORGE_VERSION`.
+
+By default every command first checks GitHub releases for a newer version and prints a hint to stderr (5-second timeout, never fails the command). Pass `--no-version-check` to skip it, for example in CI. `fastforge version-check` runs the check on demand; `fastforge version-check --current-only` prints the local version without network access.
+
 ## Project Toolchains
 
 Install the dependencies required by the operations you use:
 
 | Scenario                  | Additional dependencies                                                 |
 | ------------------------- | ----------------------------------------------------------------------- |
-| Android build or analysis | Android SDK; APK analysis requires `aapt2` under `ANDROID_HOME`         |
+| Android build or analysis | Android SDK; APK analysis requires `aapt2` under `ANDROID_HOME` (or `ANDROID_SDK_ROOT`) |
 | AAB analysis              | Android SDK `aapt2`, or bundletool specified through `BUNDLETOOL`       |
 | iOS / macOS builds        | macOS, Xcode, and command-line tools                                    |
 | Flutter builds            | Flutter SDK and the target platform toolchain, with `flutter` in `PATH` |

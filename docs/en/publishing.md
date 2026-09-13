@@ -2,33 +2,39 @@
 
 English | [简体中文](../zh-Hans/publishing.md)
 
-`publish` sends an existing file or directory to a publishing target.
+`publish` sends an existing file or directory to one or more publishing targets.
 
 ## Basic Usage
 
 ```bash
 fastforge publish \
   --path dist/my-app.apk \
-  --target fir \
-  --publish-arg bundle_id=com.example.app
+  --target fir
 ```
 
-`--path` and `--target` are required. Pass publishing parameters with repeatable `--publish-arg KEY=VALUE` options:
+`--path` and `--targets` are required (`--target` and `-t` are aliases; separate multiple targets with commas). Pass publishing parameters with repeatable `--publish-arg KEY=VALUE` options:
 
 ```bash
 fastforge publish \
   --path dist/app.zip \
   --target github \
   --publish-arg repo=owner/repository \
+  --publish-arg release-title=v1.0.0 \
   --publish-arg release-tag=v1.0.0
 ```
 
-See the [publisher overview](publishers/README.md) for available targets, parameters, and credential requirements. You can also inspect the current definitions in the `fastforge publish` command help.
+`--app-version` provides the version used by targets that need one (for example the default GitHub release title); when omitted, the `version` in `./pubspec.yaml` is used if present.
+
+The provider options of the Dart CLI are also accepted, such as `--github-repo`, `--firebase-app`, `--pgyer-password`, and `--playstore-track`. They are forwarded as `<target>-<name>` parameters. Any parameter key may use a `<target>-` prefix: for that target the prefix is stripped, and the prefixed key takes precedence over the unprefixed one. This is useful when one command publishes to several targets.
+
+See the [publisher overview](publishers/README.md) for available targets, parameters, and credential requirements. You can also inspect the provider options in the `fastforge publish --help` output.
 
 ## Credentials
 
-Pass publishing credentials through environment variables on the running process. Do not place them in command-line arguments or commit them to the repository. Each publisher page lists the environment variables required by that target.
+Prefer passing credentials through environment variables. Some publishers also accept credentials as parameters (for example `access-key` or `client-secret`), but that exposes them in command history, so avoid it and never commit secrets to the repository. `fastforge publish` reads the process environment plus the `variables` in `distribute_options.yaml` in the current directory (which take precedence). Each publisher page lists the environment variables that target reads.
 
 ## Multi-step Automation
 
-Use [Local Workflows](workflows.md) to combine build, package, publish, and shell commands. Put non-sensitive parameters in the action's `with` field, and continue to pass credentials through environment variables.
+Use [Local Workflows](workflows.md) to combine build, package, publish, and shell commands. The `fastforge/publish` action publishes to a single `target`. Put non-sensitive parameters either in a `publish-args` JSON string (string values only) or as bare `with` fields; when `publish-args` is present, other `with` fields are ignored. Actions read credentials from the environment of the `fastforge workflow run` process only.
+
+The legacy `fastforge release` command runs the releases in `distribute_options.yaml`: each job packages its target and, when `publish_to` or `publish.target` is set, publishes the first artifact with the parameters in `publish.args`. Prefer workflows for new automation.

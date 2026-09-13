@@ -3,15 +3,17 @@
 Reads an artifact's identity (name, identifier, version, build number) and —
 for deeply analyzed formats — its tech stack, shipped libraries, size
 composition, and signing state. Accepts any number of artifacts and scans
-directories recursively (hidden entries skipped, symlinks not followed; a
-`.app` bundle counts as an artifact, not a directory).
+directories recursively (up to 16 levels; hidden entries skipped; a symlink to
+an artifact is analyzed but symlinked directories are not entered; a `.app`
+bundle counts as an artifact, not a directory). Multiple artifacts are analyzed
+in parallel with `[n/total] path` progress on stderr.
 
 ## Formats and dependencies
 
 | Format | Host | Dependencies |
 | --- | --- | --- |
-| APK | any | `aapt2` under `ANDROID_HOME`; optionally `apksigner` |
-| AAB | any | `aapt2`, or `BUNDLETOOL=/path/to/bundletool.jar` |
+| APK | any | `aapt2` under `ANDROID_HOME`/`ANDROID_SDK_ROOT`; optionally `apksigner` |
+| AAB | any | `aapt2`, else bundletool: `BUNDLETOOL` (a `.jar` run via `java -jar`, or an executable) or `bundletool` in `PATH` |
 | IPA | any | none |
 | DMG | macOS only | `hdiutil`, `diskutil`; optionally `codesign`, `spctl`, `xcrun stapler` |
 | `.app` | macOS only | `Info.plist`; optionally `codesign`, `spctl`, `xcrun stapler` |
@@ -29,7 +31,8 @@ fastforge analyze dist/android build/ios/ipa         # multiple paths
   extension (e.g. HTML to stdout, or JSON into a `.html` path).
 - Single named artifact → that artifact's payload directly. Multiple artifacts
   or directory scans → wrapper `{generatedAt, artifactCount, artifacts[],
-  failures[]}`; a bad file found while scanning lands in `failures` instead of
+  failures[]}` (`artifactCount` counts successes; `failures` is present only
+  when non-empty); a bad file found while scanning lands in `failures` instead of
   failing the run, but a path named explicitly must analyze successfully.
 - Exit status is nonzero for unsupported extensions, missing tools, or
   unparsable artifacts — safe to gate CI on.

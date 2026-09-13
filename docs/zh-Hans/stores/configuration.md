@@ -2,7 +2,7 @@
 
 [English](../../en/stores/configuration.md) | 简体中文
 
-`.fastforge/config.yaml` 用于登记 App Store、AppGallery 与 Google Play 应用，供 `fastforge store` 聚合命令读取。
+`.fastforge/config.yaml` 用于登记 App Store、AppGallery 与 Google Play 应用，供 `fastforge store` 聚合命令读取。`fastforge store list` 会显示三个商店；`fastforge store catalog pull|push` 只处理 App Store 与 Google Play 应用。
 
 ```yaml
 stores:
@@ -53,7 +53,7 @@ stores:
 | `auth.service_account_key`  | 服务账号 JSON 文件路径   |
 | `auth.service_account_json` | 服务账号 JSON 内容       |
 | `apps[].package_name`       | Google Play package name |
-| `apps[].track`              | 可选默认轨道信息         |
+| `apps[].track`              | 可选 track 备注；命令目前需显式传入 `--track` |
 
 ## AppGallery 字段
 
@@ -67,7 +67,21 @@ stores:
 | `apps[].package_name`       | Android 包名                              |
 | `apps[].name`               | 可选显示名称                              |
 
-`auth` 字段支持完整的 `${ENV_NAME}` 引用，也会读取默认环境变量。当前商店 API 和 catalog 执行器仍以进程环境变量建立认证上下文，因此运行命令前应导出凭证。
+`auth` 字段支持完整的 `${ENV_NAME}` 引用。字段为空时会回退读取以下环境变量：
+
+| 商店        | 字段                   | 回退环境变量                                                       |
+| ----------- | ---------------------- | ------------------------------------------------------------------ |
+| App Store   | `key_id`               | `APP_STORE_CONNECT_KEY_ID`、`APPSTORE_APIKEY`                      |
+| App Store   | `issuer_id`            | `APP_STORE_CONNECT_ISSUER_ID`、`APPSTORE_APIISSUER`                |
+| App Store   | `key_path`             | `APP_STORE_CONNECT_KEY_PATH`                                       |
+| App Store   | `username`/`password`  | `APPSTORE_USERNAME`、`APPSTORE_PASSWORD`                           |
+| AppGallery  | `service_account_key`  | `APP_GALLERY_SERVICE_ACCOUNT_KEY`                                  |
+| AppGallery  | `service_account_json` | `APP_GALLERY_SERVICE_ACCOUNT_JSON`                                 |
+| AppGallery  | `client_id`/`client_secret` | `APP_GALLERY_CLIENT_ID`、`APP_GALLERY_CLIENT_SECRET`          |
+| Google Play | `service_account_key`  | `GOOGLE_PLAY_SERVICE_ACCOUNT_KEY`、`GOOGLE_APPLICATION_CREDENTIALS` |
+| Google Play | `service_account_json` | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`                                 |
+
+配置中的 `auth` 仅用于报告认证类型和状态（例如 `fastforge store list`）。商店 API 与 catalog 命令只从进程环境变量建立认证：App Store 使用 `APP_STORE_CONNECT_KEY_ID`、`APP_STORE_CONNECT_ISSUER_ID` 和 `APP_STORE_CONNECT_KEY_PATH`；Google Play 使用 `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`；AppGallery 使用 `APP_GALLERY_SERVICE_ACCOUNT_JSON`、`APP_GALLERY_SERVICE_ACCOUNT_KEY`，或 `APP_GALLERY_CLIENT_ID` 加 `APP_GALLERY_CLIENT_SECRET`。这些命令不会读取 `APPSTORE_APIKEY`、`GOOGLE_APPLICATION_CREDENTIALS` 等别名，运行前请导出上述标准变量。
 
 App Store 应用配置中的未知字段会直接报错，避免拼写错误被静默忽略并回退到 iOS。
 

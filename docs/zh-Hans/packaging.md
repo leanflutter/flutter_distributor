@@ -5,10 +5,11 @@
 `fastforge package` 负责准备项目、执行构建并把产物整理为可分发格式。
 
 ```bash
-fastforge package --platform android --target apk
+fastforge package --targets apk,aab
+fastforge package --platform macos --targets dmg,zip
 ```
 
-`--platform` 和 `--target` 均为必填参数，一次处理一个 target。上例适用于原生 Gradle Android 项目；Flutter 项目当前只接通了 macOS 格式（如 `--platform macos --target zip`）。各平台的格式和环境要求见[打包器总览](packagers/README.md)。
+`--targets`（别名 `--target`）接受一个或多个以逗号分隔的格式。`--platform` 可省略：只属于单一平台的格式可以直接确定平台（`apk` → `android`、`dmg` → `macos`），多个 target 取它们共同的平台，有歧义的格式（`zip`、`direct`、`custom`）则根据项目的平台目录和当前宿主判断。各平台的格式和环境要求见[打包器总览](packagers/README.md)。
 
 ## 打包流程
 
@@ -20,72 +21,102 @@ fastforge package --platform android --target apk
 4. 生成最终分发产物。
 5. 运行 post-package hook。
 
-不含 `pubspec.yaml` 的原生项目按平台接入 Gradle（Android）或 Xcode（iOS、macOS）；含 `pubspec.yaml` 的 Flutter 项目一律使用 Flutter Builder 。
+## 路由与支持范围
 
-## 当前支持范围
+路由取决于项目根目录是否存在 `pubspec.yaml` 以及目标平台：
 
-| 构建系统        | 适用项目          | 平台    | 格式                | 当前入口            |
-| --------------- | ----------------- | ------- | ------------------- | ------------------- |
-| Gradle          | 原生 Android      | Android | `apk`、`aab`        | CLI、package action |
-| Xcode           | 原生 iOS          | iOS     | `ipa`               | package action      |
-| Xcode           | 原生 macOS        | macOS   | `dmg`、`pkg`、`zip` | package action      |
-| Flutter Builder | 含 `pubspec.yaml` | macOS   | `dmg`、`pkg`、`zip` | CLI、package action |
+| 构建系统        | 适用项目          | 平台        | 格式                                                          |
+| --------------- | ----------------- | ----------- | ------------------------------------------------------------- |
+| Gradle          | 原生 Android      | Android     | `apk`、`aab`                                                  |
+| Xcode           | 原生 iOS          | iOS         | `ipa`                                                         |
+| Xcode           | 原生 macOS        | macOS       | `dmg`、`pkg`、`zip`、`custom`                                 |
+| Flutter Builder | 含 `pubspec.yaml` | Android     | `apk`、`aab`、`custom`                                        |
+| Flutter Builder | 含 `pubspec.yaml` | iOS         | `ipa`、`custom`                                               |
+| Flutter Builder | 含 `pubspec.yaml` | macOS       | `dmg`、`pkg`、`zip`、`custom`                                 |
+| Flutter Builder | 含 `pubspec.yaml` | Windows     | `exe`、`msix`、`zip`、`direct`、`custom`                      |
+| Flutter Builder | 含 `pubspec.yaml` | Linux       | `appimage`、`deb`、`rpm`、`pacman`、`zip`、`direct`、`custom` |
+| Flutter Builder | 含 `pubspec.yaml` | Web         | `zip`、`direct`、`custom`                                     |
+| Flutter Builder | 含 `pubspec.yaml` | OpenHarmony | `hap`、`app`、`custom`                                        |
 
-> [!NOTE]
-> 当前 `fastforge package` 对不同构建系统的覆盖范围并不一致。Flutter 项目当前只能打包 macOS 格式，对 `android`、`ios` 执行 `package` 会在构建完成后因 packager 未接通而失败。路由规则见[构建器总览](builders/README.md)。
+不含 `pubspec.yaml` 的项目只支持 `android`、`ios` 和 `macos`。以上组合都可以通过 CLI 和 `fastforge/package` action 使用。
 
-## 构建阶段
+在 Flutter 项目中，不支持的平台/格式组合会在构建前被拒绝；每次调用最多执行一次 `flutter clean`；除 Android 外，所有平台只构建一次并在多个 target 间复用构建结果。
 
-打包命令会根据项目类型调用 Gradle、Xcode 或 Flutter Builder，再把识别到的产物交给 packager。构建器的选择方式和接入状态见[构建器总览](builders/README.md)。
+> [!IMPORTANT]
+> 宿主限制：iOS 和 macOS 只能在 macOS 上构建，Windows 只能在 Windows 上构建，Linux 只能在 Linux 上构建。在 Flutter 项目中，如果某个 target 的构建器无法在当前宿主运行，该 target 会**输出警告并被跳过，命令仍以状态码 0 退出**。请检查输出，不要只依赖退出码。
 
-需要单独检查 Flutter Builder 的结果时，可以运行：
+原生项目的行为有所不同：每个 target 单独构建，不执行 `flutter clean`，产物名不使用 channel 和 flavor，原生 macOS 会在 Xcode 构建完成后才校验格式。相关限制见 [Gradle Builder](builders/gradle.md) 和 [Xcode Builder](builders/xcode.md)。
 
-```bash
-fastforge build --platform <platform> [--target <target>]
-```
-
-平台、target、参数和输出说明见[构建](building.md)。
+需要单独检查 Flutter Builder 的结果时，运行 `fastforge build`，详见[构建](building.md)。
 
 ## 打包参数
 
-### 跳过清理
+| 参数                                  | 说明                                                   |
+| ------------------------------------- | ------------------------------------------------------ |
+| `--channel <CHANNEL>`                 | 渠道名；在默认产物名中替代 flavor 段                   |
+| `--artifact-name <TEMPLATE>`          | Mustache 产物名模板（见下文）                          |
+| `--skip-clean`                        | 构建前跳过 `flutter clean`                             |
+| `--build-target <PATH>`               | 自定义 Flutter 入口                                    |
+| `--build-flavor <FLAVOR>`             | flavor（原生 Gradle 项目同样使用）                     |
+| `--build-target-platform <PLATFORM>`  | 目标架构                                               |
+| `--build-export-options-plist <PATH>` | iOS 导出配置                                           |
+| `--build-dart-define <KEY=VALUE>`     | 编译变量；可重复                                       |
+| `--flutter-build-args <ARG,...>`      | 其他构建参数，`flag` 或 `key=value`，以逗号分隔        |
+| `--hook-pre` / `--hook-post`          | 打包器执行前 / 后运行的 shell 命令                     |
 
-需要复用已有构建缓存时，可以跳过打包前的清理步骤：
+没有专用参数的选项，例如 `profile`、`obfuscate`、`split-debug-info=<dir>` 或 `export-method=app-store`，可以通过 `--flutter-build-args` 传入。
 
-```bash
-fastforge package --platform macos --target zip --skip-clean
+### 输出位置与产物名
+
+产物写入 `<output>/<version>/<产物名>`，例如 `dist/1.2.3+4/my_app-1.2.3+4-macos.dmg`。CLI 没有 `--output` 参数：`<output>` 取自 `distribute_options.yaml` 的 `output`，默认为 `dist/`。工作流 action 则使用其 `output` 输入。
+
+默认产物名模板为：
+
+```text
+{{name}}{{#flavor}}-{{flavor}}{{/flavor}}-{{build_name}}{{#has_build_number}}+{{build_number}}{{/has_build_number}}{{#is_profile}}-{{build_mode}}{{/is_profile}}-{{platform}}{{#is_installer}}-setup{{/is_installer}}{{#ext}}.{{ext}}{{/ext}}
 ```
 
-### 自定义 Flutter 入口
+设置 channel 后，`{{channel}}` 会替代 flavor 段。`--artifact-name` 可用的变量有 `name`、`version`、`build_name`、`build_number`、`build_mode`、`platform`、`flavor`、`channel`、`ext`，以及布尔值 `is_installer`（仅 `exe`）、`is_profile` 和 `has_build_number`。
 
-```bash
-fastforge package --platform macos --target dmg \
-  --build-target lib/main_production.dart
+### 格式配置
+
+大多数打包器会读取可选的 `<platform>/packaging/<format>/make_config.yaml`，例如 `macos/packaging/dmg/make_config.yaml` 或 `linux/packaging/deb/make_config.yaml`。文件不存在时使用默认值；文件无法解析时打包失败。只有 `custom` 格式必须提供配置文件。
+
+## 自定义格式
+
+`custom` target 运行你自己的脚本来生成产物，必须提供 `<platform>/packaging/custom/make_config.yaml`：
+
+```yaml
+script: ./scripts/package.sh # 必填
+# 省略或留空时生成目录产物，而不是文件。
+output_extension: tar.gz
 ```
 
-### 输出目录
+```bash
+fastforge package --platform linux --targets custom
+```
 
-直接运行 `package` 时输出目录为 `dist/`。需要自定义目录或产物名时，使用工作流 action 的 `output`、`artifact-name`。
+脚本通过 `sh -c`（Windows 上为 `cmd /c`）执行，并获得 `APP_NAME`、`APP_VERSION`、`BUILD_NAME`、`BUILD_NUMBER`（存在时）、`BUILD_MODE`、`FLAVOR`（存在时）、`CHANNEL`（存在时）、`BUILD_OUTPUT_DIRECTORY`、`OUTPUT_DIRECTORY` 和 `OUTPUT_ARTIFACT_PATH`。脚本必须在 `OUTPUT_ARTIFACT_PATH` 生成产物；退出码非零或产物不存在时打包失败。原生 iOS 和 Android 项目不支持 `custom`。
 
 ## 生命周期钩子
 
 ```bash
-fastforge package --platform macos --target zip \
+fastforge package --targets zip \
   --hook-pre './scripts/before-package.sh' \
   --hook-post './scripts/after-package.sh'
 ```
 
-钩子通过系统 shell 执行。Fastforge 会提供以下环境变量：
+钩子在所有宿主上都以 `sh -c <command>` 执行，因此 Windows 上需要 `PATH` 中有 `sh`。除环境变量和 `distribute_options.yaml` 中的变量外，Fastforge 还会提供：
 
 - `PLATFORM`
 - `PACKAGE_FORMAT`
 - `BUILD_MODE`
 - `OUTPUT_DIRECTORY`
 - `BUILD_OUTPUT_DIRECTORY`
-- `BUILD_OUTPUT_FILES`（以 `:` 分隔）
+- `BUILD_OUTPUT_FILES`（以 `:` 分隔；Windows、Linux、Web 等目录型构建为空）
 
-任意钩子返回非零退出码时，打包立即失败。
+钩子不会获得 `CHANNEL`、`FLAVOR` 或产物路径。任意钩子返回非零退出码时，打包立即失败。
 
 ## 自动化
 
-需要组合多个打包目标、发布或其他命令时，使用[本地工作流](workflows.md)。
+需要组合多个打包目标、发布或其他命令时，使用[本地工作流](workflows.md)。`fastforge/package` action 要求提供 `platform` 和单个 `target`，并接受 `output`（默认 `dist/`）、`artifact-name`、`channel`、`skip-clean`、`build-target`、`hook-pre`、`hook-post` 和 `build-args`（JSON object 字符串，承载其他所有构建参数，如 `{"flavor":"dev","dart-define":{"APP_ENV":"dev"}}`）。

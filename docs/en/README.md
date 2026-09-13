@@ -33,17 +33,18 @@ The legacy documentation remains in [`apps/docs`](../../apps/docs/). This direct
 - [Android](packagers/android.md): [APK](packagers/android.md#apk) · [AAB](packagers/android.md#aab)
 - [iOS](packagers/ios.md): [IPA](packagers/ios.md#ipa)
 - [macOS](packagers/macos.md): [DMG](packagers/macos.md#dmg) · [PKG](packagers/macos.md#pkg) · [ZIP](packagers/macos.md#zip)
+- [Windows](packagers/windows.md) · [Linux](packagers/linux.md) · [Web](packagers/web.md) · [OpenHarmony](packagers/ohos.md)
 
 ### Publishing Targets
 
 - [Publisher overview](publishers/README.md)
-- [S3-compatible storage](publishers/s3.md) · [fir.im](publishers/fir.md) · [Firebase](publishers/firebase.md)
-- [GitHub](publishers/github.md) · [App Store](publishers/appstore.md) · [AppGallery](publishers/appgallery.md)
+- [Object storage](publishers/s3.md) · [fir.im](publishers/fir.md) · [PGYER](publishers/pgyer.md) · [Firebase](publishers/firebase.md)
+- [GitHub](publishers/github.md) · [App Store](publishers/appstore.md) · [Google Play](publishers/playstore.md) · [AppGallery](publishers/appgallery.md)
 - [Vercel](publishers/vercel.md) · [Custom](publishers/custom.md)
 
 ### Stores and Tools
 
-- [Store management](stores/README.md): App Store Connect, Google Play, and catalog synchronization
+- [Store management](stores/README.md): App Store Connect, AppGallery Connect, Google Play, and catalog synchronization
 - [App package analysis](tools/analyze.md): APK, AAB, IPA, DMG, and `.app`
 
 ## Current Capabilities
@@ -51,14 +52,16 @@ The legacy documentation remains in [`apps/docs`](../../apps/docs/). This direct
 | Capability                    | Status                       | Entry point                                             |
 | ----------------------------- | ---------------------------- | ------------------------------------------------------- |
 | App package analysis          | Implemented                  | [Analyze](tools/analyze.md)                             |
-| Android, iOS, macOS packaging | Partially implemented        | [Packager overview](packagers/README.md)                |
+| Multi-platform packaging      | Implemented                  | [Packager overview](packagers/README.md)                |
 | Builders                      | Partially implemented        | [Builder overview](builders/README.md)                  |
 | Artifact publishing           | Multiple targets implemented | [Publisher overview](publishers/README.md)              |
 | Local workflows               | Implemented                  | [Local workflows](workflows.md)                         |
 | App Store Connect             | Implemented                  | [App Store](stores/appstore.md)                         |
+| AppGallery Connect            | Implemented                  | [AppGallery](stores/appgallery.md)                      |
 | Google Play Console           | Implemented                  | [Google Play](stores/googleplay.md)                     |
 | Multi-store catalog sync      | Implemented                  | [Catalog](stores/catalog.md)                            |
-| Self-upgrade                  | Implemented                  | `fastforge upgrade`                                     |
+| Studio (local web UI)         | Implemented                  | [`fastforge studio`](cli.md#studio)                     |
+| Self-upgrade                  | Implemented                  | [`fastforge upgrade`](installation.md#upgrade)          |
 | Online version checks         | Implemented                  | Before every command, or `fastforge version-check`      |
 
 ## Get Current Version Information

@@ -13,7 +13,7 @@ export APP_GALLERY_CLIENT_SECRET=client-secret
 
 ## 发布
 
-`app-id` 为必填发布参数：
+`app-id` 为必填发布参数，也可以通过 `--appgallery-app-id` 选项传入：
 
 ```bash
 fastforge publish --path dist/app.aab --target appgallery \

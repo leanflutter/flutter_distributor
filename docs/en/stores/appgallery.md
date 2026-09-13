@@ -4,6 +4,8 @@ English | [简体中文](../../zh-Hans/stores/appgallery.md)
 
 `fastforge appgallery` calls the AppGallery Connect Publishing API directly. The generated client covers app lookup and metadata, package queries, upload preparation, and release submission.
 
+The CLI provides `app`, `package`, `release`, and `api` subcommands. Global options are `--json <FIELDS>`, `--verbose`, `--debug`, and `--no-color`. Uploading a package is handled by `fastforge publish --target appgallery`, and AppGallery is not part of [catalog synchronization](catalog.md).
+
 ## Authentication
 
 Service accounts are recommended by Huawei. Set `APP_GALLERY_SERVICE_ACCOUNT_JSON` to either the downloaded credential JSON or its file path:
@@ -12,7 +14,7 @@ Service accounts are recommended by Huawei. Set `APP_GALLERY_SERVICE_ACCOUNT_JSO
 export APP_GALLERY_SERVICE_ACCOUNT_JSON=/secure/appgallery-private.json
 ```
 
-`APP_GALLERY_SERVICE_ACCOUNT_KEY` is accepted as a path-only alias.
+`APP_GALLERY_SERVICE_ACCOUNT_KEY` is accepted as an alias with the same format (JSON content or file path); `APP_GALLERY_SERVICE_ACCOUNT_JSON` is checked first.
 
 The legacy API client flow is also supported:
 
@@ -31,6 +33,9 @@ fastforge appgallery app view <app-id>
 fastforge appgallery app view <app-id> --lang en-US --json appInfo,languages
 ```
 
+- `app resolve` accepts up to 50 package names and maps them to AppGallery app IDs. `--package-types` is passed through to the API.
+- `app view` accepts `--lang` and `--release-type` (default `1`).
+
 ## Packages
 
 ```bash
@@ -38,12 +43,17 @@ fastforge appgallery package list <app-id>
 fastforge appgallery package status <app-id> <package-id>
 ```
 
+- `package list` accepts `--offset` (default `0`) and `--limit` (default `10`, range 1–100), and shows each package's file name, version, version code, package ID, and size.
+- `package status` accepts one or more package IDs and shows the AAB compilation status and failure reason.
+
 ## Submit for Review
 
 ```bash
 fastforge appgallery release <app-id>
 fastforge appgallery release <app-id> --release-time "2026-08-20T08:00:00+0800"
 ```
+
+`--release-type` is passed through as the API's `releaseType` (default `1`). A typical flow is to upload with `fastforge publish --target appgallery`, confirm compilation with `package status`, and then run `release`.
 
 ## Raw API
 
@@ -55,6 +65,8 @@ fastforge appgallery api get /api/publish/v2/app-info \
 fastforge appgallery api put /api/publish/v2/app-language-info \
   --query appId=<app-id> --input language.json
 ```
+
+Supported methods are `get`, `post`, `put`, `patch`, and `delete`. The path must start with `/api/`, `--query KEY=VALUE` can be repeated, and `--input` points to a JSON request body file.
 
 The checked-in source specification is [`scripts/generate/specs/app_gallery_connect.openapi.yaml`](../../../scripts/generate/specs/app_gallery_connect.openapi.yaml). Huawei publishes HTML API reference pages rather than a downloadable OAS document, so this normalized OpenAPI 3 file is maintained from the official reference and regenerated with:
 

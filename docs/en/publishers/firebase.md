@@ -8,14 +8,16 @@ Fastforge provides two Firebase targets, both of which depend on the Firebase CL
 
 Target: `firebase`
 
+`FIREBASE_TOKEN` is required. The Firebase app ID (not the bundle identifier) is also required; with `fastforge publish` it must be passed with `--firebase-app`, because the command checks for that option before publishing:
+
 ```bash
 export FIREBASE_TOKEN=firebase-token
 
 fastforge publish --path dist/app.apk --target firebase \
-  --publish-arg app=1:1234567890:android:abcdef
+  --firebase-app 1:1234567890:android:abcdef
 ```
 
-`app` is required. Optional arguments are passed directly to the Firebase CLI:
+Optional arguments are passed directly to `firebase appdistribution:distribute`. Each is available as a `--firebase-<name>` option or a `--publish-arg`:
 
 - `release-notes`
 - `release-notes-file`
@@ -26,10 +28,12 @@ fastforge publish --path dist/app.apk --target firebase \
 
 ```bash
 fastforge publish --path dist/app.apk --target firebase \
-  --publish-arg app=1:1234567890:android:abcdef \
-  --publish-arg groups=qa-team \
-  --publish-arg 'release-notes=Internal build'
+  --firebase-app 1:1234567890:android:abcdef \
+  --firebase-groups qa-team \
+  --firebase-release-notes 'Internal build'
 ```
+
+In the `fastforge/publish` workflow action and in `fastforge release`, pass the app ID as the `app` parameter.
 
 ## Firebase Hosting
 
@@ -43,11 +47,11 @@ export FIREBASE_PROJECT_ID=my-project
 fastforge publish --path build/web --target firebase-hosting
 ```
 
-You can override the environment variable with the `project-id` argument:
+The project ID is required. You can override the environment variable with the `project-id` argument or the `--firebase-hosting-project-id` option:
 
 ```bash
 fastforge publish --path build/web --target firebase-hosting \
   --publish-arg project-id=my-project
 ```
 
-Fastforge generates `.firebaserc` and `firebase.json` in the target directory, then runs `firebase deploy`. The token may be omitted when the Firebase CLI is already signed in; setting `FIREBASE_TOKEN` is recommended in CI.
+Fastforge generates `.firebaserc` and `firebase.json` in the target directory, then runs `firebase deploy` there. `FIREBASE_TOKEN` is passed to the CLI when set; it may be omitted when the Firebase CLI is already signed in, and is recommended in CI. The publishing result is the `Hosting URL` printed by the CLI.

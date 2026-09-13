@@ -11,7 +11,7 @@ Store commands have a different responsibility from the general `publish` comman
 | `fastforge appstore`   | App Store Connect API, builds, and review | [App Store Connect](appstore.md) |
 | `fastforge appgallery` | Huawei apps, packages, and releases       | [AppGallery Connect](appgallery.md) |
 | `fastforge googleplay` | Google Play edits, AABs, and tracks       | [Google Play](googleplay.md)     |
-| `fastforge store`      | Process multiple configured store apps    | [Unified Catalog](catalog.md)    |
+| `fastforge store`      | List configured apps; App Store and Google Play catalogs | [Unified Catalog](catalog.md)    |
 
 ## Project Configuration
 
@@ -44,9 +44,8 @@ Provide authentication credentials through process environment variables. See [S
 The `appstore`, `appgallery`, and `googleplay` commands support:
 
 - `--json <FIELDS>`
-- `--limit <LIMIT>`
 - `--verbose`
 - `--debug`
 - `--no-color`
 
-App Store commands additionally support `--paginate`.
+`appstore` and `googleplay` also accept `--limit <LIMIT>`; for `appgallery`, only `package list` has its own `--limit` and `--offset`. `appstore` accepts `--paginate`, but it currently has no effect.

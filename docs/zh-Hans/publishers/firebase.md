@@ -8,14 +8,16 @@ Fastforge 提供两个 Firebase target，均依赖系统中的 Firebase CLI。
 
 Target：`firebase`
 
+`FIREBASE_TOKEN` 为必填。同时必须提供 Firebase 应用 ID（不是 bundle identifier）；使用 `fastforge publish` 时必须通过 `--firebase-app` 传入，因为命令会在发布前检查该选项：
+
 ```bash
 export FIREBASE_TOKEN=firebase-token
 
 fastforge publish --path dist/app.apk --target firebase \
-  --publish-arg app=1:1234567890:android:abcdef
+  --firebase-app 1:1234567890:android:abcdef
 ```
 
-`app` 为必填参数。可选参数会直接传给 Firebase CLI：
+可选参数会直接传给 `firebase appdistribution:distribute`，每个参数都可以写成 `--firebase-<name>` 选项或 `--publish-arg`：
 
 - `release-notes`
 - `release-notes-file`
@@ -26,10 +28,12 @@ fastforge publish --path dist/app.apk --target firebase \
 
 ```bash
 fastforge publish --path dist/app.apk --target firebase \
-  --publish-arg app=1:1234567890:android:abcdef \
-  --publish-arg groups=qa-team \
-  --publish-arg 'release-notes=Internal build'
+  --firebase-app 1:1234567890:android:abcdef \
+  --firebase-groups qa-team \
+  --firebase-release-notes 'Internal build'
 ```
+
+在 `fastforge/publish` 工作流 action 和 `fastforge release` 中，请以 `app` 参数传入应用 ID。
 
 ## Firebase Hosting
 
@@ -43,11 +47,11 @@ export FIREBASE_PROJECT_ID=my-project
 fastforge publish --path build/web --target firebase-hosting
 ```
 
-也可以用 `project-id` 参数覆盖环境变量：
+project ID 为必填。也可以用 `project-id` 参数或 `--firebase-hosting-project-id` 选项覆盖环境变量：
 
 ```bash
 fastforge publish --path build/web --target firebase-hosting \
   --publish-arg project-id=my-project
 ```
 
-Fastforge 会在目标目录生成 `.firebaserc` 和 `firebase.json`，随后运行 `firebase deploy`。已登录 Firebase CLI 时 token 可省略；CI 中建议设置 `FIREBASE_TOKEN`。
+Fastforge 会在目标目录生成 `.firebaserc` 和 `firebase.json`，随后在该目录运行 `firebase deploy`。设置了 `FIREBASE_TOKEN` 时会传给 CLI；已登录 Firebase CLI 时可省略，CI 中建议设置。发布结果为 CLI 输出的 `Hosting URL`。
