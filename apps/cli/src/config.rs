@@ -135,6 +135,7 @@ impl AppStoreAuthConfig {
 
 /// App metadata recorded under App Store Connect.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct AppStoreApp {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bundle_id: Option<String>,
@@ -144,11 +145,43 @@ pub struct AppStoreApp {
     pub sku: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default)]
+    pub platform: AppStorePlatform,
 }
 
 impl AppStoreApp {
     pub fn identifier(&self) -> Option<&str> {
         self.bundle_id.as_deref()
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum AppStorePlatform {
+    #[default]
+    Ios,
+    MacOs,
+    TvOs,
+    VisionOs,
+}
+
+impl AppStorePlatform {
+    pub fn as_app_store_value(self) -> &'static str {
+        match self {
+            Self::Ios => "IOS",
+            Self::MacOs => "MAC_OS",
+            Self::TvOs => "TV_OS",
+            Self::VisionOs => "VISION_OS",
+        }
+    }
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Ios => "ios",
+            Self::MacOs => "macos",
+            Self::TvOs => "tvos",
+            Self::VisionOs => "visionos",
+        }
     }
 }
 
@@ -373,6 +406,7 @@ stores:
         assert_eq!(appstore.auth.auth_type(), "api_key");
         assert_eq!(appstore.auth.issuer_id.as_deref(), Some("issuer"));
         assert_eq!(appstore.apps[0].identifier(), Some("com.example.myapp"));
+        assert_eq!(appstore.apps[0].platform, AppStorePlatform::Ios);
 
         let appgallery = config.stores.appgallery.as_ref().unwrap();
         assert_eq!(appgallery.auth.auth_type(), "service_account");
@@ -436,5 +470,35 @@ stores:
             config.stores.googleplay.as_ref().unwrap().apps[0].identifier(),
             Some("com.example.myapp")
         );
+    }
+
+    #[test]
+    fn app_store_platform_is_configurable() {
+        let config = parse_yaml(
+            r#"
+stores:
+  appstore:
+    apps:
+      - bundle_id: com.example.macos
+        platform: MAC_OS
+"#,
+        );
+
+        assert_eq!(
+            config.stores.appstore.unwrap().apps[0].platform,
+            AppStorePlatform::MacOs
+        );
+    }
+
+    #[test]
+    fn unknown_app_store_app_field_is_rejected() {
+        let mut file = NamedTempFile::new().unwrap();
+        file.write_all(
+            b"stores:\n  appstore:\n    apps:\n      - bundle_id: com.example.app\n        platfrom: MAC_OS\n",
+        )
+        .unwrap();
+
+        let error = Config::from_file(file.path()).unwrap_err().to_string();
+        assert!(error.contains("Failed to parse"));
     }
 }

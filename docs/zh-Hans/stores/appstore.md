@@ -14,6 +14,15 @@ export APP_STORE_CONNECT_KEY_PATH="$PWD/AuthKey_ABC123DEFG.p8"
 
 三个变量均为必填。商店 API 命令只使用 API Key 认证。
 
+使用 `direnv` 的项目要注意：非交互 shell、CI 和 Agent 工具不会执行交互 shell hook。只检查变量是否已设置，不要输出凭证值；后续所有 App Store 命令都保持在同一环境中运行：
+
+```bash
+direnv status
+direnv exec . fastforge appstore app view com.example.myapp
+```
+
+`direnv exec .` 也会发现父目录中的 `.envrc`。这样可避免误用全局凭证而查询到另一个 App Store Connect 团队。
+
 ## 应用
 
 ```bash
@@ -22,6 +31,12 @@ fastforge appstore app view com.example.myapp
 ```
 
 `view` 接受 bundle id 或 App Store app id。
+
+“建立 Store 档案”可能指三种不同操作：
+
+1. 在 `.fastforge/config.yaml` 本地登记已有应用，供 `fastforge store` 聚合命令使用。
+2. 对已有远端应用执行 `catalog pull`，建立本地元数据快照。
+3. 在 App Store Connect 新建远端应用记录。本地登记和 `catalog pull` 都不会创建远端应用。
 
 ## 构建
 

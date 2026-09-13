@@ -30,7 +30,8 @@ fastforge store catalog push
 ```bash
 fastforge appstore catalog pull \
   --app com.example.myapp \
-  --platform IOS \
+  --platform MAC_OS \
+  --version 1.0.0 \
   --output .fastforge/stores/appstore
 
 fastforge appstore catalog push \
@@ -62,6 +63,7 @@ fastforge appstore catalog push \
 - `localization.yaml` 保存语言相关字段。
 - `.manifest.yaml` 保存截图远端 ID 与本地校验信息。
 - push 会按本地文件名处理截图顺序；同步前建议使用 `--dry-run`。
+- 聚合命令 `fastforge store catalog pull` 会使用配置中的 `apps[].platform`；旧配置默认使用 `IOS`。
 
 ## 单独同步 Google Play
 
@@ -96,3 +98,5 @@ Google Play 截图会按语言和图片类型继续分目录，包括 phone、7-
 3. 校验 diff，避免误删语言或截图。
 4. 使用独立商店命令的 `push --dry-run` 预览。
 5. 确认后执行实际 push。
+
+Catalog pull 会先在目标目录旁生成完整快照，所有必要请求和写入成功后才替换目标目录。pull 失败时会丢弃 staging 文件并保留上一次快照。若使用尚无此行为的旧版或 unofficial 二进制，失败可能留下部分文件：不要执行 push；先确认版本目录以及存在截图时的 `.manifest.yaml` 完整，或重新拉取到新目录。

@@ -7,7 +7,7 @@ use async_trait::async_trait;
 use clap::{Args, Subcommand};
 use minact_core::actions::{Action, ActionContext, ActionOutput};
 use minact_core::{
-    ActionRegistry, CommandStream, Engine, EngineResult, LogEvent, LogLevel, Reporter,
+    ActionRegistry, CommandStream, Engine, EngineResult, LogEvent, LogLevel, Reporter, SearchPath,
     StepConclusion, WorkflowError, WorkflowParser,
 };
 use serde_json::{Map, Value};
@@ -74,6 +74,16 @@ fn parse_key_val(s: &str) -> Result<KeyVal, String> {
     })
 }
 
+/// Where fastforge looks for workflow files.
+///
+/// minact only searches its own `.minact/workflows/` and `.github/workflows/`
+/// by default, so fastforge's own directory has to be passed in explicitly.
+fn search_paths() -> Vec<SearchPath> {
+    let mut paths = vec![SearchPath::dir(".fastforge/workflows")];
+    paths.extend(WorkflowParser::default_search_paths());
+    paths
+}
+
 pub async fn execute(args: &WorkflowArgs) -> anyhow::Result<()> {
     match &args.command {
         WorkflowCommands::Run {
@@ -107,13 +117,15 @@ async fn cmd_run(
         WorkflowParser::parse_file(file_path)?
     } else {
         // Discover workflows in workspace
-        let workflows = WorkflowParser::discover_workflows(&workspace)?;
+        let search_paths = search_paths();
+        let workflows = WorkflowParser::discover_workflows_in(&workspace, &search_paths)?;
         match workflows.len() {
             0 => {
                 anyhow::bail!(
                     "No workflow files found in {}\n\
-                     Looked in: .fastforge/workflows/",
-                    workspace.display()
+                     Looked in: {}",
+                    workspace.display(),
+                    WorkflowParser::search_path_summary(&search_paths)
                 );
             }
             1 => workflows.into_iter().next().unwrap(),
@@ -222,6 +234,14 @@ impl Reporter for PrettyReporter {
                     paint("−", Color::Yellow),
                     paint(&job_id, Color::Bold),
                     paint(&format!("skipped {}", condition), Color::Dim)
+                );
+            }
+            LogEvent::JobCancelled { job_id, reason, .. } => {
+                println!(
+                    "  {} {} {}",
+                    paint("◯", Color::Yellow),
+                    paint(&job_id, Color::Bold),
+                    paint(&format!("cancelled {}", reason), Color::Dim)
                 );
             }
             LogEvent::JobFinished { success, .. } => {
@@ -361,11 +381,15 @@ fn cmd_list(dir: &Option<PathBuf>, verbose: bool) -> anyhow::Result<()> {
     let dir = dir
         .clone()
         .unwrap_or_else(|| std::env::current_dir().unwrap_or_default());
-    let workflows = WorkflowParser::discover_workflows(&dir)?;
+    let search_paths = search_paths();
+    let workflows = WorkflowParser::discover_workflows_in(&dir, &search_paths)?;
 
     if workflows.is_empty() {
         println!("No workflows found in {}", dir.display());
-        println!("Looked in: .fastforge/workflows/");
+        println!(
+            "Looked in: {}",
+            WorkflowParser::search_path_summary(&search_paths)
+        );
         return Ok(());
     }
 

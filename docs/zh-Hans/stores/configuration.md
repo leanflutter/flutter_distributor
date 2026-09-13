@@ -16,6 +16,7 @@ stores:
         app_id: "1234567890"
         sku: MYAPP
         name: My App
+        platform: MAC_OS
 
   appgallery:
     auth:
@@ -43,6 +44,7 @@ stores:
 | `apps[].bundle_id`                | 首选应用标识                                |
 | `apps[].app_id`                   | bundle id 缺失时 catalog 命令使用的回退标识 |
 | `apps[].sku` / `apps[].name`      | 可选元数据                                  |
+| `apps[].platform`                 | App Store 平台：`IOS`、`MAC_OS`、`TV_OS` 或 `VISION_OS`；默认 `IOS` |
 
 ## Google Play 字段
 
@@ -66,6 +68,8 @@ stores:
 | `apps[].name`               | 可选显示名称                              |
 
 `auth` 字段支持完整的 `${ENV_NAME}` 引用，也会读取默认环境变量。当前商店 API 和 catalog 执行器仍以进程环境变量建立认证上下文，因此运行命令前应导出凭证。
+
+App Store 应用配置中的未知字段会直接报错，避免拼写错误被静默忽略并回退到 iOS。
 
 ## 安全建议
 

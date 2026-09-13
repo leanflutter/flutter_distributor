@@ -99,50 +99,71 @@ async fn fetch_versions(
     platform: Option<&str>,
     version: Option<&str>,
 ) -> Result<Vec<Value>> {
-    let fields_app_store_versions = Some(vec![
-        asc_types::AppsAppStoreVersionsGetToManyRelatedFieldsAppStoreVersionsItem::Platform,
-        asc_types::AppsAppStoreVersionsGetToManyRelatedFieldsAppStoreVersionsItem::VersionString,
-        asc_types::AppsAppStoreVersionsGetToManyRelatedFieldsAppStoreVersionsItem::CreatedDate,
-        asc_types::AppsAppStoreVersionsGetToManyRelatedFieldsAppStoreVersionsItem::Copyright,
-    ]);
-    let filter_platform = Some(vec![match platform.unwrap_or("IOS") {
-        "MAC_OS" => asc_types::AppsAppStoreVersionsGetToManyRelatedFilterPlatformItem::MacOs,
-        "TV_OS" => asc_types::AppsAppStoreVersionsGetToManyRelatedFilterPlatformItem::TvOs,
-        "VISION_OS" => asc_types::AppsAppStoreVersionsGetToManyRelatedFilterPlatformItem::VisionOs,
-        _ => asc_types::AppsAppStoreVersionsGetToManyRelatedFilterPlatformItem::Ios,
-    }]);
-    let filter_version_string = version.map(|v| vec![v.to_string()]);
-
-    let resp = ctx
-        .client
-        .apps_app_store_versions_get_to_many_related(
-            app_id,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            fields_app_store_versions.as_ref(),
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            filter_platform.as_ref(),
-            filter_version_string.as_ref(),
-            None,
-            Some(200),
-            None,
-            None,
-            None,
-        )
+    let query = version_query_params(platform, version)?;
+    let response: Value = ctx
+        .http
+        .get(ctx.url(&format!("/v1/apps/{app_id}/appStoreVersions")))
+        .query(&query)
+        .send()
         .await
-        .map_err(|e| anyhow::anyhow!("failed to fetch versions: {e}"))?;
-    collect_pages(ctx, resp).await
+        .context("failed to fetch versions")?
+        .error_for_status()
+        .context("failed to fetch versions")?
+        .json()
+        .await
+        .context("failed to decode versions")?;
+    collect_value_pages(ctx, response).await
+}
+
+fn version_query_params(
+    platform: Option<&str>,
+    version: Option<&str>,
+) -> Result<Vec<(&'static str, String)>> {
+    let platform = platform.unwrap_or("IOS");
+    if !matches!(platform, "IOS" | "MAC_OS" | "TV_OS" | "VISION_OS") {
+        anyhow::bail!("unsupported App Store platform `{platform}`");
+    }
+
+    let mut query = vec![
+        (
+            "fields[appStoreVersions]",
+            "platform,versionString,createdDate,copyright,appStoreState,appVersionState".into(),
+        ),
+        ("filter[platform]", platform.to_string()),
+        ("limit", "200".into()),
+    ];
+    if let Some(version) = version {
+        query.push(("filter[versionString]", version.to_string()));
+    }
+    Ok(query)
+}
+
+async fn collect_value_pages(ctx: &AppStoreConnectContext, mut page: Value) -> Result<Vec<Value>> {
+    let mut all_data = Vec::new();
+    loop {
+        if let Some(data) = page.get("data").and_then(Value::as_array) {
+            all_data.extend(data.iter().cloned());
+        }
+        let Some(next_url) = page
+            .get("links")
+            .and_then(|links| links.get("next"))
+            .and_then(Value::as_str)
+        else {
+            break;
+        };
+        page = ctx
+            .http
+            .get(next_url)
+            .send()
+            .await
+            .context("failed to fetch versions page")?
+            .error_for_status()
+            .context("failed to fetch versions page")?
+            .json()
+            .await
+            .context("failed to decode versions page")?;
+    }
+    Ok(all_data)
 }
 
 /// Fetch all app infos via the generated typed client.
@@ -399,13 +420,11 @@ pub async fn execute(args: &PullArgs, _global: &GlobalArgs) -> Result<()> {
 /// Pull catalog data using an existing App Store Connect context.
 pub async fn execute_with_context(args: &PullArgs, ctx: &AppStoreConnectContext) -> Result<()> {
     let start = std::time::Instant::now();
-    let mut pulled_count = 0u64;
 
     // 1. Resolve app
     eprintln!("🔍 Resolving app '{}'...", args.app);
     let app_row = resolve_app(ctx, &args.app).await?;
     let bundle_id = &app_row.bundle_id;
-    let app_id = &app_row.id;
 
     let output_root = args
         .output
@@ -413,7 +432,34 @@ pub async fn execute_with_context(args: &PullArgs, ctx: &AppStoreConnectContext)
         .map(Path::new)
         .unwrap_or_else(|| Path::new(".fastforge/stores/appstore"))
         .join(bundle_id);
-    ensure_dir(&output_root)?;
+    let staged = StagedCatalog::new(&output_root)?;
+    let pulled_count = pull_into_directory(args, ctx, &app_row, staged.path())
+        .await
+        .with_context(|| {
+            format!(
+                "catalog pull failed; discarded the incomplete snapshot and left {} unchanged",
+                output_root.display()
+            )
+        })?;
+    staged.commit()?;
+
+    let elapsed = start.elapsed();
+    eprintln!(
+        "\n✅ Pull complete: {pulled_count} resources synced to {} in {elapsed:?}",
+        output_root.display()
+    );
+    Ok(())
+}
+
+async fn pull_into_directory(
+    args: &PullArgs,
+    ctx: &AppStoreConnectContext,
+    app_row: &crate::cli::commands::app::AppRow,
+    output_root: &Path,
+) -> Result<u64> {
+    let mut pulled_count = 0u64;
+    let bundle_id = &app_row.bundle_id;
+    let app_id = &app_row.id;
 
     // Write app.yaml
     let app_yaml = asc_types::AppAttributes {
@@ -498,19 +544,29 @@ pub async fn execute_with_context(args: &PullArgs, ctx: &AppStoreConnectContext)
             .as_str()
             .unwrap_or("0.0.0")
             .to_string();
+        let state = version["attributes"]["appStoreState"]
+            .as_str()
+            .or_else(|| version["attributes"]["appVersionState"].as_str())
+            .map(str::to_owned);
         let version_dir = output_root
             .join("versions")
             .join(&platform)
             .join(&version_string);
         ensure_dir(&version_dir)?;
 
-        if let Some(copyright) = version["attributes"]["copyright"].as_str() {
-            if sync_copyright_file(&version_dir, copyright, version_copyrights.get(&platform))? {
-                eprintln!("  ✓ versions/{platform}/{version_string}/version.yaml");
-                pulled_count += 1;
-            } else {
-                eprintln!("  • skipped unchanged copyright");
-            }
+        let copyright = version["attributes"]["copyright"].as_str();
+        write_version_file(
+            &version_dir,
+            &version_id,
+            &platform,
+            &version_string,
+            state,
+            copyright,
+            version_copyrights.get(&platform),
+        )?;
+        eprintln!("  ✓ versions/{platform}/{version_string}/version.yaml");
+        pulled_count += 1;
+        if let Some(copyright) = copyright {
             version_copyrights.insert(platform.clone(), copyright.to_string());
         }
 
@@ -706,12 +762,94 @@ pub async fn execute_with_context(args: &PullArgs, ctx: &AppStoreConnectContext)
         }
     }
 
-    let elapsed = start.elapsed();
-    eprintln!(
-        "\n✅ Pull complete: {pulled_count} resources synced to {} in {elapsed:?}",
-        output_root.display()
-    );
-    Ok(())
+    Ok(pulled_count)
+}
+
+struct StagedCatalog {
+    target: std::path::PathBuf,
+    staging: std::path::PathBuf,
+    active: bool,
+}
+
+impl StagedCatalog {
+    fn new(target: &Path) -> Result<Self> {
+        let parent = target.parent().unwrap_or_else(|| Path::new("."));
+        ensure_dir(parent)?;
+        let name = target
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("catalog");
+        let staging = parent.join(format!(".{name}.pull-{}.tmp", uuid::Uuid::new_v4()));
+        ensure_dir(&staging)?;
+        Ok(Self {
+            target: target.to_path_buf(),
+            staging,
+            active: true,
+        })
+    }
+
+    fn path(&self) -> &Path {
+        &self.staging
+    }
+
+    fn commit(mut self) -> Result<()> {
+        if !self.target.exists() {
+            std::fs::rename(&self.staging, &self.target).with_context(|| {
+                format!(
+                    "failed to move completed catalog into {}",
+                    self.target.display()
+                )
+            })?;
+            self.active = false;
+            return Ok(());
+        }
+
+        let parent = self.target.parent().unwrap_or_else(|| Path::new("."));
+        let name = self
+            .target
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("catalog");
+        let backup = parent.join(format!(".{name}.pull-{}.backup", uuid::Uuid::new_v4()));
+        std::fs::rename(&self.target, &backup).with_context(|| {
+            format!(
+                "failed to preserve existing catalog {}",
+                self.target.display()
+            )
+        })?;
+        if let Err(error) = std::fs::rename(&self.staging, &self.target) {
+            let restore = std::fs::rename(&backup, &self.target);
+            return match restore {
+                Ok(()) => Err(error).with_context(|| {
+                    format!(
+                        "failed to replace catalog {}; the previous snapshot was restored",
+                        self.target.display()
+                    )
+                }),
+                Err(restore_error) => Err(anyhow::anyhow!(
+                    "failed to replace catalog {} ({error}) and restore backup {} ({restore_error})",
+                    self.target.display(),
+                    backup.display()
+                )),
+            };
+        }
+        self.active = false;
+        if let Err(error) = std::fs::remove_dir_all(&backup) {
+            eprintln!(
+                "  ⚠ completed catalog installed, but failed to remove backup {}: {error}",
+                backup.display()
+            );
+        }
+        Ok(())
+    }
+}
+
+impl Drop for StagedCatalog {
+    fn drop(&mut self) {
+        if self.active && self.staging.exists() {
+            let _ = std::fs::remove_dir_all(&self.staging);
+        }
+    }
 }
 
 /// Fetch review detail and attachments for a version and write to local YAML.
@@ -757,9 +895,9 @@ async fn fetch_and_write_review_detail(
         .json()
         .await?;
 
-    let data = response
-        .get("data")
-        .ok_or_else(|| anyhow::anyhow!("missing review detail data"))?;
+    let Some(data) = review_detail_data(&response) else {
+        return Ok(count);
+    };
     let detail_id = data
         .get("id")
         .and_then(Value::as_str)
@@ -926,6 +1064,10 @@ async fn fetch_and_write_review_detail(
     Ok(count)
 }
 
+fn review_detail_data(response: &Value) -> Option<&Value> {
+    response.get("data").filter(|data| !data.is_null())
+}
+
 fn sort_versions_for_asset_dedup(versions: &mut [Value]) {
     versions.sort_by(|a, b| {
         let a_platform = a["attributes"]["platform"].as_str().unwrap_or("");
@@ -1018,27 +1160,29 @@ fn has_copyright_changed(current: &str, previous: Option<&String>) -> bool {
     previous.map(String::as_str) != Some(current)
 }
 
-fn sync_copyright_file(
+fn write_version_file(
     version_dir: &Path,
-    current: &str,
+    id: &str,
+    platform: &str,
+    version_string: &str,
+    state: Option<String>,
+    copyright: Option<&str>,
     previous: Option<&String>,
-) -> Result<bool> {
+) -> Result<()> {
     let path = version_dir.join("version.yaml");
-    if has_copyright_changed(current, previous) {
-        write_yaml(
-            &path,
-            &VersionMetadata {
-                copyright: Some(current.to_string()),
-            },
-        )?;
-        return Ok(true);
-    }
-
-    if path.exists() {
-        std::fs::remove_file(&path)
-            .with_context(|| format!("failed to remove unchanged {}", path.display()))?;
-    }
-    Ok(false)
+    let copyright = copyright
+        .filter(|current| has_copyright_changed(current, previous))
+        .map(str::to_owned);
+    write_yaml(
+        &path,
+        &VersionMetadata {
+            id: Some(id.to_string()),
+            platform: Some(platform.to_string()),
+            version_string: Some(version_string.to_string()),
+            state,
+            copyright,
+        },
+    )
 }
 
 fn has_version_localization_changes(
@@ -1129,19 +1273,88 @@ mod tests {
     }
 
     #[test]
-    fn unchanged_copyright_does_not_leave_a_version_file() {
+    fn blank_draft_still_writes_version_identity() {
         let version_dir = std::env::temp_dir().join(format!(
             "fastforge-appstore-copyright-{}",
             uuid::Uuid::new_v4()
         ));
         std::fs::create_dir_all(&version_dir).unwrap();
-        let copyright = "2026 Example Inc.".to_string();
+        write_version_file(
+            &version_dir,
+            "version-id",
+            "MAC_OS",
+            "1.0.0",
+            Some("PREPARE_FOR_SUBMISSION".into()),
+            None,
+            None,
+        )
+        .unwrap();
 
-        assert!(sync_copyright_file(&version_dir, &copyright, None).unwrap());
-        assert!(version_dir.join("version.yaml").exists());
-        assert!(!sync_copyright_file(&version_dir, &copyright, Some(&copyright)).unwrap());
-        assert!(!version_dir.join("version.yaml").exists());
+        let yaml = std::fs::read_to_string(version_dir.join("version.yaml")).unwrap();
+        assert!(yaml.contains("_id: version-id"));
+        assert!(yaml.contains("platform: MAC_OS"));
+        assert!(yaml.contains("versionString: 1.0.0"));
+        assert!(yaml.contains("state: PREPARE_FOR_SUBMISSION"));
 
         std::fs::remove_dir_all(&version_dir).unwrap();
+    }
+
+    #[test]
+    fn macos_version_query_has_each_filter_once() {
+        let query = version_query_params(Some("MAC_OS"), Some("1.0.0")).unwrap();
+        let count = |name: &str| query.iter().filter(|(key, _)| *key == name).count();
+
+        assert_eq!(count("fields[appStoreVersions]"), 1);
+        assert_eq!(count("filter[platform]"), 1);
+        assert_eq!(count("filter[versionString]"), 1);
+        assert!(query.contains(&("filter[platform]", "MAC_OS".to_string())));
+        assert!(query.contains(&("filter[versionString]", "1.0.0".to_string())));
+    }
+
+    #[test]
+    fn staged_catalog_replaces_complete_snapshot() {
+        let root =
+            std::env::temp_dir().join(format!("fastforge-appstore-stage-{}", uuid::Uuid::new_v4()));
+        let target = root.join("com.example.app");
+        std::fs::create_dir_all(&target).unwrap();
+        std::fs::write(target.join("old.yaml"), "old").unwrap();
+
+        let staged = StagedCatalog::new(&target).unwrap();
+        std::fs::write(staged.path().join("app.yaml"), "new").unwrap();
+        staged.commit().unwrap();
+
+        assert!(!target.join("old.yaml").exists());
+        assert_eq!(
+            std::fs::read_to_string(target.join("app.yaml")).unwrap(),
+            "new"
+        );
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn dropped_staging_preserves_previous_snapshot() {
+        let root =
+            std::env::temp_dir().join(format!("fastforge-appstore-stage-{}", uuid::Uuid::new_v4()));
+        let target = root.join("com.example.app");
+        std::fs::create_dir_all(&target).unwrap();
+        std::fs::write(target.join("app.yaml"), "complete").unwrap();
+
+        let staging_path = {
+            let staged = StagedCatalog::new(&target).unwrap();
+            std::fs::write(staged.path().join("app.yaml"), "incomplete").unwrap();
+            staged.path().to_path_buf()
+        };
+
+        assert!(!staging_path.exists());
+        assert_eq!(
+            std::fs::read_to_string(target.join("app.yaml")).unwrap(),
+            "complete"
+        );
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn absent_review_detail_is_an_empty_optional_resource() {
+        assert!(review_detail_data(&serde_json::json!({ "data": null })).is_none());
     }
 }

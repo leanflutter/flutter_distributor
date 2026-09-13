@@ -16,6 +16,7 @@ stores:
         app_id: "1234567890"
         sku: MYAPP
         name: My App
+        platform: MAC_OS
 
   appgallery:
     auth:
@@ -43,6 +44,7 @@ stores:
 | `apps[].bundle_id`                | Preferred application identifier                                           |
 | `apps[].app_id`                   | Fallback identifier used by catalog commands when the bundle ID is missing |
 | `apps[].sku` / `apps[].name`      | Optional metadata                                                          |
+| `apps[].platform`                 | App Store platform (`IOS`, `MAC_OS`, `TV_OS`, or `VISION_OS`); defaults to `IOS` |
 
 ## Google Play Fields
 
@@ -66,6 +68,8 @@ stores:
 | `apps[].name`               | Optional display name                            |
 
 `auth` fields support complete `${ENV_NAME}` references and also read default environment variables. The current store API and catalog executors still establish authentication from process environment variables, so export credentials before running commands.
+
+Unknown fields in App Store app entries are rejected so misspelled settings do not silently fall back to iOS.
 
 ## Security Recommendations
 

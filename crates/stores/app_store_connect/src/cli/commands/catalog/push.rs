@@ -1170,12 +1170,16 @@ mod tests {
     }
 
     #[test]
-    fn version_metadata_ignores_identity_fields() {
+    fn version_metadata_preserves_identity_fields() {
         let metadata: VersionMetadata = serde_yaml::from_str(
-            "platform: IOS\nversionString: 1.2.3\ncopyright: 2026 Example Inc.\n",
+            "_id: version-id\nplatform: IOS\nversionString: 1.2.3\nstate: PREPARE_FOR_SUBMISSION\ncopyright: 2026 Example Inc.\n",
         )
         .unwrap();
 
+        assert_eq!(metadata.id.as_deref(), Some("version-id"));
+        assert_eq!(metadata.platform.as_deref(), Some("IOS"));
+        assert_eq!(metadata.version_string.as_deref(), Some("1.2.3"));
+        assert_eq!(metadata.state.as_deref(), Some("PREPARE_FOR_SUBMISSION"));
         assert_eq!(metadata.copyright.as_deref(), Some("2026 Example Inc."));
     }
 

@@ -10,7 +10,7 @@ use fastforge_google_play_console::cli::commands::catalog::{
     pull as googleplay_pull, push as googleplay_push,
 };
 
-use crate::config::Config;
+use crate::config::{AppStorePlatform, Config};
 
 #[derive(Args, Debug)]
 pub struct StoreArgs {
@@ -61,7 +61,7 @@ fn list_stores() -> Result<()> {
             for app in &appstore.apps {
                 let identifier = app.identifier().unwrap_or("<unknown>");
                 let label = app.name.as_deref().unwrap_or(identifier);
-                println!("  - {} [ios] {}", label, identifier);
+                println!("  - {} [{}] {}", label, app.platform.label(), identifier);
             }
         }
     }
@@ -113,6 +113,7 @@ impl StoreKind {
 struct CatalogTarget {
     store: StoreKind,
     identifier: Option<String>,
+    platform: Option<AppStorePlatform>,
     config_index: usize,
 }
 
@@ -145,6 +146,7 @@ fn configured_catalog_targets(config: &Config) -> Vec<CatalogTarget> {
                 identifier: non_empty(app.bundle_id.as_deref())
                     .or_else(|| non_empty(app.app_id.as_deref()))
                     .map(str::to_owned),
+                platform: Some(app.platform),
                 config_index,
             }
         }));
@@ -159,6 +161,7 @@ fn configured_catalog_targets(config: &Config) -> Vec<CatalogTarget> {
                 .map(|(config_index, app)| CatalogTarget {
                     store: StoreKind::GooglePlay,
                     identifier: non_empty(app.package_name.as_deref()).map(str::to_owned),
+                    platform: None,
                     config_index,
                 }),
         );
@@ -211,6 +214,7 @@ trait CatalogExecutor {
         command: StoreCatalogCommand,
         store: StoreKind,
         identifier: &str,
+        platform: Option<AppStorePlatform>,
     ) -> Result<()>;
 }
 
@@ -256,6 +260,7 @@ impl CatalogExecutor for LiveCatalogExecutor {
         command: StoreCatalogCommand,
         store: StoreKind,
         identifier: &str,
+        platform: Option<AppStorePlatform>,
     ) -> Result<()> {
         match store {
             StoreKind::AppStore => {
@@ -266,7 +271,9 @@ impl CatalogExecutor for LiveCatalogExecutor {
                             &appstore_pull::PullArgs {
                                 app: identifier.to_owned(),
                                 version: None,
-                                platform: None,
+                                platform: platform
+                                    .map(AppStorePlatform::as_app_store_value)
+                                    .map(str::to_owned),
                                 output: None,
                             },
                             context,
@@ -333,7 +340,12 @@ async fn execute_catalog_targets<E: CatalogExecutor>(
                 configured_identifier
             );
             executor
-                .execute(command, target.store, configured_identifier)
+                .execute(
+                    command,
+                    target.store,
+                    configured_identifier,
+                    target.platform,
+                )
                 .await
         } else {
             Err(anyhow!(
@@ -381,7 +393,12 @@ mod tests {
 
     #[derive(Default)]
     struct MockExecutor {
-        calls: Vec<(StoreCatalogCommand, StoreKind, String)>,
+        calls: Vec<(
+            StoreCatalogCommand,
+            StoreKind,
+            String,
+            Option<AppStorePlatform>,
+        )>,
         fail_identifier: Option<String>,
     }
 
@@ -392,8 +409,10 @@ mod tests {
             command: StoreCatalogCommand,
             store: StoreKind,
             identifier: &str,
+            platform: Option<AppStorePlatform>,
         ) -> Result<()> {
-            self.calls.push((command, store, identifier.to_owned()));
+            self.calls
+                .push((command, store, identifier.to_owned(), platform));
             if self.fail_identifier.as_deref() == Some(identifier) {
                 Err(anyhow!("simulated failure"))
             } else {
@@ -450,21 +469,25 @@ stores:
                 CatalogTarget {
                     store: StoreKind::AppStore,
                     identifier: Some("com.example.ios".to_owned()),
+                    platform: Some(AppStorePlatform::Ios),
                     config_index: 0,
                 },
                 CatalogTarget {
                     store: StoreKind::AppStore,
                     identifier: Some("456".to_owned()),
+                    platform: Some(AppStorePlatform::Ios),
                     config_index: 1,
                 },
                 CatalogTarget {
                     store: StoreKind::AppStore,
                     identifier: None,
+                    platform: Some(AppStorePlatform::Ios),
                     config_index: 2,
                 },
                 CatalogTarget {
                     store: StoreKind::GooglePlay,
                     identifier: Some("com.example.android".to_owned()),
+                    platform: None,
                     config_index: 0,
                 },
             ]
@@ -497,6 +520,24 @@ stores:
         assert!(outcomes[0].error.is_some());
         assert!(outcomes[1].error.is_none());
         assert!(outcomes[2].error.is_none());
+    }
+
+    #[tokio::test]
+    async fn passes_configured_app_store_platform_to_catalog_pull() {
+        let targets = configured_catalog_targets(&config(
+            r#"
+stores:
+  appstore:
+    apps:
+      - bundle_id: com.example.macos
+        platform: MAC_OS
+"#,
+        ));
+        let mut executor = MockExecutor::default();
+
+        execute_catalog_targets(StoreCatalogCommand::Pull, targets, &mut executor).await;
+
+        assert_eq!(executor.calls[0].3, Some(AppStorePlatform::MacOs));
     }
 
     #[tokio::test]

@@ -12,7 +12,16 @@ pub use pull::PullArgs;
 pub use push::PushArgs;
 
 #[derive(Debug, Default, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct VersionMetadata {
+    #[serde(rename = "_id", default, skip_serializing_if = "Option::is_none")]
+    id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    platform: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    version_string: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    state: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     copyright: Option<String>,
 }

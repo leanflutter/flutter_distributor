@@ -14,6 +14,15 @@ export APP_STORE_CONNECT_KEY_PATH="$PWD/AuthKey_ABC123DEFG.p8"
 
 All three variables are required. Store API commands use API Key authentication only.
 
+For projects managed by `direnv`, remember that non-interactive shells, CI, and agent tools do not run the interactive shell hook. Verify only whether variables are set—never print credential values—and keep every App Store command inside the same environment:
+
+```bash
+direnv status
+direnv exec . fastforge appstore app view com.example.myapp
+```
+
+`direnv exec .` also discovers an `.envrc` in a parent directory. This prevents a global credential from accidentally selecting a different App Store Connect team.
+
 ## Apps
 
 ```bash
@@ -22,6 +31,12 @@ fastforge appstore app view com.example.myapp
 ```
 
 `view` accepts either a bundle ID or an App Store app ID.
+
+“Set up a Store app” can mean three different operations:
+
+1. Register an existing app locally in `.fastforge/config.yaml` for aggregate `fastforge store` commands.
+2. Run `catalog pull` to create a local metadata snapshot of an existing remote app.
+3. Create a new remote app record in App Store Connect. Neither local registration nor `catalog pull` creates one.
 
 ## Builds
 
