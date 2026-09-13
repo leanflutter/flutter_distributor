@@ -6,11 +6,27 @@ use thiserror::Error;
 
 pub type PublishProgressCallback = Arc<dyn Fn(u64, u64) + Send + Sync + 'static>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct PublishConfig {
     pub app_version: Option<String>,
     pub artifact_path: Option<String>,
     pub publish_arguments: Option<HashMap<String, String>>,
+    /// Process environment plus `distribute_options.yaml` variables
+    /// (global/release/job), as Dart passes `environment` to publishers.
+    /// Lookups fall back to the process environment.
+    pub environment: HashMap<String, String>,
+}
+
+impl PublishConfig {
+    /// Looks up a variable in `environment`, then the process environment.
+    /// Empty values count as unset (Dart checks `isEmpty`).
+    pub fn env_var(&self, key: &str) -> Option<String> {
+        self.environment
+            .get(key)
+            .cloned()
+            .filter(|v| !v.is_empty())
+            .or_else(|| std::env::var(key).ok().filter(|v| !v.is_empty()))
+    }
 }
 
 #[derive(Debug)]

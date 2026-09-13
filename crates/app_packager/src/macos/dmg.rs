@@ -30,59 +30,64 @@ impl AppPackager for MacOSDmgPackager {
 
     fn package(&self, config: &PackageConfig) -> Result<PackageResult, PackageError> {
         let pkg_dir = config.packaging_dir();
-
-        // Find the .app bundle, preferring build_output_files over scanning build_output_dir
-        let app_bundle = config
-            .build_output_files
-            .iter()
-            .find(|p| p.extension().is_some_and(|x| x == "app"))
-            .map(|p| p.to_path_buf())
-            .or_else(|| {
-                std::fs::read_dir(&config.build_output_dir)
-                    .ok()?
-                    .filter_map(|e| e.ok())
-                    .find(|e| e.path().extension().is_some_and(|x| x == "app"))
-                    .map(|e| e.path())
-            })
-            .ok_or_else(|| PackageError::NotFound(".app bundle in build output".into()))?;
-
-        // Copy the .app into the packaging directory
-        run_cp_r(&app_bundle, &pkg_dir)?;
-
-        // Copy the project's dmg packaging assets (background, icon, etc.)
-        // These are expected at macos/packaging/dmg/ relative to the project root.
-        let dmg_assets = Path::new("macos/packaging/dmg");
-        if dmg_assets.exists() {
-            run_cp_r_dir_contents(dmg_assets, &pkg_dir)?;
-        }
-
-        let output_file = config.output_file();
-
-        // Prefer the project's `macos/packaging/dmg/make_config.yaml` (same
-        // appdmg-format schema as Dart's `MakeDmgConfig`: title, icon,
-        // background, background-color, icon-size, format, window, code-sign,
-        // contents). Fall back to a default spec when it's absent.
-        let spec = match load_dmg_make_config(Path::new("macos/packaging/dmg/make_config.yaml"))? {
-            Some(spec) => spec,
-            None => default_spec(&config.app_name, &pkg_dir),
-        };
-
-        // Delegate DMG creation to the native dmg_maker crate.
-        create(CreateOptions {
-            target: output_file.clone(),
-            source: None,
-            basepath: Some(pkg_dir.clone()),
-            specification: Some(spec),
-        })
-        .map_err(map_dmg_error)?;
-
-        // Clean up the packaging directory.
+        // Dart deletes the packaging directory in a `finally` block, so it is
+        // cleaned up even when DMG creation fails.
+        let result = make_dmg(config, &pkg_dir);
         std::fs::remove_dir_all(&pkg_dir).ok();
-
-        Ok(PackageResult {
-            artifacts: vec![output_file],
-        })
+        let output_file = result?;
+        config.resolve_result(output_file)
     }
+}
+
+/// Stages the `.app` and packaging assets in `pkg_dir` and creates the DMG,
+/// returning the output path.
+fn make_dmg(config: &PackageConfig, pkg_dir: &Path) -> Result<std::path::PathBuf, PackageError> {
+    // Find the .app bundle, preferring build_output_files over scanning build_output_dir
+    let app_bundle = config
+        .build_output_files
+        .iter()
+        .find(|p| p.extension().is_some_and(|x| x == "app"))
+        .map(|p| p.to_path_buf())
+        .or_else(|| {
+            std::fs::read_dir(&config.build_output_dir)
+                .ok()?
+                .filter_map(|e| e.ok())
+                .find(|e| e.path().extension().is_some_and(|x| x == "app"))
+                .map(|e| e.path())
+        })
+        .ok_or_else(|| PackageError::NotFound(".app bundle in build output".into()))?;
+
+    // Copy the .app into the packaging directory
+    run_cp_r(&app_bundle, pkg_dir)?;
+
+    // Copy the project's dmg packaging assets (background, icon, etc.)
+    // These are expected at macos/packaging/dmg/ relative to the project root.
+    let dmg_assets = Path::new("macos/packaging/dmg");
+    if dmg_assets.exists() {
+        run_cp_r_dir_contents(dmg_assets, pkg_dir)?;
+    }
+
+    let output_file = config.output_file();
+
+    // Prefer the project's `macos/packaging/dmg/make_config.yaml` (same
+    // appdmg-format schema as Dart's `MakeDmgConfig`: title, icon,
+    // background, background-color, icon-size, format, window, code-sign,
+    // contents). Fall back to a default spec when it's absent.
+    let spec = match load_dmg_make_config(Path::new("macos/packaging/dmg/make_config.yaml"))? {
+        Some(spec) => spec,
+        None => default_spec(&config.app_name, pkg_dir),
+    };
+
+    // Delegate DMG creation to the native dmg_maker crate.
+    create(CreateOptions {
+        target: output_file.clone(),
+        source: None,
+        basepath: Some(pkg_dir.to_path_buf()),
+        specification: Some(spec),
+    })
+    .map_err(map_dmg_error)?;
+
+    Ok(output_file)
 }
 
 /// Loads `macos/packaging/dmg/make_config.yaml` as an appdmg-style JSON spec.
@@ -96,7 +101,11 @@ fn load_dmg_make_config(path: &Path) -> Result<Option<serde_json::Value>, Packag
     let yaml: serde_yaml::Value = serde_yaml::from_str(&content)
         .map_err(|e| PackageError::General(format!("Failed to parse {}: {}", path.display(), e)))?;
     let spec = serde_json::to_value(yaml).map_err(|e| {
-        PackageError::General(format!("Failed to convert {} to JSON: {}", path.display(), e))
+        PackageError::General(format!(
+            "Failed to convert {} to JSON: {}",
+            path.display(),
+            e
+        ))
     })?;
     Ok(Some(spec))
 }

@@ -1,3 +1,7 @@
+use crate::common::{
+    argument_or_env, artifact_path, file_body, http_client, missing_env, resolve_app_version,
+    to_publish_error,
+};
 use chrono::Utc;
 use fastforge_core::{
     AppPublisher, PublishConfig, PublishError, PublishProgressCallback, PublishResult,
@@ -6,9 +10,7 @@ use jsonwebtoken::{Algorithm, EncodingKey, Header, encode};
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::env;
 use std::fs::File;
-use std::io::{Read, Result as IoResult};
 use std::path::Path;
 
 pub struct PlayStorePublisher;
@@ -37,15 +39,12 @@ impl AppPublisher for PlayStorePublisher {
         config: &PublishConfig,
         on_progress: Option<&PublishProgressCallback>,
     ) -> Result<PublishResult, PublishError> {
-        let artifact_path = config
-            .artifact_path
-            .as_deref()
-            .ok_or_else(|| PublishError::MissingArgument("artifact_path".to_string()))?;
+        let artifact_path = artifact_path(config)?;
         ensure_bundle_extension(artifact_path)?;
         let publish_config = PlayStoreConfig::from_config(config)?;
         let credentials = ServiceAccountCredentials::from_file(&publish_config.credentials_file)?;
-        let access_token = fetch_access_token(&credentials)?;
-        let client = Client::new();
+        let client = http_client()?;
+        let access_token = fetch_access_token(&client, &credentials)?;
 
         let edit_id = insert_edit(&client, &access_token, &publish_config.package_name)?;
         let version_code = upload_bundle(
@@ -58,7 +57,8 @@ impl AppPublisher for PlayStorePublisher {
         )?;
 
         if let Some(track) = publish_config.track.as_deref().filter(|t| !t.is_empty()) {
-            let release_name = build_release_name(artifact_path, config.app_version.as_deref());
+            let app_version = resolve_app_version(config).map(|version| version.text);
+            let release_name = build_release_name(artifact_path, app_version.as_deref());
             update_track(
                 &client,
                 &access_token,
@@ -95,12 +95,12 @@ struct PlayStoreConfig {
 
 impl PlayStoreConfig {
     fn from_config(config: &PublishConfig) -> Result<Self, PublishError> {
-        let credentials_file = required_value(
+        let credentials_file = argument_or_env(
             config,
             &["credentials-file", "playstore-credentials-file"],
             &[ENV_PLAYSTORE_CREDENTIALS_FILE],
-            "PlayStore credentials file",
-        )?;
+        )
+        .ok_or_else(|| missing_env(ENV_PLAYSTORE_CREDENTIALS_FILE))?;
         let package_name = required_value(
             config,
             &["package-name", "playstore-package-name"],
@@ -156,7 +156,10 @@ struct UploadBundleResponse {
     version_code: i64,
 }
 
-fn fetch_access_token(credentials: &ServiceAccountCredentials) -> Result<String, PublishError> {
+fn fetch_access_token(
+    client: &Client,
+    credentials: &ServiceAccountCredentials,
+) -> Result<String, PublishError> {
     let token_uri = credentials
         .token_uri
         .as_deref()
@@ -177,7 +180,7 @@ fn fetch_access_token(credentials: &ServiceAccountCredentials) -> Result<String,
     )
     .map_err(to_publish_error)?;
 
-    let response = Client::new()
+    let response = client
         .post(token_uri)
         .form(&[
             ("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"),
@@ -232,14 +235,12 @@ fn upload_bundle(
     let url = format!(
         "https://androidpublisher.googleapis.com/upload/androidpublisher/v3/applications/{package_name}/edits/{edit_id}/bundles?uploadType=media"
     );
-    let file = File::open(artifact_path).map_err(to_publish_error)?;
-    let total_size = file.metadata().map_err(to_publish_error)?.len();
-    let body_reader = UploadProgressReader::new(file, total_size, on_progress.cloned());
+    let body = file_body(artifact_path, on_progress)?;
     let response = client
         .post(url)
         .bearer_auth(access_token)
         .header("content-type", "application/octet-stream")
-        .body(reqwest::blocking::Body::sized(body_reader, total_size))
+        .body(body)
         .send()
         .map_err(to_publish_error)?;
 
@@ -354,51 +355,5 @@ fn optional_value(
     argument_keys: &[&str],
     env_keys: &[&str],
 ) -> Option<String> {
-    config
-        .publish_arguments
-        .as_ref()
-        .and_then(|arguments| {
-            argument_keys
-                .iter()
-                .find_map(|key| arguments.get(*key).cloned())
-        })
-        .or_else(|| env_keys.iter().find_map(|key| env::var(key).ok()))
-}
-
-fn to_publish_error(error: impl std::fmt::Display) -> PublishError {
-    PublishError::General(error.to_string())
-}
-
-struct UploadProgressReader {
-    file: File,
-    sent: u64,
-    total: u64,
-    on_progress: Option<PublishProgressCallback>,
-}
-
-impl UploadProgressReader {
-    fn new(file: File, total: u64, on_progress: Option<PublishProgressCallback>) -> Self {
-        if let Some(callback) = &on_progress {
-            callback(0, total);
-        }
-        Self {
-            file,
-            sent: 0,
-            total,
-            on_progress,
-        }
-    }
-}
-
-impl Read for UploadProgressReader {
-    fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
-        let bytes_read = self.file.read(buf)?;
-        if bytes_read > 0 {
-            self.sent += bytes_read as u64;
-            if let Some(callback) = &self.on_progress {
-                callback(self.sent, self.total);
-            }
-        }
-        Ok(bytes_read)
-    }
+    argument_or_env(config, argument_keys, env_keys)
 }

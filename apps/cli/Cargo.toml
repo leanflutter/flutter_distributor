@@ -1,6 +1,7 @@
 [package]
 name = "fastforge_cli"
 version = "0.7.0"
+build = "build.rs"
 edition.workspace = true
 authors.workspace = true
 description = "The ultimate all-in-one app packaging and distribution tool"
@@ -29,6 +30,7 @@ async-trait = "0.1"
 minact-core = { git = "https://github.com/fastforgedev/minact.git" }
 tokio = { version = "1.47.1", features = ["rt", "rt-multi-thread", "macros"] }
 log = "0.4.28"
+reqwest = { version = "0.13", default-features = false, features = ["json", "rustls"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 

@@ -53,7 +53,8 @@ pub async fn execute(args: &BuildArgs) -> Result<()> {
     let mut build_arguments = generate_build_args(args);
     merge_flutter_build_args(&mut build_arguments, args.flutter_build_args.as_deref())?;
 
-    let env: HashMap<String, String> = std::env::vars().collect();
+    let env: HashMap<String, String> =
+        crate::utils::global_variables(&crate::config::DistributeOptions::load()?);
     let builder = FlutterAppBuilder::default();
     if args.clean {
         builder.clean(Some(&env)).map_err(|e| anyhow!("{}", e))?;

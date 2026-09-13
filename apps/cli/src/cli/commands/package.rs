@@ -1,7 +1,8 @@
 use anyhow::{Context, Result, anyhow};
 use clap::Args;
 use fastforge_app_builder::{
-    FlutterAppBuilder, GradleAppBuilder, IOSXcodeAppBuilder, MacOSXcodeAppBuilder, Platform,
+    BuildError, BuildResult, FlutterAppBuilder, GradleAppBuilder, IOSXcodeAppBuilder,
+    MacOSXcodeAppBuilder, Platform,
 };
 use fastforge_app_packager::{
     AndroidAabPackager, AndroidApkPackager, AppPackager, CustomPackager, IOSIpaPackager,
@@ -18,43 +19,56 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::str::FromStr;
 
+use crate::config::DistributeOptions;
+use crate::utils::{bright_green, global_variables, run_streaming, yellow};
+
 #[derive(Args)]
 pub struct PackageArgs {
-    /// Target platform (auto-detected from the targets and project layout
-    /// when omitted).
-    #[arg(short, long = "platform")]
+    /// The platform to package the application for (auto-detected from the
+    /// targets and project layout when omitted).
+    #[arg(
+        short,
+        long = "platform",
+        value_name = "android,ios,linux,macos,ohos,windows,web"
+    )]
     pub platform: Option<String>,
-    /// Comma-separated list of bundle types to build (e.g. `apk`, `dmg,zip`).
-    #[arg(short, long = "targets", alias = "target", value_name = "TARGET,...")]
+    /// Comma separated list of bundle types to build.
+    #[arg(
+        short,
+        long = "targets",
+        alias = "target",
+        value_name = "apk,aab,app,appimage,deb,dmg,exe,hap,ipa,msix,pkg,rpm,zip"
+    )]
     pub targets: Option<String>,
-    /// Release channel included in the artifact name.
     #[arg(long = "channel")]
     pub channel: Option<String>,
     /// Artifact name template (mustache syntax, e.g. `{{name}}-{{build_name}}.{{ext}}`).
     #[arg(long = "artifact-name")]
     pub artifact_name: Option<String>,
-    #[arg(long = "skip-clean", default_value_t = false)]
+    /// Whether or not to skip 'flutter clean' before packaging.
+    #[arg(long = "skip-clean", overrides_with = "no_skip_clean")]
     pub skip_clean: bool,
+    #[arg(long = "no-skip-clean", overrides_with = "skip_clean", hide = true)]
+    pub no_skip_clean: bool,
 
-    /// Comma-separated arguments passed directly to `flutter build`
-    /// (e.g. `verbose,obfuscate` or `split-debug-info=./symbols`).
-    #[arg(long = "flutter-build-args", value_name = "ARG,...")]
+    /// Arguments to pass directly to flutter build
+    #[arg(long = "flutter-build-args", value_name = "verbose,obfuscate")]
     pub flutter_build_args: Option<String>,
-    /// The --target argument passed to `flutter build`.
-    #[arg(long = "build-target")]
+    /// The --target argument passed to 'flutter build'
+    #[arg(long = "build-target", value_name = "path")]
     pub build_target: Option<String>,
-    /// The --flavor argument passed to `flutter build`.
+    /// The --flavor argument passed to 'flutter build'
     #[arg(long = "build-flavor")]
     pub build_flavor: Option<String>,
-    /// The --target-platform argument passed to `flutter build`.
+    /// The --target-platform argument passed to 'flutter build'
     #[arg(long = "build-target-platform")]
     pub build_target_platform: Option<String>,
-    /// The --export-options-plist argument passed to `flutter build`.
+    /// The --export-options-plist argument passed 'flutter build'
     #[arg(long = "build-export-options-plist")]
     pub build_export_options_plist: Option<String>,
-    /// The --dart-define argument(s) passed to `flutter build`.
-    /// May be repeated: `--build-dart-define foo=bar --build-dart-define a=b`.
-    #[arg(long = "build-dart-define", value_name = "KEY=VALUE")]
+    /// The --dart-define argument(s) passed to 'flutter build'
+    /// You may add multiple '--build-dart-define key=value' pairs
+    #[arg(long = "build-dart-define", value_name = "foo=bar")]
     pub build_dart_define: Vec<String>,
 
     /// Shell command to run before packaging.
@@ -110,7 +124,9 @@ impl PackageArgs {
                         .or_insert(Value::String(value.to_string()));
                 }
                 None => {
-                    build_args.entry(arg.to_string()).or_insert(Value::Bool(true));
+                    build_args
+                        .entry(arg.to_string())
+                        .or_insert(Value::Bool(true));
                 }
             }
         }
@@ -119,27 +135,26 @@ impl PackageArgs {
 }
 
 pub async fn execute(args: &PackageArgs) -> Result<()> {
-    log::info!("Executing package command");
-    let targets: Vec<&str> = args
+    let targets: Vec<String> = args
         .targets
         .as_deref()
         .unwrap_or("")
         .split(',')
         .map(str::trim)
         .filter(|s| !s.is_empty())
+        .map(String::from)
         .collect();
     if targets.is_empty() {
         return Err(anyhow!("At least one 'target' must be specified!"));
     }
+    let target_refs: Vec<&str> = targets.iter().map(String::as_str).collect();
     let platform = match args.platform.as_deref() {
         Some(platform) => platform.to_string(),
-        None => super::platform_infer::infer_platform(&targets)?
+        None => super::platform_infer::infer_platform(&target_refs)?
             .as_str()
             .to_string(),
     };
-    let platform = platform.as_str();
 
-    // Build hooks map from CLI args
     let hooks: Option<HashMap<String, serde_yaml::Value>> = {
         let mut map = HashMap::new();
         if let Some(cmd) = &args.hook_pre {
@@ -151,112 +166,200 @@ pub async fn execute(args: &PackageArgs) -> Result<()> {
         if map.is_empty() { None } else { Some(map) }
     };
 
-    let is_native = !is_flutter_project();
-    let mut clean_before_build = !args.skip_clean;
-    let mut artifacts = Vec::new();
-
-    // Non-android flutter platforms build once and reuse the output for
-    // subsequent targets (mirrors Dart's `isBuildOnlyOnce`); android rebuilds
-    // per target because apk/aab need different `flutter build` subcommands.
-    let mut cached_build: Option<fastforge_app_builder::BuildResult> = None;
-
-    for target in targets {
-        let build_args = args.build_arguments();
-        let target_artifacts = if is_native && platform == "macos" {
-            log::info!("Detected native macOS Xcode project (no pubspec.yaml)");
-            package_native_macos_artifact(
-                target,
-                build_args,
-                std::env::vars().collect(),
-                "dist/",
-                args.artifact_name.clone(),
-                hooks.as_ref(),
-            )?
-        } else if is_native && platform == "ios" {
-            log::info!("Detected native iOS Xcode project (no pubspec.yaml)");
-            package_native_ios_artifact(
-                target,
-                build_args,
-                std::env::vars().collect(),
-                "dist/",
-                args.artifact_name.clone(),
-                hooks.as_ref(),
-            )?
-        } else if is_native && platform == "android" {
-            log::info!("Detected native Android project (no pubspec.yaml)");
-            package_native_android_artifact(
-                target,
-                build_args,
-                std::env::vars().collect(),
-                "dist/",
-                args.artifact_name.clone(),
-                hooks.as_ref(),
-            )?
-        } else {
-            let flutter_platform = Platform::from_str(platform)
-                .map_err(|e| anyhow!("Invalid platform '{}': {}", platform, e))?;
-
-            // Fail fast on unsupported (platform, target) pairs before building.
-            let packager = resolve_packager(flutter_platform, target)?;
-            if !packager.is_supported_on_current_platform() {
-                return Err(anyhow!(
-                    "Packager '{}' is not supported on the current platform",
-                    target
-                ));
-            }
-            drop(packager);
-
-            let environment: HashMap<String, String> = std::env::vars().collect();
-            let build = match (&cached_build, flutter_platform) {
-                (Some(build), p) if p != Platform::Android => build,
-                _ => {
-                    let build = build_flutter_target(
-                        &flutter_platform,
-                        target,
-                        build_args,
-                        &environment,
-                        clean_before_build,
-                    )?;
-                    cached_build = Some(build);
-                    cached_build.as_ref().unwrap()
-                }
-            };
-
-            package_flutter_build(
-                &flutter_platform,
-                target,
-                build,
-                environment,
-                "dist/",
-                args.artifact_name.clone(),
-                args.channel.clone(),
-                hooks.as_ref(),
-            )?
-        };
-        // Clean at most once per invocation (mirrors Dart).
-        clean_before_build = false;
-
-        // Print a JSON summary per packaged target (mirrors Dart's
-        // MakeResult JSON output).
-        let summary = serde_json::json!({
-            "platform": platform,
-            "target": target,
-            "artifacts": target_artifacts
-                .iter()
-                .map(|p| p.to_string_lossy())
-                .collect::<Vec<_>>(),
-        });
-        println!("{}", serde_json::to_string_pretty(&summary)?);
-
-        artifacts.extend(target_artifacts);
-    }
-
-    for artifact in artifacts {
-        println!("{}", artifact.display());
-    }
+    // Like Dart, `package` honours `distribute_options.yaml`: its `output`
+    // directory and its `variables` (layered over the environment).
+    let options = DistributeOptions::load()?;
+    package(PackageRequest {
+        platform: &platform,
+        targets: &targets,
+        channel: args.channel.clone(),
+        artifact_name: args.artifact_name.clone(),
+        clean_before_build: !args.skip_clean,
+        build_arguments: args.build_arguments(),
+        variables: global_variables(&options),
+        hooks: hooks.as_ref(),
+        output: &options.output,
+    })?;
     Ok(())
 }
 
+/// Arguments of one packaging run (Dart's `UnifiedDistributor.package`).
+pub struct PackageRequest<'a> {
+    pub platform: &'a str,
+    pub targets: &'a [String],
+    pub channel: Option<String>,
+    pub artifact_name: Option<String>,
+    pub clean_before_build: bool,
+    pub build_arguments: Map<String, Value>,
+    pub variables: HashMap<String, String>,
+    pub hooks: Option<&'a HashMap<String, serde_yaml::Value>>,
+    pub output: &'a str,
+}
+
+/// The artifacts produced for one target.
+pub struct PackagedTarget {
+    pub artifacts: Vec<PathBuf>,
+}
+
+/// Packages the project for every requested target, mirroring Dart's
+/// `UnifiedDistributor.package`: `flutter clean` at most once, non-android
+/// platforms build once and reuse the output for every target, and a target
+/// whose builder can't run on this host is skipped with a warning.
+pub fn package(request: PackageRequest) -> Result<Vec<PackagedTarget>> {
+    std::fs::create_dir_all(request.output)
+        .with_context(|| format!("Failed to create {}", request.output))?;
+
+    let mut results = Vec::new();
+    let environment = request.variables;
+
+    if !is_flutter_project() {
+        for target in request.targets {
+            println!("Packaging as {}:", target);
+            let artifacts = match request.platform {
+                "macos" => {
+                    log::info!("Detected native macOS Xcode project (no pubspec.yaml)");
+                    package_native_macos_artifact(
+                        target,
+                        request.build_arguments.clone(),
+                        environment.clone(),
+                        request.output,
+                        request.artifact_name.clone(),
+                        request.hooks,
+                    )?
+                }
+                "ios" => {
+                    log::info!("Detected native iOS Xcode project (no pubspec.yaml)");
+                    package_native_ios_artifact(
+                        target,
+                        request.build_arguments.clone(),
+                        environment.clone(),
+                        request.output,
+                        request.artifact_name.clone(),
+                        request.hooks,
+                    )?
+                }
+                "android" => {
+                    log::info!("Detected native Android project (no pubspec.yaml)");
+                    package_native_android_artifact(
+                        target,
+                        request.build_arguments.clone(),
+                        environment.clone(),
+                        request.output,
+                        request.artifact_name.clone(),
+                        request.hooks,
+                    )?
+                }
+                other => {
+                    return Err(anyhow!(
+                        "No pubspec.yaml found: `{}` projects must be Flutter projects.",
+                        other
+                    ));
+                }
+            };
+            results.push(PackagedTarget { artifacts });
+        }
+        return Ok(results);
+    }
+
+    let platform = Platform::from_str(request.platform)
+        .map_err(|e| anyhow!("Invalid platform '{}': {}", request.platform, e))?;
+    let pubspec = ProjectPubspec::load()?;
+    let builder = FlutterAppBuilder::default();
+    if request.clean_before_build {
+        builder
+            .clean(Some(&environment))
+            .map_err(|e| anyhow!("{}", e))?;
+    }
+
+    let build_only_once = platform != Platform::Android;
+    let mut cached_build: Option<BuildResult> = None;
+
+    for target in request.targets {
+        println!(
+            "Packaging {} {} as {}:",
+            pubspec.name, pubspec.version, target
+        );
+
+        // Reject unknown (platform, target) pairs before building. A builder
+        // that can't run on this host is skipped with a warning (Dart
+        // catches the builder's `UnsupportedError`); a packager that can't
+        // run here fails before the expensive build.
+        let packager = resolve_packager(platform, target)?;
+        if builder.is_supported_on_current_platform(&platform, Some(target)) == Some(false) {
+            eprintln!(
+                "{}",
+                yellow(&format!(
+                    "Warning: {} is not supported on the current platform",
+                    platform.as_str()
+                ))
+            );
+            continue;
+        }
+        if !packager.is_supported_on_current_platform() {
+            return Err(anyhow!(
+                "Packager '{}' is not supported on the current platform",
+                target
+            ));
+        }
+        drop(packager);
+
+        if !build_only_once || cached_build.is_none() {
+            match builder.build(
+                &platform,
+                Some(target),
+                request.build_arguments.clone(),
+                Some(environment.clone()),
+            ) {
+                Ok(build) => {
+                    print_build_result(&build)?;
+                    cached_build = Some(build);
+                }
+                Err(BuildError::UnsupportedPlatform(message)) => {
+                    eprintln!("{}", yellow(&format!("Warning: {}", message)));
+                    continue;
+                }
+                Err(error) => return Err(anyhow!("{}", error)),
+            }
+        }
+
+        let Some(build) = cached_build.as_ref() else {
+            continue;
+        };
+        let artifacts = package_flutter_build(
+            &platform,
+            target,
+            build,
+            environment.clone(),
+            request.output,
+            request.artifact_name.clone(),
+            request.channel.clone(),
+            request.hooks,
+        )?;
+        results.push(PackagedTarget { artifacts });
+    }
+    Ok(results)
+}
+
+/// Prints a build result like Dart: the result JSON, then
+/// `Successfully built <dir> in <n>s`.
+fn print_build_result(build: &BuildResult) -> Result<()> {
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&build.to_json_compatible())?
+    );
+    println!(
+        "{}",
+        bright_green(&format!(
+            "Successfully built {} in {}s",
+            build.output_directory.display(),
+            build.duration_ms / 1000
+        ))
+    );
+    Ok(())
+}
+
+/// Packages a single flutter target (clean → build → package). Used by the
+/// local workflow runner.
 #[allow(clippy::too_many_arguments)]
 pub fn package_flutter_artifact(
     platform_str: &str,
@@ -269,52 +372,22 @@ pub fn package_flutter_artifact(
     clean_before_build: bool,
     hooks: Option<&HashMap<String, serde_yaml::Value>>,
 ) -> Result<Vec<PathBuf>> {
-    let platform = Platform::from_str(platform_str)
-        .map_err(|e| anyhow!("Invalid platform '{}': {}", platform_str, e))?;
-
-    // Resolve the packager up-front so unsupported (platform, target) pairs
-    // fail fast, before any expensive build step runs.
-    let packager = resolve_packager(platform, target)?;
-    if !packager.is_supported_on_current_platform() {
-        return Err(anyhow!(
-            "Packager '{}' is not supported on the current platform",
-            target
-        ));
-    }
-    drop(packager);
-
-    let build = build_flutter_target(&platform, target, build_args, &environment, clean_before_build)?;
-    package_flutter_build(
-        &platform,
-        target,
-        &build,
-        environment,
-        output,
-        artifact_name,
+    let targets = [target.to_string()];
+    let results = package(PackageRequest {
+        platform: platform_str,
+        targets: &targets,
         channel,
+        artifact_name,
+        clean_before_build,
+        build_arguments: build_args,
+        variables: environment,
         hooks,
-    )
-}
-
-/// Runs `flutter build` for a `(platform, target)` pair, optionally cleaning
-/// first. Split from packaging so multi-target invocations can build once and
-/// reuse the output (mirrors Dart's `isBuildOnlyOnce` behavior).
-pub fn build_flutter_target(
-    platform: &Platform,
-    target: &str,
-    build_args: Map<String, Value>,
-    environment: &HashMap<String, String>,
-    clean_before_build: bool,
-) -> Result<fastforge_app_builder::BuildResult> {
-    let builder = FlutterAppBuilder::default();
-    if clean_before_build {
-        builder
-            .clean(Some(environment))
-            .map_err(|e| anyhow!("{}", e))?;
-    }
-    builder
-        .build(platform, Some(target), build_args, Some(environment.clone()))
-        .map_err(|e| anyhow!("{}", e))
+        output,
+    })?;
+    Ok(results
+        .into_iter()
+        .flat_map(|result| result.artifacts)
+        .collect())
 }
 
 /// Packages an existing flutter build output as `target`.
@@ -322,7 +395,7 @@ pub fn build_flutter_target(
 pub fn package_flutter_build(
     platform: &Platform,
     target: &str,
-    build: &fastforge_app_builder::BuildResult,
+    build: &BuildResult,
     environment: HashMap<String, String>,
     output: &str,
     artifact_name: Option<String>,
@@ -337,8 +410,6 @@ pub fn package_flutter_build(
             target
         ));
     }
-
-    let hook_env_base = environment;
 
     let pubspec = ProjectPubspec::load()?;
     let app_binary_name = if platform == Platform::Linux {
@@ -364,22 +435,31 @@ pub fn package_flutter_build(
         build_output_dir: build.output_directory.clone(),
         build_output_files: build.output_files.clone(),
         output_dir: PathBuf::from(output),
+        environment: environment.clone(),
     };
 
-    // Resolve hooks: YAML allows both a single string and a list of strings
+    package_with_hooks(packager.as_ref(), &package_config, hooks, environment)
+}
+
+/// Runs the pre-package hooks, the packager and the post-package hooks, then
+/// prints the result like Dart (`MakeResult` JSON and
+/// `Successfully packaged <artifact>`).
+fn package_with_hooks(
+    packager: &(dyn AppPackager + Send + Sync),
+    package_config: &PackageConfig,
+    hooks: Option<&HashMap<String, serde_yaml::Value>>,
+    environment: HashMap<String, String>,
+) -> Result<Vec<PathBuf>> {
+    let package_format = packager.package_format().to_string();
     let pre_hooks = resolve_hooks(hooks, "pre");
     let post_hooks = resolve_hooks(hooks, "post");
 
-    // Build hook environment
-    let mut hook_env = hook_env_base;
+    let mut hook_env = environment;
     hook_env.insert(
         "PLATFORM".to_string(),
         package_config.platform.as_str().to_string(),
     );
-    hook_env.insert(
-        "PACKAGE_FORMAT".to_string(),
-        package_config.package_format.clone(),
-    );
+    hook_env.insert("PACKAGE_FORMAT".to_string(), package_format.clone());
     hook_env.insert("BUILD_MODE".to_string(), package_config.build_mode.clone());
     hook_env.insert(
         "OUTPUT_DIRECTORY".to_string(),
@@ -402,17 +482,104 @@ pub fn package_flutter_build(
             .join(":"),
     );
 
-    // Run prepackage hooks
     run_hooks(&pre_hooks, &hook_env)?;
-
     let result = packager
-        .package(&package_config)
+        .package(package_config)
         .map_err(|e| anyhow!("{}", e))?;
-
-    // Run postpackage hooks
     run_hooks(&post_hooks, &hook_env)?;
 
+    println!(
+        "{}",
+        serde_json::to_string_pretty(&make_result_json(
+            package_config,
+            &package_format,
+            &result.artifacts
+        ))?
+    );
+    if let Some(artifact) = result.artifacts.first() {
+        println!(
+            "{}",
+            bright_green(&format!("Successfully packaged {}", artifact.display()))
+        );
+    }
     Ok(result.artifacts)
+}
+
+/// Dart's `MakeResult.toJson()` (`config` is `MakeConfig.toJson()`).
+fn make_result_json(config: &PackageConfig, package_format: &str, artifacts: &[PathBuf]) -> Value {
+    let mut make_config = Map::new();
+    let mut put = |key: &str, value: Value| {
+        make_config.insert(key.to_string(), value);
+    };
+    put("isInstaller", Value::Bool(config.is_installer));
+    put("buildMode", Value::String(config.build_mode.clone()));
+    put(
+        "buildOutputDirectory",
+        Value::String(config.build_output_dir.to_string_lossy().to_string()),
+    );
+    put(
+        "buildOutputFiles",
+        Value::Array(
+            config
+                .build_output_files
+                .iter()
+                .map(|p| Value::String(p.to_string_lossy().to_string()))
+                .collect(),
+        ),
+    );
+    put(
+        "platform",
+        Value::String(config.platform.as_str().to_string()),
+    );
+    if let Some(flavor) = &config.flavor {
+        put("flavor", Value::String(flavor.clone()));
+    }
+    if let Some(channel) = &config.channel {
+        put("channel", Value::String(channel.clone()));
+    }
+    if let Some(artifact_name) = &config.artifact_name {
+        put("artifactName", Value::String(artifact_name.clone()));
+    }
+    put("packageFormat", Value::String(package_format.to_string()));
+    put(
+        "outputDirectory",
+        Value::String(config.output_dir.to_string_lossy().to_string()),
+    );
+    put("appName", Value::String(config.app_name.clone()));
+    put("appVersion", Value::String(config.app_version.clone()));
+    put(
+        "appBuildName",
+        Value::String(
+            config
+                .app_version
+                .split('+')
+                .next()
+                .unwrap_or_default()
+                .to_string(),
+        ),
+    );
+    put(
+        "appBuildNumber",
+        Value::String(
+            config
+                .app_version
+                .rsplit('+')
+                .next()
+                .unwrap_or_default()
+                .to_string(),
+        ),
+    );
+
+    let artifacts: Vec<Value> = artifacts
+        .iter()
+        .map(|path| {
+            serde_json::json!({
+                "type": if path.is_dir() { "directory" } else { "file" },
+                "path": path.to_string_lossy(),
+            })
+        })
+        .collect();
+    serde_json::json!({ "config": make_config, "artifacts": artifacts })
 }
 
 /// Extract and normalize hook commands for a given key ("pre" or "post").
@@ -432,29 +599,20 @@ fn resolve_hooks(hooks: Option<&HashMap<String, serde_yaml::Value>>, key: &str) 
     }
 }
 
-/// Execute a list of shell hook commands.
+/// Executes hook commands with `sh -c`, echoing and streaming their output
+/// like Dart's shell executor.
 fn run_hooks(hooks: &[String], env: &HashMap<String, String>) -> Result<()> {
     for hook in hooks {
-        let output = Command::new("sh")
-            .args(["-c", hook])
-            .envs(env)
-            .output()
-            .map_err(|e| anyhow!("Failed to execute hook '{}': {}", hook, e))?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
+        let mut command = Command::new("sh");
+        command.args(["-c", hook]).envs(env);
+        let (status, stderr) = run_streaming(&mut command, &format!("sh -c {}", hook))?;
+        if !status.success() {
             return Err(anyhow!(
                 "Hook failed (exit {}): {}\n{}",
-                output.status.code().unwrap_or(-1),
+                status.code().unwrap_or(-1),
                 hook,
                 stderr,
             ));
-        }
-
-        // Print hook stdout so users can see the output
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        if !stdout.is_empty() {
-            print!("{}", stdout);
         }
     }
     Ok(())
@@ -574,6 +732,7 @@ pub fn package_native_macos_artifact(
             Some(environment.clone()),
         )
         .map_err(|e| anyhow!("Xcode build failed: {}", e))?;
+    print_build_result(&build)?;
 
     // Read metadata from the built .app's Info.plist
     let app_path = build
@@ -599,6 +758,7 @@ pub fn package_native_macos_artifact(
         build_output_dir: build.output_directory,
         build_output_files: build.output_files,
         output_dir: PathBuf::from(output),
+        environment: environment.clone(),
     };
 
     let packager = macos_packager(target)?;
@@ -609,53 +769,7 @@ pub fn package_native_macos_artifact(
         ));
     }
 
-    // Resolve hooks
-    let pre_hooks = resolve_hooks(hooks, "pre");
-    let post_hooks = resolve_hooks(hooks, "post");
-
-    // Build hook environment
-    let mut hook_env = environment;
-    hook_env.insert(
-        "PLATFORM".to_string(),
-        package_config.platform.as_str().to_string(),
-    );
-    hook_env.insert(
-        "PACKAGE_FORMAT".to_string(),
-        package_config.package_format.clone(),
-    );
-    hook_env.insert("BUILD_MODE".to_string(), package_config.build_mode.clone());
-    hook_env.insert(
-        "OUTPUT_DIRECTORY".to_string(),
-        package_config.output_dir.to_string_lossy().to_string(),
-    );
-    hook_env.insert(
-        "BUILD_OUTPUT_DIRECTORY".to_string(),
-        package_config
-            .build_output_dir
-            .to_string_lossy()
-            .to_string(),
-    );
-    hook_env.insert(
-        "BUILD_OUTPUT_FILES".to_string(),
-        package_config
-            .build_output_files
-            .iter()
-            .map(|p| p.to_string_lossy().to_string())
-            .collect::<Vec<_>>()
-            .join(":"),
-    );
-
-    // Run prepackage hooks
-    run_hooks(&pre_hooks, &hook_env)?;
-
-    let result = packager
-        .package(&package_config)
-        .map_err(|e| anyhow!("{}", e))?;
-
-    // Run postpackage hooks
-    run_hooks(&post_hooks, &hook_env)?;
-
-    Ok(result.artifacts)
+    package_with_hooks(packager.as_ref(), &package_config, hooks, environment)
 }
 
 /// Read metadata (name, version, build_number) from a built macOS .app bundle.
@@ -728,6 +842,7 @@ pub fn package_native_ios_artifact(
             Some(environment.clone()),
         )
         .map_err(|e| anyhow!("iOS Xcode build failed: {}", e))?;
+    print_build_result(&build)?;
 
     // Read metadata from the built app.
     // First try: find the .app inside the .xcarchive (Products/Applications/<App>.app).
@@ -774,6 +889,7 @@ pub fn package_native_ios_artifact(
         build_output_dir: build.output_directory,
         build_output_files: build.output_files,
         output_dir: PathBuf::from(output),
+        environment: environment.clone(),
     };
 
     let packager = ios_packager(target)?;
@@ -784,53 +900,7 @@ pub fn package_native_ios_artifact(
         ));
     }
 
-    // Resolve hooks
-    let pre_hooks = resolve_hooks(hooks, "pre");
-    let post_hooks = resolve_hooks(hooks, "post");
-
-    // Build hook environment
-    let mut hook_env = environment;
-    hook_env.insert(
-        "PLATFORM".to_string(),
-        package_config.platform.as_str().to_string(),
-    );
-    hook_env.insert(
-        "PACKAGE_FORMAT".to_string(),
-        package_config.package_format.clone(),
-    );
-    hook_env.insert("BUILD_MODE".to_string(), package_config.build_mode.clone());
-    hook_env.insert(
-        "OUTPUT_DIRECTORY".to_string(),
-        package_config.output_dir.to_string_lossy().to_string(),
-    );
-    hook_env.insert(
-        "BUILD_OUTPUT_DIRECTORY".to_string(),
-        package_config
-            .build_output_dir
-            .to_string_lossy()
-            .to_string(),
-    );
-    hook_env.insert(
-        "BUILD_OUTPUT_FILES".to_string(),
-        package_config
-            .build_output_files
-            .iter()
-            .map(|p| p.to_string_lossy().to_string())
-            .collect::<Vec<_>>()
-            .join(":"),
-    );
-
-    // Run prepackage hooks
-    run_hooks(&pre_hooks, &hook_env)?;
-
-    let result = packager
-        .package(&package_config)
-        .map_err(|e| anyhow!("{}", e))?;
-
-    // Run postpackage hooks
-    run_hooks(&post_hooks, &hook_env)?;
-
-    Ok(result.artifacts)
+    package_with_hooks(packager.as_ref(), &package_config, hooks, environment)
 }
 
 /// Attempt to read the app name and version from an IPA's embedded Info.plist.
@@ -925,6 +995,7 @@ pub fn package_native_android_artifact(
             Some(environment.clone()),
         )
         .map_err(|e| anyhow!("Gradle build failed: {}", e))?;
+    print_build_result(&build)?;
 
     // Read metadata from app/build.gradle.kts
     let version_info = read_android_metadata()?;
@@ -944,6 +1015,7 @@ pub fn package_native_android_artifact(
         build_output_dir: build.output_directory,
         build_output_files: build.output_files,
         output_dir: PathBuf::from(output),
+        environment: environment.clone(),
     };
 
     let packager = android_packager(target)?;
@@ -954,47 +1026,7 @@ pub fn package_native_android_artifact(
         ));
     }
 
-    let pre_hooks = resolve_hooks(hooks, "pre");
-    let post_hooks = resolve_hooks(hooks, "post");
-
-    let mut hook_env = environment;
-    hook_env.insert(
-        "PLATFORM".to_string(),
-        package_config.platform.as_str().to_string(),
-    );
-    hook_env.insert(
-        "PACKAGE_FORMAT".to_string(),
-        package_config.package_format.clone(),
-    );
-    hook_env.insert("BUILD_MODE".to_string(), package_config.build_mode.clone());
-    hook_env.insert(
-        "OUTPUT_DIRECTORY".to_string(),
-        package_config.output_dir.to_string_lossy().to_string(),
-    );
-    hook_env.insert(
-        "BUILD_OUTPUT_DIRECTORY".to_string(),
-        package_config
-            .build_output_dir
-            .to_string_lossy()
-            .to_string(),
-    );
-    hook_env.insert(
-        "BUILD_OUTPUT_FILES".to_string(),
-        package_config
-            .build_output_files
-            .iter()
-            .map(|p| p.to_string_lossy().to_string())
-            .collect::<Vec<_>>()
-            .join(":"),
-    );
-
-    run_hooks(&pre_hooks, &hook_env)?;
-    let result = packager
-        .package(&package_config)
-        .map_err(|e| anyhow!("{}", e))?;
-    run_hooks(&post_hooks, &hook_env)?;
-
-    Ok(result.artifacts)
+    package_with_hooks(packager.as_ref(), &package_config, hooks, environment)
 }
 
 /// Read app name and version info from `app/build.gradle.kts`.
@@ -1083,7 +1115,10 @@ mod tests {
         let matrix: &[(&str, &[&str])] = &[
             ("android", &["aab", "apk"]),
             ("ios", &["ipa"]),
-            ("linux", &["appimage", "deb", "pacman", "rpm", "zip", "direct"]),
+            (
+                "linux",
+                &["appimage", "deb", "pacman", "rpm", "zip", "direct"],
+            ),
             ("macos", &["dmg", "pkg", "zip"]),
             ("ohos", &["app", "hap"]),
             ("web", &["zip", "direct"]),
@@ -1123,7 +1158,10 @@ mod tests {
     fn only_exe_is_an_installer_target() {
         assert!(is_installer_target("exe"));
         for target in ["dmg", "pkg", "deb", "rpm", "pacman", "msix", "apk", "zip"] {
-            assert!(!is_installer_target(target), "{target} must not be an installer");
+            assert!(
+                !is_installer_target(target),
+                "{target} must not be an installer"
+            );
         }
     }
 }

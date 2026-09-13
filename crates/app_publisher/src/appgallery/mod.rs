@@ -1,14 +1,15 @@
+use crate::common::{
+    argument, argument_or_env, artifact_path, file_body, file_name, http_client, missing_env,
+    to_publish_error,
+};
 use fastforge_core::{
     AppPublisher, PublishConfig, PublishError, PublishProgressCallback, PublishResult,
 };
 use reqwest::blocking::Client;
-use reqwest::header::{AUTHORIZATION, CONTENT_TYPE};
+use reqwest::header::{AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE};
 use serde::Deserialize;
-use serde_json::json;
-use std::env;
-use std::fs::File;
-use std::io::{Read, Result as IoResult};
-use std::path::Path;
+use serde_json::{Value, json};
+use std::collections::BTreeMap;
 
 pub struct AppGalleryPublisher;
 
@@ -16,6 +17,8 @@ const PUBLISHER_NAME: &str = "appgallery";
 const ENV_CLIENT_ID: &str = "APP_GALLERY_CLIENT_ID";
 const ENV_CLIENT_SECRET: &str = "APP_GALLERY_CLIENT_SECRET";
 const BASE_URL: &str = "https://connect-api.cloud.huawei.com";
+const AGC_CONSOLE_URL: &str =
+    "https://developer.huawei.com/consumer/cn/service/josp/agc/index.html";
 
 #[derive(Debug, Deserialize)]
 struct TokenResponse {
@@ -34,12 +37,42 @@ struct UploadHeader {
     value: String,
 }
 
+/// Dart reads `urlInfo.headers` as a JSON object; some responses carry an
+/// array of `{name, value}` pairs instead. Both are accepted.
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+enum UploadHeaders {
+    Map(BTreeMap<String, Value>),
+    List(Vec<UploadHeader>),
+}
+
+impl UploadHeaders {
+    fn pairs(&self) -> Vec<(String, String)> {
+        match self {
+            Self::Map(map) => map
+                .iter()
+                .map(|(name, value)| {
+                    let value = match value {
+                        Value::String(value) => value.clone(),
+                        other => other.to_string(),
+                    };
+                    (name.clone(), value)
+                })
+                .collect(),
+            Self::List(list) => list
+                .iter()
+                .map(|header| (header.name.clone(), header.value.clone()))
+                .collect(),
+        }
+    }
+}
+
 #[derive(Debug, Deserialize)]
 struct UploadUrlInfo {
     url: String,
     #[serde(rename = "objectId")]
     object_id: String,
-    headers: Vec<UploadHeader>,
+    headers: Option<UploadHeaders>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -72,37 +105,23 @@ impl AppPublisher for AppGalleryPublisher {
         config: &PublishConfig,
         on_progress: Option<&PublishProgressCallback>,
     ) -> Result<PublishResult, PublishError> {
-        let artifact_path = config
-            .artifact_path
-            .as_deref()
-            .ok_or_else(|| PublishError::MissingArgument("artifact_path".to_string()))?;
-        let file_name = Path::new(artifact_path)
-            .file_name()
-            .and_then(|n| n.to_str())
-            .ok_or_else(|| {
-                PublishError::General("Cannot infer file name from artifact path.".to_string())
-            })?
-            .to_string();
+        let artifact_path = artifact_path(config)?;
+        let file_name = file_name(artifact_path)?;
 
-        let client_id = optional_arg(config, "client-id")
-            .or_else(|| env::var(ENV_CLIENT_ID).ok())
-            .filter(|v| !v.trim().is_empty())
-            .ok_or_else(|| PublishError::MissingArgument(ENV_CLIENT_ID.to_string()))?;
-        let client_secret = optional_arg(config, "client-secret")
-            .or_else(|| env::var(ENV_CLIENT_SECRET).ok())
-            .filter(|v| !v.trim().is_empty())
-            .ok_or_else(|| PublishError::MissingArgument(ENV_CLIENT_SECRET.to_string()))?;
-        let app_id = optional_arg(config, "app-id")
-            .filter(|v| !v.trim().is_empty())
-            .ok_or_else(|| PublishError::MissingArgument("app-id".to_string()))?;
+        let client_id = argument_or_env(config, &["client-id"], &[ENV_CLIENT_ID])
+            .ok_or_else(|| missing_env(ENV_CLIENT_ID))?;
+        let client_secret = argument_or_env(config, &["client-secret"], &[ENV_CLIENT_SECRET])
+            .ok_or_else(|| missing_env(ENV_CLIENT_SECRET))?;
+        let app_id = argument(config, &["app-id"])
+            .ok_or_else(|| PublishError::General("Missing `app-id` arg".to_string()))?;
 
-        let client = Client::new();
+        let client = http_client()?;
         let token = get_access_token(&client, &client_id, &client_secret)?;
         let file_size = std::fs::metadata(artifact_path)
             .map_err(to_publish_error)?
             .len();
         let url_info = get_upload_url(&client, &client_id, &token, &app_id, &file_name, file_size)?;
-        upload_file(&client, artifact_path, &url_info, file_size, on_progress)?;
+        upload_file(&client, artifact_path, &url_info, on_progress)?;
         apply_upload(
             &client,
             &client_id,
@@ -114,9 +133,7 @@ impl AppPublisher for AppGalleryPublisher {
 
         Ok(PublishResult {
             success: true,
-            message:
-                "https://developer.huawei.com/consumer/en/service/josp/agc/index.html#/appGallery"
-                    .to_string(),
+            message: AGC_CONSOLE_URL.to_string(),
         })
     }
 }
@@ -191,17 +208,22 @@ fn upload_file(
     client: &Client,
     artifact_path: &str,
     url_info: &UploadUrlInfo,
-    total_size: u64,
     on_progress: Option<&PublishProgressCallback>,
 ) -> Result<(), PublishError> {
-    let file = File::open(artifact_path).map_err(to_publish_error)?;
-    let reader = UploadProgressReader::new(file, total_size, on_progress.cloned());
-    let mut request = client
-        .put(&url_info.url)
-        .body(reqwest::blocking::Body::sized(reader, total_size));
-    for h in &url_info.headers {
-        request = request.header(&h.name, &h.value);
+    // The sized body sends `Content-Length: <file size>` like Dart does.
+    let body = file_body(artifact_path, on_progress)?;
+    let mut request = client.put(&url_info.url);
+    for (name, value) in url_info
+        .headers
+        .as_ref()
+        .map(UploadHeaders::pairs)
+        .unwrap_or_default()
+    {
+        if !name.eq_ignore_ascii_case(CONTENT_LENGTH.as_str()) {
+            request = request.header(name, value);
+        }
     }
+    let request = request.body(body);
     let response = request.send().map_err(to_publish_error)?;
     if !response.status().is_success() {
         return Err(PublishError::HttpError(format!(
@@ -254,44 +276,34 @@ fn apply_upload(
     Ok(())
 }
 
-fn optional_arg(config: &PublishConfig, key: &str) -> Option<String> {
-    config.publish_arguments.as_ref()?.get(key).cloned()
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-fn to_publish_error(error: impl std::fmt::Display) -> PublishError {
-    PublishError::General(error.to_string())
-}
+    #[test]
+    fn upload_headers_accept_object_and_array() {
+        let info: UploadUrlInfo = serde_json::from_str(
+            r#"{"url":"https://obs","objectId":"o1","headers":{"Content-Type":"application/octet-stream","x-amz-date":"20250101"}}"#,
+        )
+        .unwrap();
+        assert_eq!(
+            info.headers.unwrap().pairs(),
+            vec![
+                (
+                    "Content-Type".to_string(),
+                    "application/octet-stream".to_string()
+                ),
+                ("x-amz-date".to_string(), "20250101".to_string()),
+            ]
+        );
 
-struct UploadProgressReader {
-    file: File,
-    sent: u64,
-    total: u64,
-    on_progress: Option<PublishProgressCallback>,
-}
-
-impl UploadProgressReader {
-    fn new(file: File, total: u64, on_progress: Option<PublishProgressCallback>) -> Self {
-        if let Some(cb) = &on_progress {
-            cb(0, total);
-        }
-        Self {
-            file,
-            sent: 0,
-            total,
-            on_progress,
-        }
-    }
-}
-
-impl Read for UploadProgressReader {
-    fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
-        let n = self.file.read(buf)?;
-        if n > 0 {
-            self.sent += n as u64;
-            if let Some(cb) = &self.on_progress {
-                cb(self.sent, self.total);
-            }
-        }
-        Ok(n)
+        let info: UploadUrlInfo = serde_json::from_str(
+            r#"{"url":"https://obs","objectId":"o1","headers":[{"name":"Host","value":"obs.example"}]}"#,
+        )
+        .unwrap();
+        assert_eq!(
+            info.headers.unwrap().pairs(),
+            vec![("Host".to_string(), "obs.example".to_string())]
+        );
     }
 }

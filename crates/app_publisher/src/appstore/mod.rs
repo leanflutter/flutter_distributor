@@ -1,3 +1,4 @@
+use crate::common::{argument_or_env, artifact_path, run_streaming, to_publish_error};
 use fastforge_core::{
     AppPublisher, PublishConfig, PublishError, PublishProgressCallback, PublishResult,
 };
@@ -16,6 +17,8 @@ const KEY_ID_ENV: &str = "APP_STORE_CONNECT_KEY_ID";
 const ISSUER_ID_ENV: &str = "APP_STORE_CONNECT_ISSUER_ID";
 const KEY_PATH_ENV: &str = "APP_STORE_CONNECT_KEY_PATH";
 const APPSTORE_CONNECT_APPS_URL: &str = "https://appstoreconnect.apple.com/apps";
+const ALTOOL_AUTH_DOC_URL: &str =
+    "https://help.apple.com/asc/appsaltool/#/apdATD1E53-D1E1A1303-D1E53A1126";
 
 impl AppPublisher for AppStorePublisher {
     fn new() -> Self {
@@ -41,10 +44,7 @@ impl AppPublisher for AppStorePublisher {
             ));
         }
 
-        let artifact_path = config
-            .artifact_path
-            .as_deref()
-            .ok_or_else(|| PublishError::MissingArgument("artifact_path".to_string()))?;
+        let artifact_path = artifact_path(config)?;
         let artifact_path = std::fs::canonicalize(artifact_path).map_err(|error| {
             PublishError::General(format!(
                 "Artifact path does not exist or cannot be resolved: {artifact_path}: {error}"
@@ -69,20 +69,13 @@ impl AppPublisher for AppStorePublisher {
             command.current_dir(&staged_key.work_dir);
         }
 
-        let output = command.args(args).output().map_err(to_publish_error)?;
-        let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
-        let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
-
+        let output = run_streaming(command.args(args)).map_err(to_publish_error)?;
         if !output.status.success() {
-            return Err(PublishError::CommandFailed(format!(
-                "Upload of appstore failed: exit_code={:?}, stdout={}, stderr={}",
-                output.status.code(),
-                stdout,
-                stderr
+            return Err(PublishError::General(format!(
+                "{} - Upload of appstore failed",
+                output.code()
             )));
         }
-
-        print_command_output(&stdout, &stderr);
 
         Ok(PublishResult {
             success: true,
@@ -111,38 +104,41 @@ struct AppStoreAuth {
 
 impl AppStoreAuth {
     fn from_config(config: &PublishConfig) -> Result<Self, PublishError> {
-        let username = optional_value(config, &["username"], &[ENV_APPSTORE_USERNAME]);
-        let password = optional_value(config, &["password"], &[ENV_APPSTORE_PASSWORD]);
-        let key_id = optional_value(
+        let username = argument_or_env(config, &["username"], &[ENV_APPSTORE_USERNAME]);
+        let password = argument_or_env(config, &["password"], &[ENV_APPSTORE_PASSWORD]);
+        let key_id = argument_or_env(
             config,
             &["key-id", "api-key"],
-            &[KEY_ID_ENV, ENV_APPSTORE_API_KEY],
+            &[ENV_APPSTORE_API_KEY, KEY_ID_ENV],
         );
-        let issuer_id = optional_value(
+        let issuer_id = argument_or_env(
             config,
             &["issuer-id", "api-issuer"],
-            &[ISSUER_ID_ENV, ENV_APPSTORE_API_ISSUER],
+            &[ENV_APPSTORE_API_ISSUER, ISSUER_ID_ENV],
         );
-        let key_path = optional_value(config, &["key-path"], &[KEY_PATH_ENV]);
+        let key_path = argument_or_env(config, &["key-path"], &[KEY_PATH_ENV]);
 
-        let has_userpass = is_non_empty(&username) || is_non_empty(&password);
-        let has_api = is_non_empty(&key_id) || is_non_empty(&issuer_id) || is_non_empty(&key_path);
-
-        if !has_userpass && !has_api {
-            return Err(PublishError::MissingEnv(format!(
-                "`{ENV_APPSTORE_USERNAME}` & `{ENV_APPSTORE_PASSWORD}` or `{KEY_ID_ENV}` & `{ISSUER_ID_ENV}` & `{KEY_PATH_ENV}`"
+        // Validation mirrors Dart's `PublishAppStoreConfig.parse`. With an
+        // API key only `APPSTORE_APIKEY` & `APPSTORE_APIISSUER` are required:
+        // altool finds `AuthKey_<id>.p8` in its default `private_keys`
+        // folders. A key path is an optional extra.
+        if !is_non_empty(&username)
+            && !is_non_empty(&password)
+            && !is_non_empty(&key_id)
+            && !is_non_empty(&issuer_id)
+        {
+            return Err(PublishError::General(format!(
+                "Missing `{ENV_APPSTORE_USERNAME}` & `{ENV_APPSTORE_PASSWORD}` | `{ENV_APPSTORE_API_KEY}` & `{ENV_APPSTORE_API_ISSUER}` environment variable. See:{ALTOOL_AUTH_DOC_URL}"
             )));
         }
         if is_non_empty(&username) ^ is_non_empty(&password) {
-            return Err(PublishError::MissingEnv(format!(
-                "`{ENV_APPSTORE_USERNAME}` & `{ENV_APPSTORE_PASSWORD}`"
+            return Err(PublishError::General(format!(
+                "Missing `{ENV_APPSTORE_USERNAME}` & `{ENV_APPSTORE_PASSWORD}` environment variable. See:{ALTOOL_AUTH_DOC_URL}"
             )));
         }
-        if has_api
-            && !(is_non_empty(&key_id) && is_non_empty(&issuer_id) && is_non_empty(&key_path))
-        {
-            return Err(PublishError::MissingEnv(format!(
-                "`{KEY_ID_ENV}` & `{ISSUER_ID_ENV}` & `{KEY_PATH_ENV}`"
+        if is_non_empty(&key_id) ^ is_non_empty(&issuer_id) {
+            return Err(PublishError::General(format!(
+                "Missing `{ENV_APPSTORE_API_KEY}` & `{ENV_APPSTORE_API_ISSUER}` environment variable. See:{ALTOOL_AUTH_DOC_URL}"
             )));
         }
 
@@ -209,23 +205,6 @@ fn appstore_artifact_type(path: &Path) -> Result<&'static str, PublishError> {
     }
 }
 
-fn optional_value(
-    config: &PublishConfig,
-    argument_keys: &[&str],
-    env_keys: &[&str],
-) -> Option<String> {
-    config
-        .publish_arguments
-        .as_ref()
-        .and_then(|arguments| {
-            argument_keys
-                .iter()
-                .find_map(|key| arguments.get(*key).cloned())
-        })
-        .or_else(|| env_keys.iter().find_map(|key| env::var(key).ok()))
-        .filter(|value| !value.trim().is_empty())
-}
-
 fn is_non_empty(value: &Option<String>) -> bool {
     value.as_ref().is_some_and(|v| !v.trim().is_empty())
 }
@@ -258,15 +237,49 @@ fn unix_timestamp_millis() -> u128 {
         .unwrap_or(0)
 }
 
-fn print_command_output(stdout: &str, stderr: &str) {
-    if !stdout.is_empty() {
-        println!("{stdout}");
-    }
-    if !stderr.is_empty() {
-        eprintln!("{stderr}");
-    }
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-fn to_publish_error(error: impl std::fmt::Display) -> PublishError {
-    PublishError::General(error.to_string())
+    fn config_with(environment: &[(&str, &str)]) -> PublishConfig {
+        PublishConfig {
+            environment: environment
+                .iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect(),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn api_key_and_issuer_are_enough() {
+        let auth = AppStoreAuth::from_config(&config_with(&[
+            (ENV_APPSTORE_API_KEY, "KEYID"),
+            (ENV_APPSTORE_API_ISSUER, "issuer"),
+        ]))
+        .unwrap();
+        assert_eq!(
+            auth.to_cli_args(),
+            vec!["--apiKey", "KEYID", "--apiIssuer", "issuer"]
+        );
+        if auth.key_path.is_none() {
+            assert!(auth.stage_key_file().unwrap().is_none());
+        }
+    }
+
+    #[test]
+    fn api_key_without_issuer_is_rejected() {
+        if env::var(ENV_APPSTORE_API_ISSUER).is_ok() || env::var(ISSUER_ID_ENV).is_ok() {
+            return;
+        }
+        let error = AppStoreAuth::from_config(&config_with(&[(ENV_APPSTORE_API_KEY, "KEYID")]))
+            .err()
+            .unwrap();
+        assert_eq!(
+            error.to_string(),
+            format!(
+                "Missing `APPSTORE_APIKEY` & `APPSTORE_APIISSUER` environment variable. See:{ALTOOL_AUTH_DOC_URL}"
+            )
+        );
+    }
 }

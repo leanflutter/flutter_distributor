@@ -1,7 +1,8 @@
 use crate::flutter::FlutterVersion;
-use fastforge_core::BuildError;
+use fastforge_core::{BuildError, path_expansion};
 use serde_json::Value;
 use std::collections::HashMap;
+use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 
@@ -14,41 +15,71 @@ impl<'a> FlutterCommand<'a> {
         Self { environment }
     }
 
+    /// Runs `flutter clean`, streaming its output. Like the Dart CLI, a
+    /// failing clean does not abort the build.
     pub fn clean(&self) -> Result<(), BuildError> {
         let mut cmd = self.base_command()?;
         cmd.arg("clean");
-        let output = cmd
-            .output()
+        echo_command("flutter clean");
+        let status = cmd
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .status()
             .map_err(|e| BuildError::Io(format!("Failed to execute flutter clean: {}", e)))?;
-        if output.status.success() {
-            Ok(())
-        } else {
-            Err(BuildError::CommandFailed(
-                String::from_utf8_lossy(&output.stderr).to_string(),
-            ))
+        if !status.success() {
+            eprintln!(
+                "\x1b[33mWarning: flutter clean exited with code {}\x1b[0m",
+                status.code().unwrap_or(-1)
+            );
         }
+        Ok(())
     }
 
-    pub fn build(&self, subcommand: &str, arguments: &[String]) -> Result<i32, BuildError> {
+    /// Runs `flutter build <subcommand> <arguments>`, streaming its output.
+    /// Returns the exit code and the captured stderr (Dart's `BuildError`
+    /// carries the stderr of a failed build).
+    pub fn build(
+        &self,
+        subcommand: &str,
+        arguments: &[String],
+    ) -> Result<(i32, String), BuildError> {
         let mut cmd = self.base_command()?;
         cmd.arg("build").arg(subcommand).args(arguments);
-        cmd.stdout(Stdio::inherit()).stderr(Stdio::inherit());
-        let status = cmd
-            .status()
+        cmd.stdout(Stdio::inherit()).stderr(Stdio::piped());
+        let mut child = cmd
+            .spawn()
             .map_err(|e| BuildError::Io(format!("Failed to execute flutter build: {}", e)))?;
-        Ok(status.code().unwrap_or(-1))
+        let mut captured = String::new();
+        if let Some(stderr) = child.stderr.take() {
+            let mut reader = BufReader::new(stderr);
+            let mut line = Vec::new();
+            let mut sink = std::io::stderr();
+            while reader.read_until(b'\n', &mut line).unwrap_or(0) > 0 {
+                let _ = sink.write_all(&line);
+                let _ = sink.flush();
+                captured.push_str(&String::from_utf8_lossy(&line));
+                line.clear();
+            }
+        }
+        let status = child
+            .wait()
+            .map_err(|e| BuildError::Io(format!("Failed to execute flutter build: {}", e)))?;
+        Ok((status.code().unwrap_or(-1), captured))
     }
 
     pub fn build_with_echo(
         &self,
         subcommand: &str,
         arguments: &[String],
-    ) -> Result<i32, BuildError> {
-        eprintln!("$ flutter build {} {}", subcommand, arguments.join(" "));
+    ) -> Result<(i32, String), BuildError> {
+        echo_command(&format!(
+            "flutter build {} {}",
+            subcommand,
+            arguments.join(" ")
+        ));
         self.build(subcommand, arguments)
     }
 
-    #[allow(dead_code)]
     pub fn version(&self) -> Result<FlutterVersion, BuildError> {
         let mut cmd = self.base_command()?;
         cmd.arg("--version").arg("--machine");
@@ -84,21 +115,35 @@ impl<'a> FlutterCommand<'a> {
     }
 
     fn resolve_executable(&self) -> Result<String, BuildError> {
+        // On Windows `flutter` is a batch script; Dart ran it through the
+        // shell (`runInShell: true`), Rust has to name the `.bat` explicitly.
+        let file_name = if cfg!(windows) {
+            "flutter.bat"
+        } else {
+            "flutter"
+        };
         if let Some(env) = self.environment
             && let Some(root) = env.get("FLUTTER_ROOT")
             && !root.is_empty()
         {
-            let path = PathBuf::from(root).join("bin").join("flutter");
-            if !path.exists() {
+            let root = path_expansion(root, env);
+            if !PathBuf::from(&root).is_dir() {
                 return Err(BuildError::Io(format!(
                     "FLUTTER_ROOT environment variable is set to a path that does not exist: {}",
                     root
                 )));
             }
+            let path = PathBuf::from(root).join("bin").join(file_name);
             return Ok(path.to_string_lossy().to_string());
         }
-        Ok("flutter".to_string())
+        Ok(file_name.to_string())
     }
+}
+
+/// Prints the command line before running it (Dart's `DefaultShellExecutor`
+/// logs `$ <command>` in bright black).
+fn echo_command(command_line: &str) {
+    eprintln!("\x1b[90m$ {}\x1b[0m", command_line);
 }
 
 #[cfg(test)]
@@ -129,7 +174,19 @@ mod tests {
         );
         let command = FlutterCommand::new(Some(&env));
         let resolved = command.resolve_executable().expect("resolve executable");
-        assert!(resolved.ends_with("bin/flutter"));
+        assert!(resolved.contains("bin") && resolved.contains("flutter"));
+    }
+
+    #[test]
+    fn expands_flutter_root() {
+        let dir = tempdir().expect("tempdir");
+        fs::create_dir_all(dir.path().join("sdk")).expect("mkdir");
+        let mut env = HashMap::new();
+        env.insert("SDKS".to_string(), dir.path().to_string_lossy().to_string());
+        env.insert("FLUTTER_ROOT".to_string(), "${SDKS}/sdk".to_string());
+        let command = FlutterCommand::new(Some(&env));
+        let resolved = command.resolve_executable().expect("resolve executable");
+        assert!(resolved.starts_with(&*dir.path().to_string_lossy()));
     }
 
     #[test]

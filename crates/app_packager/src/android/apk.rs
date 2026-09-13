@@ -23,9 +23,7 @@ impl AppPackager for AndroidApkPackager {
             .ok_or_else(|| PackageError::General("no build output files".into()))?;
         let dst = config.output_file();
         std::fs::copy(src, &dst)?;
-        Ok(PackageResult {
-            artifacts: vec![dst],
-        })
+        config.resolve_result(dst)
     }
 }
 
@@ -54,6 +52,7 @@ mod tests {
             build_output_dir: tmp.path().to_path_buf(),
             build_output_files: vec![src],
             output_dir: tmp.path().to_path_buf(),
+            environment: Default::default(),
         };
         let result = AndroidApkPackager.package(&cfg).unwrap();
         assert!(result.artifacts[0].exists());

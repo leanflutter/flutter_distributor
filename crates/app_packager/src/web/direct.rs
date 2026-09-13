@@ -1,22 +1,13 @@
 use fastforge_core::{AppPackager, PackageConfig, PackageError, PackageResult, Platform};
 
-/// Copies a flutter web build output directory to the output path, mirroring
-/// Dart's `AppPackageMakerDirect("web")`.
-pub struct WebDirectPackager;
+use crate::fs_util::copy_dir_contents;
 
-fn copy_dir(src: &std::path::Path, dst: &std::path::Path) -> Result<(), PackageError> {
-    let out = std::process::Command::new("cp")
-        .args(["-r", &src.display().to_string(), &dst.display().to_string()])
-        .output()
-        .map_err(|e| PackageError::MissingTool(format!("cp: {}", e)))?;
-    if !out.status.success() {
-        return Err(PackageError::CommandFailed {
-            command: "cp".into(),
-            stderr: String::from_utf8_lossy(&out.stderr).into(),
-        });
-    }
-    Ok(())
-}
+/// Copies the flutter Web build output directory to the output path
+/// without any additional packaging, mirroring Dart's
+/// `AppPackageMakerDirect("web")`. Like Dart's `copyPathSync`, the build
+/// output *contents* are merged into the destination directory, so re-running
+/// never nests the build directory inside an existing output.
+pub struct WebDirectPackager;
 
 impl AppPackager for WebDirectPackager {
     fn name(&self) -> &str {
@@ -32,12 +23,10 @@ impl AppPackager for WebDirectPackager {
     }
 
     fn package(&self, config: &PackageConfig) -> Result<PackageResult, PackageError> {
-        // Mirrors Dart: the destination directory uses the rendered artifact
-        // name (no extension for direct output).
+        // The destination directory uses the rendered artifact name (no
+        // extension for direct output).
         let dst = config.output_file();
-        copy_dir(&config.build_output_dir, &dst)?;
-        Ok(PackageResult {
-            artifacts: vec![dst],
-        })
+        copy_dir_contents(&config.build_output_dir, &dst)?;
+        config.resolve_result(dst)
     }
 }

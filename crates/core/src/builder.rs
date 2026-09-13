@@ -90,7 +90,6 @@ impl BuildResult {
     pub fn to_json_compatible(&self) -> Value {
         json!({
             "config": self.config.to_json_compatible(),
-            "platform": self.platform.as_str(),
             "outputDirectory": self.output_directory.to_string_lossy().to_string(),
             "duration": self.duration_ms,
             "outputFiles": self.output_files.iter().map(|p| p.to_string_lossy().to_string()).collect::<Vec<_>>(),
@@ -126,6 +125,12 @@ pub trait AppBuilder {
     fn build_subcommand(&self) -> &str;
     fn validate_arguments(&self, _config: &BuildConfig) -> Result<(), BuildError> {
         Ok(())
+    }
+    /// Whether the build output is a whole directory (linux/windows/web
+    /// bundles). Such builders report no individual `output_files`, as in
+    /// Dart, and only the output directory has to exist.
+    fn outputs_directory(&self) -> bool {
+        false
     }
     fn resolve_output_files(
         &self,

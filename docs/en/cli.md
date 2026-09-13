@@ -8,10 +8,14 @@ fastforge <COMMAND>
 
 Global options:
 
-| Option          | Description      |
-| --------------- | ---------------- |
-| `-h, --help`    | Show help        |
-| `-V, --version` | Show the version |
+| Option               | Description                                                             |
+| -------------------- | ----------------------------------------------------------------------- |
+| `-h, --help`         | Show help                                                               |
+| `-V, --version`      | Show the version                                                        |
+| `--no-version-check` | Skip the update check that runs before every command (on by default)    |
+| `--version-check`    | Re-enable the update check (overrides an earlier `--no-version-check`) |
+
+Before running a command, fastforge checks GitHub releases for a newer version and prints an upgrade hint (or a "latest version" note) to stderr. The check times out after 5 seconds and never fails the command. Set `GITHUB_TOKEN` to avoid GitHub API rate limits.
 
 Top-level commands:
 
@@ -27,8 +31,8 @@ Top-level commands:
 | `appstore`      | Operate App Store Connect                          |
 | `appgallery`    | Operate Huawei AppGallery Connect                  |
 | `googleplay`    | Operate Google Play Console                        |
-| `upgrade`       | Reserved upgrade command                           |
-| `version-check` | Print the current version                          |
+| `upgrade`       | Upgrade fastforge to the latest release            |
+| `version-check` | Check for a newer version                          |
 
 ## `analyze`
 
@@ -81,14 +85,23 @@ See [Building](building.md) for the current scope of the `build` command and bui
 fastforge package [OPTIONS]
 ```
 
-| Option                      | Description                             |
-| --------------------------- | --------------------------------------- |
-| `-p, --platform <PLATFORM>` | Target platform; required at runtime    |
-| `-t, --target <TARGET>`     | One package target; required at runtime |
-| `--skip-clean`              | Skip cleaning before the build          |
-| `--build-target <PATH>`     | Flutter Builder entry point             |
-| `--hook-pre <COMMAND>`      | Shell command to run before packaging   |
-| `--hook-post <COMMAND>`     | Shell command to run after packaging    |
+| Option                                | Description                                                                 |
+| ------------------------------------- | --------------------------------------------------------------------------- |
+| `-p, --platform <PLATFORM>`           | Target platform; inferred from the targets and project when omitted         |
+| `-t, --targets <TARGET,...>`          | Comma-separated package targets (alias `--target`); required                |
+| `--channel <CHANNEL>`                 | Channel name used in the artifact name                                      |
+| `--artifact-name <TEMPLATE>`          | Mustache artifact-name template                                             |
+| `--skip-clean`                        | Skip `flutter clean` before the build                                       |
+| `--flutter-build-args <ARG,...>`      | Arguments passed to `flutter build` (`verbose,obfuscate`, `key=value`)      |
+| `--build-target <PATH>`               | `--target` passed to `flutter build`                                        |
+| `--build-flavor <FLAVOR>`             | `--flavor` passed to `flutter build`                                        |
+| `--build-target-platform <PLATFORM>`  | `--target-platform` passed to `flutter build`                               |
+| `--build-export-options-plist <PATH>` | `--export-options-plist` passed to `flutter build`                          |
+| `--build-dart-define <KEY=VALUE>`     | `--dart-define` passed to `flutter build`; repeatable                       |
+| `--hook-pre <COMMAND>`                | Shell command to run before packaging                                       |
+| `--hook-post <COMMAND>`               | Shell command to run after packaging                                        |
+
+Like the Dart CLI, `package` reads `distribute_options.yaml` when present: artifacts go to its `output` directory (default `dist/`), and its `variables` are layered over the environment for the build, the packagers (for example `INNO_SETUP_PATH`) and the hooks. `flutter clean` runs at most once; non-Android platforms build once and reuse the output for every target. A target whose builder cannot run on the current OS is skipped with a warning.
 
 See [Packaging](packaging.md) for current support.
 
@@ -100,17 +113,24 @@ See the [packager overview](packagers/README.md) for platform and format details
 fastforge publish [OPTIONS]
 ```
 
-| Option                      | Description                                 |
-| --------------------------- | ------------------------------------------- |
-| `--path <PATH>`             | File or directory path; required at runtime |
-| `-t, --target <TARGET>`     | One publishing target; required at runtime  |
-| `--publish-arg <KEY=VALUE>` | Publisher argument; repeatable              |
+| Option                         | Description                                                |
+| ------------------------------ | ---------------------------------------------------------- |
+| `--path <PATH>`                | File or directory path; required                           |
+| `-t, --targets <TARGET,...>`   | Comma-separated publishing targets (alias `--target`)      |
+| `--app-version <VERSION>`      | App version passed to publishers                           |
+| `--publish-arg <KEY=VALUE>`    | Publisher argument; repeatable                             |
+
+The provider options of the Dart CLI are also accepted and forwarded to the matching publisher with their prefix stripped (`--github-repo` becomes `repo` for `github`): `--appgallery-app-id`, `--firebase-app`, `--firebase-release-notes[-file]`, `--firebase-testers[-file]`, `--firebase-groups[-file]`, `--firebase-hosting-project-id`, `--github-repo`, `--github-repo-owner`, `--github-repo-name`, `--github-release-title`, `--github-release-draft`, `--github-release-prerelease`, `--minio-endpoint`, `--minio-access-key`, `--minio-secret-key`, `--minio-region`, `--minio-bucket`, `--minio-savekey-prefix`, `--pgyer-*`, `--playstore-package-name`, `--playstore-track`, `--qiniu-bucket`, `--qiniu-bucket-domain`, `--qiniu-savekey-prefix`, `--vercel-org-id` and `--vercel-project-id`. `--firebase-app` is required for the `firebase` target. Publishers read credentials from the environment plus the `variables` in `distribute_options.yaml`.
 
 See the [publisher overview](publishers/README.md) for credentials and arguments for each target.
 
 ## `release`
 
-This command is retained for compatibility with the legacy release process. Use `fastforge workflow` for new automation.
+```text
+fastforge release [--name <NAME>] [--jobs <JOB,...>] [--skip-jobs <JOB,...>] [--skip-clean] [--dry-run]
+```
+
+Runs the releases defined in `distribute_options.yaml`: every release when `--name` is omitted, otherwise the named one. `--jobs` selects jobs and takes precedence over `--skip-jobs`. Each job packages its target and, when `publish`/`publish_to` is set, publishes the first artifact. Variables are merged as environment < global `variables` < release `variables` < job `variables`. `flutter clean` runs at most once per release. The run ends with `RELEASE SUCCESSFUL in Ns` or `RELEASE FAILED in Ns`. For new automation, prefer `fastforge workflow`.
 
 ## `store`
 
@@ -234,12 +254,12 @@ fastforge googleplay track update --help
 fastforge version-check [--current-only]
 ```
 
-The current implementation prints only the version embedded at compile time. It does not check the network for a newer version, with or without `--current-only`.
+Queries GitHub releases for the newest published version that ships a prebuilt binary for the current platform and reports whether an upgrade is available. With `--current-only`, prints only the local version without touching the network.
 
 ## `upgrade`
 
 ```text
-fastforge upgrade
+fastforge upgrade [--force]
 ```
 
-The command is currently a no-op and does not download or replace the binary. Upgrade by running the installation script again or installing a specific version.
+Downloads the latest release archive for the current platform (the same `fastforge-<version>-<target>` archive the installation scripts use) and replaces the running binary in place. It does nothing when the current version is already the latest; `--force` reinstalls anyway. If the binary lives in a directory you cannot write to (for example `/usr/local/bin`), re-run with elevated permissions or use the installation script.

@@ -2,6 +2,7 @@ use clap::{Parser, Subcommand};
 
 mod cli;
 mod config;
+mod utils;
 
 use cli::{
     AnalyzeArgs, BuildArgs, PackageArgs, PublishArgs, ReleaseArgs, StoreArgs, UpgradeArgs,
@@ -14,8 +15,14 @@ use fastforge_google_play_console::cli::GooglePlayConsoleArgs;
 #[derive(Parser)]
 #[command(name = "fastforge")]
 #[command(about = "Package and publish your apps with ease.")]
-#[command(version = env!("CARGO_PKG_VERSION"))]
+#[command(version = env!("FASTFORGE_BUILD_VERSION"))]
 struct Cli {
+    /// Check for updates when this command runs (default: on).
+    #[arg(long = "version-check", global = true, overrides_with = "no_version_check")]
+    version_check: bool,
+    /// Do not check for updates when this command runs.
+    #[arg(long = "no-version-check", global = true, overrides_with = "version_check")]
+    no_version_check: bool,
     #[command(subcommand)]
     command: Commands,
 }
@@ -26,15 +33,25 @@ enum Commands {
     Analyze(AnalyzeArgs),
     #[command(about = "Build your project")]
     Build(BuildArgs),
-    #[command(about = "Package your project")]
+    #[command(
+        about = "Package the current Flutter application for distribution",
+        long_about = "Package the current Flutter application for distribution\n\n\
+                      Options prefixed with --build- are passed directly to 'flutter build'\n\
+                      For more details on build options, refer to the 'flutter build' documentation."
+    )]
     Package(PackageArgs),
-    #[command(about = "Publish your project")]
-    Publish(PublishArgs),
+    #[command(
+        about = "Publish the built Flutter application artifacts to distribution platforms",
+        long_about = "Publish the built Flutter application artifacts to distribution platforms\n\n\
+                      This command uploads your application bundle to specified target providers\n\
+                      Use --targets to specify one or more distribution platforms"
+    )]
+    Publish(Box<PublishArgs>),
     #[command(about = "Release the current Flutter application")]
     Release(ReleaseArgs),
     #[command(about = "Manage distribution store configuration")]
     Store(StoreArgs),
-    #[command(about = "Update Fastforge to the latest version")]
+    #[command(about = "Update Fastforge to the latest version.")]
     Upgrade(UpgradeArgs),
     #[command(
         name = "version-check",
@@ -85,11 +102,34 @@ fn print_local_build_notice_if_needed() {
     }
 }
 
+/// Routes `log`/`tracing` records to stderr. Quiet by default (warnings and
+/// errors only); set `RUST_LOG=info` (or `debug`) for more detail.
+fn init_logging() {
+    let filter = tracing_subscriber::EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn"));
+    let _ = tracing_subscriber::fmt()
+        .with_env_filter(filter)
+        .with_writer(std::io::stderr)
+        .without_time()
+        .try_init();
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    init_logging();
     print_rename_notice_if_needed();
     print_local_build_notice_if_needed();
     let cli = Cli::parse();
+
+    // Mirrors the Dart CLI's `--[no-]version-check` (default on). The
+    // `upgrade` / `version-check` commands perform their own check.
+    let checks_itself = matches!(
+        cli.command,
+        Commands::Upgrade(_) | Commands::VersionCheck(_)
+    );
+    if !cli.no_version_check && !checks_itself {
+        cli::version_check::run_startup_check().await;
+    }
 
     match &cli.command {
         Commands::Analyze(args) => {

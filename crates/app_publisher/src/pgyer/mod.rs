@@ -1,14 +1,14 @@
+use crate::common::{
+    artifact_path, file_name, file_part, http_client, required_env, to_publish_error,
+};
 use fastforge_core::{
     AppPublisher, PublishConfig, PublishError, PublishProgressCallback, PublishResult,
 };
 use reqwest::StatusCode;
 use reqwest::blocking::Client;
-use reqwest::blocking::multipart::{Form, Part};
+use reqwest::blocking::multipart::Form;
 use serde::Deserialize;
-use std::env;
-use std::fs::File;
-use std::io::{Read, Result as IoResult};
-use std::path::Path;
+use serde_json::Value;
 use std::thread;
 use std::time::Duration;
 
@@ -26,7 +26,6 @@ const BUILD_INFO_RETRY_INTERVAL: Duration = Duration::from_secs(3);
 #[derive(Debug, Deserialize)]
 struct PgyerResponse<T> {
     code: i64,
-    message: Option<String>,
     data: Option<T>,
 }
 
@@ -50,6 +49,85 @@ struct BuildInfoData {
     build_key: String,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum ParamValue {
+    Int(i64),
+    Text(String),
+}
+
+impl ParamValue {
+    fn to_json(&self) -> String {
+        match self {
+            Self::Int(value) => value.to_string(),
+            Self::Text(value) => Value::String(value.clone()).to_string(),
+        }
+    }
+}
+
+/// Mirrors Dart's `PublishPgyerConfig`.
+/// See https://www.pgyer.com/doc/view/api#fastUploadApp
+#[derive(Debug)]
+struct PgyerConfig {
+    api_key: String,
+    /// `(form field, value)` in Dart's `toJson` order; `None` values removed.
+    params: Vec<(&'static str, ParamValue)>,
+}
+
+impl PgyerConfig {
+    fn parse(config: &PublishConfig) -> Result<Self, PublishError> {
+        let api_key = required_env(config, ENV_PGYER_API_KEY)?;
+        // (publish argument, form field, is integer)
+        let fields: [(&str, &'static str, bool); 9] = [
+            ("oversea", "oversea", true),
+            ("install-type", "buildInstallType", true),
+            ("password", "buildPassword", false),
+            ("description", "buildDescription", false),
+            ("update-description", "buildUpdateDescription", false),
+            ("install-date", "buildInstallDate", true),
+            ("install-start-date", "buildInstallStartDate", false),
+            ("install-end-date", "buildInstallEndDate", false),
+            ("channel-shortcut", "buildChannelShortcut", false),
+        ];
+        let params = fields
+            .into_iter()
+            .filter_map(|(arg_key, form_key, is_int)| {
+                let raw = raw_argument(config, arg_key)?;
+                let value = if is_int {
+                    // Dart's `int.tryParse`: non-numeric values are dropped.
+                    ParamValue::Int(raw.trim().parse::<i64>().ok()?)
+                } else {
+                    ParamValue::Text(raw)
+                };
+                Some((form_key, value))
+            })
+            .collect();
+        Ok(Self { api_key, params })
+    }
+
+    /// Dart's `JsonEncoder.withIndent('  ').convert(config.toJson())`.
+    fn to_pretty_json(&self) -> String {
+        if self.params.is_empty() {
+            return "{}".to_string();
+        }
+        let lines = self
+            .params
+            .iter()
+            .map(|(key, value)| format!("  \"{key}\": {}", value.to_json()))
+            .collect::<Vec<_>>()
+            .join(",\n");
+        format!("{{\n{lines}\n}}")
+    }
+}
+
+/// Publish argument as given (empty strings kept, like Dart's `_parseString`).
+fn raw_argument(config: &PublishConfig, key: &str) -> Option<String> {
+    let arguments = config.publish_arguments.as_ref()?;
+    arguments
+        .get(key)
+        .or_else(|| arguments.get(&format!("pgyer-{key}")))
+        .cloned()
+}
+
 impl AppPublisher for PgyerPublisher {
     fn new() -> Self {
         Self
@@ -68,22 +146,17 @@ impl AppPublisher for PgyerPublisher {
         config: &PublishConfig,
         on_progress: Option<&PublishProgressCallback>,
     ) -> Result<PublishResult, PublishError> {
-        let api_key = env::var(ENV_PGYER_API_KEY)
-            .map_err(|_| PublishError::MissingEnv(ENV_PGYER_API_KEY.to_string()))?;
-        let artifact_path = config
-            .artifact_path
-            .as_deref()
-            .ok_or_else(|| PublishError::MissingArgument("artifact_path".to_string()))?;
-        let build_type = file_extension(artifact_path).ok_or_else(|| {
-            PublishError::General(format!(
-                "Cannot infer build type from artifact path: {artifact_path}"
-            ))
-        })?;
+        let artifact_path = artifact_path(config)?;
+        let pgyer_config = PgyerConfig::parse(config)?;
+        println!("config:\n{}", pgyer_config.to_pretty_json());
 
-        let client = Client::new();
-        let token_data = self.get_cos_token(&client, &api_key, build_type, config)?;
-        let upload_key = self.upload_app(&client, artifact_path, &token_data, on_progress)?;
-        let build_info = self.get_build_info_with_retry(&client, &api_key, &upload_key)?;
+        // Dart: `filePath.split('.').last`
+        let build_type = artifact_path.rsplit('.').next().unwrap_or_default();
+
+        let client = http_client()?;
+        let token_data = get_cos_token(&client, &pgyer_config, build_type)?;
+        let upload_key = upload_app(&client, artifact_path, &token_data, on_progress)?;
+        let build_info = get_build_info_with_retry(&client, &pgyer_config.api_key, &upload_key)?;
         let build_key = build_info.build_key;
 
         Ok(PublishResult {
@@ -93,186 +166,159 @@ impl AppPublisher for PgyerPublisher {
     }
 }
 
-impl PgyerPublisher {
-    fn get_cos_token(
-        &self,
-        client: &Client,
-        api_key: &str,
-        build_type: &str,
-        config: &PublishConfig,
-    ) -> Result<CosTokenData, PublishError> {
-        let mut form = Form::new()
-            .text("_api_key", api_key.to_string())
-            .text("buildType", build_type.to_string());
-
-        // Optional pgyer API parameters, mirroring Dart's `PublishPgyerConfig`.
-        // See https://www.pgyer.com/doc/view/api#fastUploadApp
-        let optional_params = [
-            ("oversea", "oversea"),
-            ("install-type", "buildInstallType"),
-            ("password", "buildPassword"),
-            ("description", "buildDescription"),
-            ("update-description", "buildUpdateDescription"),
-            ("install-date", "buildInstallDate"),
-            ("install-start-date", "buildInstallStartDate"),
-            ("install-end-date", "buildInstallEndDate"),
-            ("channel-shortcut", "buildChannelShortcut"),
-        ];
-        if let Some(arguments) = config.publish_arguments.as_ref() {
-            for (arg_key, form_key) in optional_params {
-                if let Some(value) = arguments
-                    .get(arg_key)
-                    .or_else(|| arguments.get(&format!("pgyer-{arg_key}")))
-                    .filter(|v| !v.is_empty())
-                {
-                    form = form.text(form_key, value.clone());
-                }
-            }
+fn get_cos_token(
+    client: &Client,
+    config: &PgyerConfig,
+    build_type: &str,
+) -> Result<CosTokenData, PublishError> {
+    let mut form = Form::new()
+        .text("_api_key", config.api_key.clone())
+        .text("buildType", build_type.to_string());
+    // Dart's `_addOptionalParameter`: empty strings are not sent.
+    for (key, value) in &config.params {
+        match value {
+            ParamValue::Int(value) => form = form.text(*key, value.to_string()),
+            ParamValue::Text(value) if !value.is_empty() => form = form.text(*key, value.clone()),
+            ParamValue::Text(_) => {}
         }
-        let response = client
-            .post(GET_COS_TOKEN_URL)
-            .multipart(form)
-            .send()
-            .map_err(to_publish_error)?;
-        let body: PgyerResponse<CosTokenData> = response.json().map_err(to_publish_error)?;
+    }
+    let response = client
+        .post(GET_COS_TOKEN_URL)
+        .multipart(form)
+        .send()
+        .map_err(to_publish_error)?;
+    let text = response.text().map_err(to_publish_error)?;
+    let body: PgyerResponse<CosTokenData> = serde_json::from_str(&text)
+        .map_err(|error| PublishError::General(format!("getCOSToken error: {error}: {text}")))?;
+    if body.code != 0 {
+        return Err(PublishError::General(format!("getCOSToken error: {text}")));
+    }
+    body.data
+        .ok_or_else(|| PublishError::General(format!("getCOSToken error: {text}")))
+}
 
-        if body.code != 0 {
-            return Err(PublishError::ApiError {
-                status: body.code.to_string(),
-                message: body.message.unwrap_or_default(),
-            });
-        }
-        body.data.ok_or_else(|| {
-            PublishError::General("getCOSToken error: missing response data.".to_string())
-        })
+fn upload_app(
+    client: &Client,
+    artifact_path: &str,
+    token_data: &CosTokenData,
+    on_progress: Option<&PublishProgressCallback>,
+) -> Result<String, PublishError> {
+    let file_name = file_name(artifact_path)?;
+    let form = Form::new()
+        .text("key", token_data.key.clone())
+        .text("signature", token_data.params.signature.clone())
+        .text(
+            "x-cos-security-token",
+            token_data.params.x_cos_security_token.clone(),
+        )
+        .text("x-cos-meta-file-name", file_name.clone())
+        .part("file", file_part(artifact_path, &file_name, on_progress)?);
+    let response = client
+        .post(&token_data.endpoint)
+        .multipart(form)
+        .send()
+        .map_err(to_publish_error)?;
+
+    if response.status() != StatusCode::NO_CONTENT {
+        let status = response.status();
+        let text = response.text().unwrap_or_default();
+        return Err(PublishError::General(format!(
+            "UploadApp error: unexpected status code {status} {text}"
+        )));
     }
 
-    fn upload_app(
-        &self,
-        client: &Client,
-        artifact_path: &str,
-        token_data: &CosTokenData,
-        on_progress: Option<&PublishProgressCallback>,
-    ) -> Result<String, PublishError> {
-        let file_name = file_name(artifact_path).ok_or_else(|| {
-            PublishError::General(format!(
-                "Cannot infer file name from artifact path: {artifact_path}"
-            ))
+    Ok(token_data.key.clone())
+}
+
+fn get_build_info_with_retry(
+    client: &Client,
+    api_key: &str,
+    upload_key: &str,
+) -> Result<BuildInfoData, PublishError> {
+    let mut try_count = 0;
+    loop {
+        if try_count > MAX_BUILD_INFO_RETRIES {
+            return Err(PublishError::General(
+                "getBuildInfo error :Too many retries".to_string(),
+            ));
+        }
+        thread::sleep(BUILD_INFO_RETRY_INTERVAL);
+        let response = client
+            .get(BUILD_INFO_URL)
+            .query(&[("_api_key", api_key), ("buildKey", upload_key)])
+            .send()
+            .map_err(to_publish_error)?;
+        let text = response.text().map_err(to_publish_error)?;
+        let body: PgyerResponse<BuildInfoData> = serde_json::from_str(&text).map_err(|error| {
+            PublishError::General(format!("getBuildInfo error: {error}: {text}"))
         })?;
-        let file = File::open(artifact_path).map_err(to_publish_error)?;
-        let total_size = file.metadata().map_err(to_publish_error)?.len();
-        let progress_reader = UploadProgressReader::new(file, total_size, on_progress.cloned());
 
-        let form = Form::new()
-            .text("key", token_data.key.clone())
-            .text("signature", token_data.params.signature.clone())
-            .text(
-                "x-cos-security-token",
-                token_data.params.x_cos_security_token.clone(),
-            )
-            .text("x-cos-meta-file-name", file_name.clone())
-            .part(
-                "file",
-                Part::reader(progress_reader)
-                    .file_name(file_name)
-                    .mime_str("application/octet-stream")
-                    .map_err(to_publish_error)?,
+        match body.code {
+            0 => {
+                return body
+                    .data
+                    .ok_or_else(|| PublishError::General(format!("getBuildInfo error: {text}")));
+            }
+            BUILD_INFO_PROCESSING_CODE => {
+                try_count += 1;
+                println!("应用发布信息获取中，请稍等 {try_count}");
+            }
+            _ => return Err(PublishError::General(format!("getBuildInfo error: {text}"))),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn config_with(arguments: &[(&str, &str)]) -> PublishConfig {
+        PublishConfig {
+            publish_arguments: Some(
+                arguments
+                    .iter()
+                    .map(|(k, v)| (k.to_string(), v.to_string()))
+                    .collect(),
+            ),
+            environment: [(ENV_PGYER_API_KEY.to_string(), "key".to_string())].into(),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn integer_params_are_parsed_and_invalid_ones_dropped() {
+        let config = PgyerConfig::parse(&config_with(&[
+            ("oversea", "1"),
+            ("install-type", "abc"),
+            ("install-date", "2"),
+            ("description", ""),
+        ]))
+        .unwrap();
+        assert_eq!(
+            config.params,
+            vec![
+                ("oversea", ParamValue::Int(1)),
+                ("buildDescription", ParamValue::Text(String::new())),
+                ("buildInstallDate", ParamValue::Int(2)),
+            ]
+        );
+        assert_eq!(
+            config.to_pretty_json(),
+            "{\n  \"oversea\": 1,\n  \"buildDescription\": \"\",\n  \"buildInstallDate\": 2\n}"
+        );
+    }
+
+    #[test]
+    fn missing_api_key_uses_dart_message() {
+        if std::env::var(ENV_PGYER_API_KEY).is_ok_and(|v| !v.is_empty()) {
+            return;
+        }
+        let error = PgyerConfig::parse(&PublishConfig::default()).unwrap_err();
+        {
+            assert_eq!(
+                error.to_string(),
+                "Missing `PGYER_API_KEY` environment variable."
             );
-        let response = client
-            .post(&token_data.endpoint)
-            .multipart(form)
-            .send()
-            .map_err(to_publish_error)?;
-
-        if response.status() != StatusCode::NO_CONTENT {
-            return Err(PublishError::HttpError(format!(
-                "uploadApp error: unexpected status code {}",
-                response.status()
-            )));
         }
-
-        Ok(token_data.key.clone())
-    }
-
-    fn get_build_info_with_retry(
-        &self,
-        client: &Client,
-        api_key: &str,
-        upload_key: &str,
-    ) -> Result<BuildInfoData, PublishError> {
-        for _ in 0..=MAX_BUILD_INFO_RETRIES {
-            thread::sleep(BUILD_INFO_RETRY_INTERVAL);
-            let response = client
-                .get(BUILD_INFO_URL)
-                .query(&[("_api_key", api_key), ("buildKey", upload_key)])
-                .send()
-                .map_err(to_publish_error)?;
-            let body: PgyerResponse<BuildInfoData> = response.json().map_err(to_publish_error)?;
-
-            if body.code == 0 {
-                return body.data.ok_or_else(|| {
-                    PublishError::General("getBuildInfo error: missing response data.".to_string())
-                });
-            }
-            if body.code != BUILD_INFO_PROCESSING_CODE {
-                return Err(PublishError::ApiError {
-                    status: body.code.to_string(),
-                    message: body.message.unwrap_or_default(),
-                });
-            }
-        }
-
-        Err(PublishError::General(
-            "getBuildInfo error: Too many retries".to_string(),
-        ))
-    }
-}
-
-fn to_publish_error(error: impl std::fmt::Display) -> PublishError {
-    PublishError::General(error.to_string())
-}
-
-fn file_extension(path: &str) -> Option<&str> {
-    Path::new(path).extension().and_then(|ext| ext.to_str())
-}
-
-fn file_name(path: &str) -> Option<String> {
-    Path::new(path)
-        .file_name()
-        .and_then(|name| name.to_str())
-        .map(ToOwned::to_owned)
-}
-
-struct UploadProgressReader {
-    file: File,
-    sent: u64,
-    total: u64,
-    on_progress: Option<PublishProgressCallback>,
-}
-
-impl UploadProgressReader {
-    fn new(file: File, total: u64, on_progress: Option<PublishProgressCallback>) -> Self {
-        if let Some(callback) = &on_progress {
-            callback(0, total);
-        }
-        Self {
-            file,
-            sent: 0,
-            total,
-            on_progress,
-        }
-    }
-}
-
-impl Read for UploadProgressReader {
-    fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
-        let bytes_read = self.file.read(buf)?;
-        if bytes_read > 0 {
-            self.sent += bytes_read as u64;
-            if let Some(callback) = &self.on_progress {
-                callback(self.sent, self.total);
-            }
-        }
-        Ok(bytes_read)
     }
 }

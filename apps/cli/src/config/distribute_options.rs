@@ -47,17 +47,13 @@ impl DistributeOptions {
         }
     }
 
-    /// Resolved variables: `env` legacy key is merged into `variables`.
-    /// The `variables` map takes precedence over `env`.
+    /// Resolved variables: `variables`, or the legacy `env` key when
+    /// `variables` is absent (Dart reads only one of them).
     pub fn resolved_variables(&self) -> HashMap<String, String> {
-        let mut vars: HashMap<String, String> = HashMap::new();
-        if let Some(env) = &self.env {
-            vars.extend(env.clone());
-        }
-        if let Some(variables) = &self.variables {
-            vars.extend(variables.clone());
-        }
-        vars
+        self.variables
+            .clone()
+            .or_else(|| self.env.clone())
+            .unwrap_or_default()
     }
 }
 

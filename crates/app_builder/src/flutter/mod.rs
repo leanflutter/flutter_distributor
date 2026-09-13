@@ -1,5 +1,5 @@
 use fastforge_core::{AppBuilder, BuildConfig, BuildError, BuildResult, Platform};
-use glob::glob;
+use glob::{MatchOptions, glob_with};
 use std::collections::HashMap;
 use std::path::PathBuf;
 
@@ -29,7 +29,12 @@ fn sentence_case(s: &str) -> String {
 }
 
 fn resolve_glob(pattern: &str) -> Result<Vec<PathBuf>, BuildError> {
-    let mut output: Vec<PathBuf> = glob(pattern)
+    // Dart's `Glob` is case-insensitive on Windows.
+    let options = MatchOptions {
+        case_sensitive: !cfg!(windows),
+        ..MatchOptions::new()
+    };
+    let mut output: Vec<PathBuf> = glob_with(pattern, options)
         .map_err(|e| BuildError::Parse(format!("Invalid glob pattern '{}': {}", pattern, e)))?
         .filter_map(Result::ok)
         .collect();
@@ -39,6 +44,23 @@ fn resolve_glob(pattern: &str) -> Result<Vec<PathBuf>, BuildError> {
 
 fn current_platform() -> Option<Platform> {
     Platform::current()
+}
+
+/// Linux bundle arch segment, from `uname -m` at runtime like Dart
+/// (`aarch64`/`arm64` → `arm64`, anything else → `x64`).
+fn linux_arch() -> &'static str {
+    let machine = std::process::Command::new("uname")
+        .arg("-m")
+        .output()
+        .ok()
+        .filter(|output| output.status.success())
+        .map(|output| String::from_utf8_lossy(&output.stdout).trim().to_string())
+        .unwrap_or_else(|| std::env::consts::ARCH.to_string());
+    if machine == "aarch64" || machine == "arm64" {
+        "arm64"
+    } else {
+        "x64"
+    }
 }
 
 /// Parses `PRODUCT_NAME` from a macOS `AppInfo.xcconfig` file.
@@ -51,7 +73,7 @@ fn read_product_name_from_xcconfig(path: &str) -> Option<String> {
             continue;
         }
         if let Some(value) = line.strip_prefix("PRODUCT_NAME")
-            && let Some(equals) = value.strip_prefix('=')
+            && let Some(equals) = value.trim_start().strip_prefix('=')
         {
             let name = equals.trim();
             if !name.is_empty() {
@@ -275,14 +297,21 @@ impl AppBuilder for MacOSBuilder {
 
         // Read PRODUCT_NAME from AppInfo.xcconfig to target the exact .app bundle.
         // Falls back to a wildcard if the file is missing or unparseable.
-        let product_name = read_product_name_from_xcconfig("macos/Runner/Configs/AppInfo.xcconfig")
-            .unwrap_or_else(|| "*".to_string());
-
-        let files = resolve_glob(&format!(
-            "{}/{}.app",
-            output_directory.display(),
-            product_name
-        ))?;
+        // Falls back to any `.app` (Dart's `*.app`) when the named bundle is
+        // not there, e.g. a flavor renames the product or the value uses
+        // `$(VAR)` substitutions.
+        let mut files =
+            match read_product_name_from_xcconfig("macos/Runner/Configs/AppInfo.xcconfig") {
+                Some(product_name) => resolve_glob(&format!(
+                    "{}/{}.app",
+                    output_directory.display(),
+                    glob::Pattern::escape(&product_name)
+                ))?,
+                None => Vec::new(),
+            };
+        if files.is_empty() {
+            files = resolve_glob(&format!("{}/*.app", output_directory.display()))?;
+        }
         Ok((output_directory, files))
     }
     fn build_result(
@@ -319,26 +348,38 @@ impl AppBuilder for WindowsBuilder {
     fn build_subcommand(&self) -> &str {
         "windows"
     }
+    fn outputs_directory(&self) -> bool {
+        true
+    }
     fn resolve_output_files(
         &self,
         config: &BuildConfig,
         environment: Option<&HashMap<String, String>>,
     ) -> Result<(PathBuf, Vec<PathBuf>), BuildError> {
         let build_mode = sentence_case(config.mode().as_str());
-        let arch = if let Some(env) = environment {
-            let upper = env
-                .get("PROCESSOR_ARCHITECTURE")
-                .map(|v| v.to_ascii_uppercase())
-                .unwrap_or_default();
-            if upper == "ARM64" { "arm64" } else { "x64" }
+        let processor_architecture = environment
+            .and_then(|env| env.get("PROCESSOR_ARCHITECTURE").cloned())
+            .or_else(|| std::env::var("PROCESSOR_ARCHITECTURE").ok())
+            .unwrap_or_default();
+        let arch = if processor_architecture.eq_ignore_ascii_case("ARM64") {
+            "arm64"
         } else {
             "x64"
         };
 
-        let output_directory =
-            PathBuf::from(format!("build/windows/{}/runner/{}", arch, build_mode));
-        let files = resolve_glob(&format!("{}/**/*", output_directory.display()))?;
-        Ok((output_directory, files))
+        // Flutter < 3.15 had no arch segment in the Windows output path.
+        let legacy_layout = current_platform() == Some(Platform::Windows)
+            && command::FlutterCommand::new(environment)
+                .version()
+                .is_ok_and(|version| {
+                    version.flutter_version.is_some() && !version.is_greater_or_equal("3.15.0")
+                });
+        let output_directory = if legacy_layout {
+            PathBuf::from(format!("build/windows/runner/{}", build_mode))
+        } else {
+            PathBuf::from(format!("build/windows/{}/runner/{}", arch, build_mode))
+        };
+        Ok((output_directory, Vec::new()))
     }
     fn build_result(
         &self,
@@ -374,23 +415,20 @@ impl AppBuilder for LinuxBuilder {
     fn build_subcommand(&self) -> &str {
         "linux"
     }
+    fn outputs_directory(&self) -> bool {
+        true
+    }
     fn resolve_output_files(
         &self,
         config: &BuildConfig,
         _environment: Option<&HashMap<String, String>>,
     ) -> Result<(PathBuf, Vec<PathBuf>), BuildError> {
-        let arch = if std::env::consts::ARCH == "aarch64" {
-            "arm64"
-        } else {
-            "x64"
-        };
         let output_directory = PathBuf::from(format!(
             "build/linux/{}/{}/bundle",
-            arch,
+            linux_arch(),
             config.mode().as_str()
         ));
-        let files = resolve_glob(&format!("{}/**/*", output_directory.display()))?;
-        Ok((output_directory, files))
+        Ok((output_directory, Vec::new()))
     }
     fn build_result(
         &self,
@@ -426,14 +464,15 @@ impl AppBuilder for WebBuilder {
     fn build_subcommand(&self) -> &str {
         "web"
     }
+    fn outputs_directory(&self) -> bool {
+        true
+    }
     fn resolve_output_files(
         &self,
         _config: &BuildConfig,
         _environment: Option<&HashMap<String, String>>,
     ) -> Result<(PathBuf, Vec<PathBuf>), BuildError> {
-        let output_directory = PathBuf::from("build/web");
-        let files = resolve_glob(&format!("{}/**/*", output_directory.display()))?;
-        Ok((output_directory, files))
+        Ok((PathBuf::from("build/web"), Vec::new()))
     }
     fn build_result(
         &self,

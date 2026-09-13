@@ -41,6 +41,7 @@ impl CliRun {
 /// Gradle/Xcode system state, and must be `#[serial]`-tagged.
 pub fn run_fastforge(cwd: &Path, args: &[&str]) -> CliRun {
     let output = Command::new(env!("CARGO_BIN_EXE_fastforge"))
+        .arg("--no-version-check")
         .args(args)
         .current_dir(cwd)
         .output()

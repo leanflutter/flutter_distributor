@@ -29,6 +29,20 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Resolved version: $VERSION"
 
+      - uses: actions/checkout@v4
+
+      - name: Check Cargo version matches the release version
+        run: |
+          VERSION="${{ steps.resolve_version.outputs.version }}"
+          CARGO_VERSION=$(sed -n 's/^version = "\(.*\)"/\1/p' apps/cli/Cargo.toml | head -1)
+          # `fastforge version-check` / `upgrade` compare the embedded Cargo
+          # version with the release tag, so they must agree (a pre-release
+          # tag such as 0.7.0-dev.1 may also match its core version).
+          if [ "$CARGO_VERSION" != "$VERSION" ] && [ "$CARGO_VERSION" != "${VERSION%%-*}" ]; then
+            echo "::error::apps/cli/Cargo.toml version ($CARGO_VERSION) does not match the release version ($VERSION)."
+            exit 1
+          fi
+
       - name: Check if release already exists
         if: github.event_name == 'workflow_dispatch'
         env:

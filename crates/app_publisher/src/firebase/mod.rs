@@ -1,7 +1,7 @@
+use crate::common::{argument, artifact_path, run_streaming};
 use fastforge_core::{
     AppPublisher, PublishConfig, PublishError, PublishProgressCallback, PublishResult,
 };
-use std::env;
 use std::process::Command;
 
 pub struct FirebasePublisher;
@@ -28,49 +28,10 @@ impl AppPublisher for FirebasePublisher {
         config: &PublishConfig,
         _on_progress: Option<&PublishProgressCallback>,
     ) -> Result<PublishResult, PublishError> {
-        let token = env::var(ENV_FIREBASE_TOKEN)
-            .map_err(|_| PublishError::MissingEnv(ENV_FIREBASE_TOKEN.to_string()))?;
+        let artifact_path = artifact_path(config)?;
+        let cmd_args = distribute_args(config, artifact_path)?;
 
-        let artifact_path = config
-            .artifact_path
-            .as_deref()
-            .ok_or_else(|| PublishError::MissingArgument("artifact_path".to_string()))?;
-
-        let args = config.publish_arguments.as_ref();
-        let app = args
-            .and_then(|a| a.get("app"))
-            .map(|s| s.as_str())
-            .ok_or_else(|| PublishError::MissingArgument("app".to_string()))?;
-
-        let mut cmd_args = vec![
-            "appdistribution:distribute".to_string(),
-            artifact_path.to_string(),
-            "--app".to_string(),
-            app.to_string(),
-            "--token".to_string(),
-            token,
-        ];
-
-        let optional_args = [
-            "release-notes",
-            "release-notes-file",
-            "testers",
-            "testers-file",
-            "groups",
-            "groups-file",
-        ];
-        for arg_name in &optional_args {
-            if let Some(value) = args.and_then(|a| a.get(*arg_name))
-                && !value.is_empty()
-            {
-                cmd_args.push(format!("--{arg_name}"));
-                cmd_args.push(value.clone());
-            }
-        }
-
-        let output = Command::new("firebase")
-            .args(&cmd_args)
-            .output()
+        let output = run_streaming(Command::new("firebase").args(&cmd_args))
             .map_err(|e| PublishError::CommandFailed(format!("Failed to run firebase CLI: {e}")))?;
 
         if output.status.success() {
@@ -79,12 +40,51 @@ impl AppPublisher for FirebasePublisher {
                 message: FIREBASE_CONSOLE_URL.to_string(),
             })
         } else {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            Err(PublishError::CommandFailed(format!(
-                "{} - Upload to Firebase failed\n{}",
-                output.status.code().unwrap_or(-1),
-                stderr.trim()
+            Err(PublishError::General(format!(
+                "{} - Upload of firebase failed",
+                output.code()
             )))
         }
     }
+}
+
+/// Mirrors Dart's `PublishFirebaseConfig.parse` + `toFirebaseCliDistributeArgs`.
+fn distribute_args(
+    config: &PublishConfig,
+    artifact_path: &str,
+) -> Result<Vec<String>, PublishError> {
+    let token = config.env_var(ENV_FIREBASE_TOKEN).ok_or_else(|| {
+        PublishError::General(format!(
+            "Missing `{ENV_FIREBASE_TOKEN}` environment variable. See:https://firebase.google.com/docs/cli?authuser=0#cli-ci-systems"
+        ))
+    })?;
+    let app = argument(config, &["app"]).ok_or_else(|| {
+        PublishError::General(
+            "Missing app args. See:https://console.firebase.google.com/project/_/settings/general/?authuser=0"
+                .to_string(),
+        )
+    })?;
+
+    let mut cmd_args = vec![
+        "appdistribution:distribute".to_string(),
+        artifact_path.to_string(),
+        "--app".to_string(),
+        app,
+        "--token".to_string(),
+        token,
+    ];
+    for arg_name in [
+        "release-notes",
+        "release-notes-file",
+        "testers",
+        "testers-file",
+        "groups",
+        "groups-file",
+    ] {
+        if let Some(value) = argument(config, &[arg_name]) {
+            cmd_args.push(format!("--{arg_name}"));
+            cmd_args.push(value);
+        }
+    }
+    Ok(cmd_args)
 }

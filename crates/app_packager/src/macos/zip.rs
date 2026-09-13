@@ -7,6 +7,8 @@ use fastforge_core::{AppPackager, PackageConfig, PackageError, PackageResult, Pl
 ///
 /// The Dart implementation notes that `archive` (pure-Dart zip) corrupts `.app`
 /// bundles, so `7z` is used instead; the same approach is applied here.
+/// Like Dart, the packager is not restricted to macOS hosts (it only needs
+/// `cp` and `7z`).
 pub struct MacOSZipPackager;
 
 fn run(cmd: &mut Command) -> Result<(), PackageError> {
@@ -33,11 +35,6 @@ impl AppPackager for MacOSZipPackager {
 
     fn package_format(&self) -> &str {
         "zip"
-    }
-
-    #[cfg(not(target_os = "macos"))]
-    fn is_supported_on_current_platform(&self) -> bool {
-        false
     }
 
     fn package(&self, config: &PackageConfig) -> Result<PackageResult, PackageError> {
@@ -73,8 +70,6 @@ impl AppPackager for MacOSZipPackager {
         ]))?;
 
         std::fs::remove_dir_all(&pkg_dir).ok();
-        Ok(PackageResult {
-            artifacts: vec![output_file],
-        })
+        config.resolve_result(output_file)
     }
 }

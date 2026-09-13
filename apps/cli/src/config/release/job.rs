@@ -7,9 +7,10 @@ pub struct ReleaseJobPackage {
     pub platform: String,
     pub target: String,
     pub channel: Option<String>,
-    /// Build arguments passed to `flutter build`.
+    /// Build arguments passed to `flutter build`, in YAML order (Dart keeps
+    /// the map order when turning them into flags).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub build_args: Option<HashMap<String, serde_yaml::Value>>,
+    pub build_args: Option<serde_yaml::Mapping>,
     /// Package lifecycle hooks, e.g. `{ "pre": "echo before", "post": ["cmd1", "cmd2"] }`.
     /// Values can be a single string or a list of strings.
     #[serde(default, skip_serializing_if = "Option::is_none")]

@@ -73,10 +73,7 @@ impl AppImageMakeConfig {
                     .clone()
                     .unwrap_or_else(|| "A Flutter Application".to_string()),
             ),
-            (
-                "Exec",
-                format!("LD_LIBRARY_PATH=usr/lib {} %u", app_name),
-            ),
+            ("Exec", format!("LD_LIBRARY_PATH=usr/lib {} %u", app_name)),
             ("Icon", app_name.clone()),
             ("Type", "Application".to_string()),
             (
@@ -84,11 +81,7 @@ impl AppImageMakeConfig {
                 self.startup_notify.unwrap_or(false).to_string(),
             ),
         ];
-        if let Some(mime) = self
-            .supported_mime_type
-            .as_ref()
-            .filter(|v| !v.is_empty())
-        {
+        if let Some(mime) = self.supported_mime_type.as_ref().filter(|v| !v.is_empty()) {
             fields.push(("MimeType", format!("{};", mime.join(";"))));
         }
         if !self.categories.is_empty() {
@@ -283,9 +276,11 @@ impl AppPackager for LinuxAppImagePackager {
             };
             let metainfo_dir = app_dir.join("usr/share/metainfo");
             std::fs::create_dir_all(&metainfo_dir)?;
+            // Dart's AppImage config extends `MakeConfig` (not the Linux
+            // variant), so its `appBinaryName` is the pubspec name.
             std::fs::copy(
                 metainfo_path,
-                metainfo_dir.join(format!("{}{}", config.app_binary_name, ext)),
+                metainfo_dir.join(format!("{}{}", config.app_name, ext)),
             )?;
         }
 
@@ -358,9 +353,7 @@ impl AppPackager for LinuxAppImagePackager {
             .env("ARCH", arch))?;
 
         std::fs::remove_dir_all(&pkg_dir).ok();
-        Ok(PackageResult {
-            artifacts: vec![output_file],
-        })
+        effective.resolve_result(output_file)
     }
 }
 
@@ -384,6 +377,7 @@ mod tests {
             build_output_dir: PathBuf::new(),
             build_output_files: vec![],
             output_dir: PathBuf::new(),
+            environment: Default::default(),
         }
     }
 

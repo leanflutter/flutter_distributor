@@ -120,9 +120,9 @@ impl AppPackager for CustomPackager {
             cmd.env("CHANNEL", channel);
         }
 
-        let out = cmd.output().map_err(|e| {
-            PackageError::MissingTool(format!("{}: {}", shell, e))
-        })?;
+        let out = cmd
+            .output()
+            .map_err(|e| PackageError::MissingTool(format!("{}: {}", shell, e)))?;
         if !out.status.success() {
             return Err(PackageError::CommandFailed {
                 command: self.script.clone(),
@@ -130,9 +130,9 @@ impl AppPackager for CustomPackager {
             });
         }
 
-        Ok(PackageResult {
-            artifacts: vec![output_path],
-        })
+        // Mirrors Dart's `DefaultMakeResultResolver`: the script must have
+        // produced the artifact (a directory when `output_extension` is empty).
+        effective.resolve_result(output_path)
     }
 }
 
@@ -175,6 +175,38 @@ mod tests {
 
     #[cfg(unix)]
     #[test]
+    fn missing_artifact_is_an_error() {
+        let dir = tempfile::tempdir().unwrap();
+        let config = PackageConfig {
+            app_name: "demo".into(),
+            app_binary_name: "demo".into(),
+            app_version: "1.0.0".into(),
+            build_mode: "release".into(),
+            platform: Platform::Linux,
+            flavor: None,
+            channel: None,
+            artifact_name: None,
+            package_format: "custom".into(),
+            is_installer: false,
+            build_output_dir: dir.path().to_path_buf(),
+            build_output_files: vec![],
+            output_dir: dir.path().join("dist"),
+            environment: Default::default(),
+        };
+        let file = CustomPackager::new(Platform::Linux, "true".into(), "tar.gz".into());
+        assert_eq!(
+            file.package(&config).unwrap_err().to_string(),
+            "No output file found."
+        );
+        let directory = CustomPackager::new(Platform::Linux, "true".into(), String::new());
+        assert_eq!(
+            directory.package(&config).unwrap_err().to_string(),
+            "No output directory found."
+        );
+    }
+
+    #[cfg(unix)]
+    #[test]
     fn runs_script_with_environment() {
         let dir = tempfile::tempdir().unwrap();
         let out_dir = dir.path().join("dist");
@@ -183,8 +215,7 @@ mod tests {
             "echo \"$APP_NAME|$APP_VERSION|$BUILD_NAME|$BUILD_NUMBER|$BUILD_MODE|$FLAVOR|$CHANNEL\" > {} && touch \"$OUTPUT_ARTIFACT_PATH\"",
             capture.display()
         );
-        let packager =
-            CustomPackager::new(Platform::Linux, script, "tar.gz".to_string());
+        let packager = CustomPackager::new(Platform::Linux, script, "tar.gz".to_string());
 
         let config = PackageConfig {
             app_name: "demo".into(),
@@ -200,6 +231,7 @@ mod tests {
             build_output_dir: dir.path().to_path_buf(),
             build_output_files: vec![],
             output_dir: out_dir.clone(),
+            environment: Default::default(),
         };
 
         let result = packager.package(&config).unwrap();
@@ -212,8 +244,7 @@ mod tests {
         );
 
         let captured = std::fs::read_to_string(&capture).unwrap();
-        let parts: HashMap<usize, &str> =
-            captured.trim().split('|').enumerate().collect();
+        let parts: HashMap<usize, &str> = captured.trim().split('|').enumerate().collect();
         assert_eq!(parts[&0], "demo");
         assert_eq!(parts[&1], "1.0.0+7");
         assert_eq!(parts[&2], "1.0.0");

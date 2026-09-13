@@ -70,21 +70,23 @@ function Resolve-Release {
     Write-Fail "Failed to fetch releases from GitHub: $_`nSet `$env:FASTFORGE_VERSION to specify a version manually."
   }
 
-  $latest = $releases | Select-Object -First 1
-  if (-not $latest) { Write-Fail "No releases found in the repository." }
-
-  $version = $latest.tag_name -replace '^v', ''
-  if (-not $version) { Write-Fail "Failed to parse version from GitHub API response." }
-
-  Write-Info "Latest version: $version"
-
-  # ── Resolve download URL from assets ──────────────────────────────────────
-  $archiveName = "$BinaryName-$version-$target.zip"
-  $asset       = $latest.assets | Where-Object { $_.name -eq $archiveName } | Select-Object -First 1
+  # Pick the newest release that ships a binary for this target (releases
+  # from the Dart era carry no binaries).
+  $pattern = "^$([regex]::Escape($BinaryName))-(.+)-$([regex]::Escape($target))\.zip$"
+  $asset = $releases |
+    ForEach-Object { $_.assets } |
+    Where-Object { $_.name -match $pattern } |
+    Select-Object -First 1
 
   if (-not $asset) {
-    Write-Fail "No download asset found for target '$target' in the latest release.`nThe release may not have finished uploading assets yet."
+    Write-Fail "No release provides a prebuilt binary for '$target'.`nSet `$env:FASTFORGE_VERSION to specify a version manually."
   }
+
+  $archiveName = $asset.name
+  $version     = [regex]::Match($archiveName, $pattern).Groups[1].Value
+  if (-not $version) { Write-Fail "Failed to parse version from asset name '$archiveName'." }
+
+  Write-Info "Latest version: $version"
 
   $downloadUrl = $asset.browser_download_url
   return @{ Version = $version; ArchiveName = $archiveName; DownloadUrl = $downloadUrl }

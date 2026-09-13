@@ -1,3 +1,6 @@
+use crate::common::{
+    argument_or_env, artifact_path, file_body, file_name, http_client, to_publish_error,
+};
 use chrono::Utc;
 use fastforge_core::{
     AppPublisher, PublishConfig, PublishError, PublishProgressCallback, PublishResult,
@@ -5,12 +8,9 @@ use fastforge_core::{
 use hmac::{Hmac, Mac};
 use percent_encoding::{AsciiSet, NON_ALPHANUMERIC, utf8_percent_encode};
 use reqwest::StatusCode;
-use reqwest::blocking::Client;
 use sha2::{Digest, Sha256};
-use std::env;
 use std::fs::File;
-use std::io::{Read, Result as IoResult};
-use std::path::Path;
+use std::io::Read;
 
 mod cos;
 mod oss;
@@ -22,7 +22,12 @@ pub use qiniu::QiniuPublisher;
 
 pub struct S3Publisher;
 
+/// The `minio` target: the S3 upload with Dart's `PublishMinioConfig`
+/// variable precedence and error messages.
+pub struct MinioPublisher;
+
 const PUBLISHER_NAME: &str = "s3";
+const MINIO_PUBLISHER_NAME: &str = "minio";
 const S3_SERVICE: &str = "s3";
 const S3_REQUEST: &str = "aws4_request";
 const ENV_S3_ENDPOINT: &str = "S3_ENDPOINT";
@@ -68,13 +73,40 @@ impl AppPublisher for S3Publisher {
         config: &PublishConfig,
         on_progress: Option<&PublishProgressCallback>,
     ) -> Result<PublishResult, PublishError> {
-        let artifact_path = config
-            .artifact_path
-            .as_deref()
-            .ok_or_else(|| PublishError::MissingArgument("artifact_path".to_string()))?;
-        let options = S3PublishOptions::from_config(config)?;
+        let artifact_path = artifact_path(config)?;
+        let options = S3PublishOptions::from_config(config, Flavor::S3)?;
         upload_artifact(&options, artifact_path, on_progress)
     }
+}
+
+impl AppPublisher for MinioPublisher {
+    fn new() -> Self {
+        Self
+    }
+
+    fn name(&self) -> &str {
+        MINIO_PUBLISHER_NAME
+    }
+
+    fn is_supported_on_current_platform(&self) -> bool {
+        true
+    }
+
+    fn perform_publish(
+        &self,
+        config: &PublishConfig,
+        on_progress: Option<&PublishProgressCallback>,
+    ) -> Result<PublishResult, PublishError> {
+        let artifact_path = artifact_path(config)?;
+        let options = S3PublishOptions::from_config(config, Flavor::Minio)?;
+        upload_artifact(&options, artifact_path, on_progress)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Flavor {
+    S3,
+    Minio,
 }
 
 fn upload_artifact(
@@ -82,11 +114,7 @@ fn upload_artifact(
     artifact_path: &str,
     on_progress: Option<&PublishProgressCallback>,
 ) -> Result<PublishResult, PublishError> {
-    let artifact_name = file_name(artifact_path).ok_or_else(|| {
-        PublishError::General(format!(
-            "Cannot infer file name from artifact path: {artifact_path}"
-        ))
-    })?;
+    let artifact_name = file_name(artifact_path)?;
     let key = compose_object_key(options.key_prefix.as_deref(), &artifact_name);
     let payload_hash = sha256_file_hex(artifact_path)?;
     let datetime = Utc::now();
@@ -125,18 +153,16 @@ fn upload_artifact(
         options.access_key, credential_scope, signed_headers, signature
     );
 
-    let file = File::open(artifact_path).map_err(to_publish_error)?;
-    let total_size = file.metadata().map_err(to_publish_error)?.len();
-    let body_reader = UploadProgressReader::new(file, total_size, on_progress.cloned());
+    let body = file_body(artifact_path, on_progress)?;
 
-    let client = Client::new();
+    let client = http_client()?;
     let mut request = client
         .put(&url)
         .header("host", host)
         .header("x-amz-content-sha256", payload_hash)
         .header("x-amz-date", amz_date)
         .header("authorization", authorization)
-        .body(reqwest::blocking::Body::sized(body_reader, total_size));
+        .body(body);
 
     if let Some(session_token) = &options.session_token {
         request = request.header("x-amz-security-token", session_token);
@@ -170,40 +196,90 @@ struct S3PublishOptions {
 }
 
 impl S3PublishOptions {
-    fn from_config(config: &PublishConfig) -> Result<Self, PublishError> {
-        let endpoint = required_value(
+    fn from_config(config: &PublishConfig, flavor: Flavor) -> Result<Self, PublishError> {
+        let minio = flavor == Flavor::Minio;
+        let missing = |s3_field: &str, minio_message: &str| {
+            if minio {
+                PublishError::General(minio_message.to_string())
+            } else {
+                PublishError::MissingArgument(s3_field.to_string())
+            }
+        };
+        // Dart's MinIO config reads `MINIO_*`; those win for the `minio` target.
+        let envs = |s3: &'static [&'static str], minio_env: &'static str| -> Vec<&'static str> {
+            if minio {
+                std::iter::once(minio_env)
+                    .chain(s3.iter().copied().filter(|key| *key != minio_env))
+                    .collect()
+            } else {
+                s3.to_vec()
+            }
+        };
+
+        let endpoint = non_blank_value(
             config,
             &["endpoint", "s3-endpoint", "minio-endpoint"],
-            &[ENV_S3_ENDPOINT, ENV_MINIO_ENDPOINT],
-            "S3 endpoint",
-        )?;
+            &envs(&[ENV_S3_ENDPOINT, ENV_MINIO_ENDPOINT], ENV_MINIO_ENDPOINT),
+        )
+        .ok_or_else(|| {
+            missing(
+                "S3 endpoint",
+                "Minio endpoint is required. Please provide it via `--minio-endpoint` argument or `MINIO_ENDPOINT` environment variable.",
+            )
+        })?;
         let region = optional_value(
             config,
             &["region", "s3-region", "minio-region"],
             &[ENV_S3_REGION, ENV_AWS_REGION],
         )
         .unwrap_or_else(|| DEFAULT_REGION.to_string());
-        let access_key = required_value(
+        let access_key = non_blank_value(
             config,
             &["access-key", "s3-access-key", "minio-access-key"],
-            &[ENV_S3_ACCESS_KEY, ENV_AWS_ACCESS_KEY_ID, ENV_MINIO_ACCESS_KEY],
-            "S3 access key",
-        )?;
-        let secret_key = required_value(
+            &envs(
+                &[ENV_S3_ACCESS_KEY, ENV_AWS_ACCESS_KEY_ID, ENV_MINIO_ACCESS_KEY],
+                ENV_MINIO_ACCESS_KEY,
+            ),
+        )
+        .ok_or_else(|| {
+            missing(
+                "S3 access key",
+                "Minio access key is required. Please provide it via `--minio-access-key` argument or `MINIO_ACCESS_KEY` environment variable.",
+            )
+        })?;
+        let secret_key = non_blank_value(
             config,
             &["secret-key", "s3-secret-key", "minio-secret-key"],
-            &[ENV_S3_SECRET_KEY, ENV_AWS_SECRET_ACCESS_KEY, ENV_MINIO_SECRET_KEY],
-            "S3 secret key",
-        )?;
-        let bucket = required_value(
+            &envs(
+                &[ENV_S3_SECRET_KEY, ENV_AWS_SECRET_ACCESS_KEY, ENV_MINIO_SECRET_KEY],
+                ENV_MINIO_SECRET_KEY,
+            ),
+        )
+        .ok_or_else(|| {
+            missing(
+                "S3 secret key",
+                "Minio secret key is required. Please provide it via `--minio-secret-key` argument or `MINIO_SECRET_KEY` environment variable.",
+            )
+        })?;
+        let bucket = non_blank_value(
             config,
             &["bucket", "s3-bucket", "minio-bucket"],
             &[ENV_S3_BUCKET],
-            "S3 bucket",
-        )?;
+        )
+        .ok_or_else(|| {
+            missing(
+                "S3 bucket",
+                "Minio bucket is required. Please provide it via `--minio-bucket` argument.",
+            )
+        })?;
         let key_prefix = optional_value(
             config,
-            &["savekey-prefix", "key-prefix", "s3-key-prefix", "minio-savekey-prefix"],
+            &[
+                "savekey-prefix",
+                "key-prefix",
+                "s3-key-prefix",
+                "minio-savekey-prefix",
+            ],
             &[ENV_S3_KEY_PREFIX],
         );
         let public_base_url = optional_value(
@@ -239,31 +315,34 @@ impl S3PublishOptions {
     }
 }
 
+/// Like [`optional_value`], but blank values count as missing.
+fn non_blank_value(
+    config: &PublishConfig,
+    argument_keys: &[&str],
+    env_keys: &[&str],
+) -> Option<String> {
+    optional_value(config, argument_keys, env_keys).filter(|value| !value.trim().is_empty())
+}
+
 fn required_value(
     config: &PublishConfig,
     argument_keys: &[&str],
     env_keys: &[&str],
     field_name: &str,
 ) -> Result<String, PublishError> {
-    optional_value(config, argument_keys, env_keys)
-        .filter(|value| !value.trim().is_empty())
+    non_blank_value(config, argument_keys, env_keys)
         .ok_or_else(|| PublishError::MissingArgument(field_name.to_string()))
 }
 
+/// First non-empty publish argument, then the first non-empty variable
+/// (read through [`PublishConfig::env_var`]). An argument that is present
+/// but empty falls back to the variable, like Dart's `PublishMinioConfig`.
 fn optional_value(
     config: &PublishConfig,
     argument_keys: &[&str],
     env_keys: &[&str],
 ) -> Option<String> {
-    config
-        .publish_arguments
-        .as_ref()
-        .and_then(|arguments| {
-            argument_keys
-                .iter()
-                .find_map(|key| arguments.get(*key).cloned())
-        })
-        .or_else(|| env_keys.iter().find_map(|key| env::var(key).ok()))
+    argument_or_env(config, argument_keys, env_keys)
 }
 
 fn normalize_endpoint(endpoint: &str) -> String {
@@ -405,51 +484,6 @@ fn parse_bool(value: &str) -> Result<bool, PublishError> {
     }
 }
 
-fn file_name(path: &str) -> Option<String> {
-    Path::new(path)
-        .file_name()
-        .and_then(|name| name.to_str())
-        .map(ToOwned::to_owned)
-}
-
-fn to_publish_error(error: impl std::fmt::Display) -> PublishError {
-    PublishError::General(error.to_string())
-}
-
-struct UploadProgressReader {
-    file: File,
-    sent: u64,
-    total: u64,
-    on_progress: Option<PublishProgressCallback>,
-}
-
-impl UploadProgressReader {
-    fn new(file: File, total: u64, on_progress: Option<PublishProgressCallback>) -> Self {
-        if let Some(callback) = &on_progress {
-            callback(0, total);
-        }
-        Self {
-            file,
-            sent: 0,
-            total,
-            on_progress,
-        }
-    }
-}
-
-impl Read for UploadProgressReader {
-    fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
-        let bytes_read = self.file.read(buf)?;
-        if bytes_read > 0 {
-            self.sent += bytes_read as u64;
-            if let Some(callback) = &self.on_progress {
-                callback(self.sent, self.total);
-            }
-        }
-        Ok(bytes_read)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -514,6 +548,47 @@ mod tests {
         assert!(parse_bool("1").expect("1 should parse"));
         assert!(!parse_bool("false").expect("false should parse"));
         assert!(!parse_bool("0").expect("0 should parse"));
+    }
+
+    #[test]
+    fn minio_uses_dart_messages_and_env_fallback_for_empty_arguments() {
+        let arguments = |pairs: &[(&str, &str)]| {
+            pairs
+                .iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect::<std::collections::HashMap<_, _>>()
+        };
+        let config = PublishConfig {
+            publish_arguments: Some(arguments(&[("endpoint", ""), ("bucket", "apps")])),
+            environment: arguments(&[
+                (ENV_MINIO_ENDPOINT, "play.min.io"),
+                (ENV_MINIO_ACCESS_KEY, "ak"),
+                (ENV_MINIO_SECRET_KEY, "sk"),
+            ]),
+            ..Default::default()
+        };
+        let options = S3PublishOptions::from_config(&config, Flavor::Minio).unwrap();
+        assert_eq!(options.endpoint, "play.min.io");
+        assert_eq!(options.access_key, "ak");
+
+        let config = PublishConfig {
+            publish_arguments: Some(arguments(&[("bucket", "")])),
+            environment: arguments(&[
+                (ENV_MINIO_ENDPOINT, "play.min.io"),
+                (ENV_MINIO_ACCESS_KEY, "ak"),
+                (ENV_MINIO_SECRET_KEY, "sk"),
+            ]),
+            ..Default::default()
+        };
+        if std::env::var(ENV_S3_BUCKET).is_err() {
+            let error = S3PublishOptions::from_config(&config, Flavor::Minio)
+                .err()
+                .unwrap();
+            assert_eq!(
+                error.to_string(),
+                "Minio bucket is required. Please provide it via `--minio-bucket` argument."
+            );
+        }
     }
 
     #[test]

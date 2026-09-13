@@ -52,6 +52,19 @@ impl FlutterAppBuilder {
         FlutterCommand::new(environment).clean()
     }
 
+    /// Whether the builder for `(platform, target)` can run on this host.
+    /// `None` when no builder matches.
+    pub fn is_supported_on_current_platform(
+        &self,
+        platform: &Platform,
+        target: Option<&str>,
+    ) -> Option<bool> {
+        self.builders
+            .iter()
+            .find(|b| b.matches(platform, target))
+            .map(|b| b.is_supported_on_current_platform())
+    }
+
     pub fn build(
         &self,
         platform: &Platform,
@@ -81,24 +94,45 @@ impl FlutterAppBuilder {
         let config = BuildConfig::new(arguments);
         builder.validate_arguments(&config)?;
 
-        let build_arguments = encode_build_arguments(&config.arguments);
+        let mut build_arguments = encode_build_arguments(&config.arguments);
+        // Like Dart's `AppBuilder.build`, default `--build-name` /
+        // `--build-number` to the pubspec version unless given explicitly.
+        if let Some(pubspec) = PubspecInfo::load("pubspec.yaml") {
+            if !config.arguments.contains_key("build-name") {
+                build_arguments.extend(["--build-name".to_string(), pubspec.build_name]);
+            }
+            if !config.arguments.contains_key("build-number") {
+                build_arguments.extend(["--build-number".to_string(), pubspec.build_number]);
+            }
+        }
 
         let start = Instant::now();
         let flutter = FlutterCommand::new(environment.as_ref());
-        let exit = flutter.build_with_echo(builder.build_subcommand(), &build_arguments)?;
+        let (exit, stderr) =
+            flutter.build_with_echo(builder.build_subcommand(), &build_arguments)?;
         if exit != 0 {
-            return Err(BuildError::CommandFailed(format!(
-                "flutter build failed with exit code {}",
-                exit
-            )));
+            let stderr = stderr.trim();
+            return Err(BuildError::CommandFailed(if stderr.is_empty() {
+                format!("flutter build failed with exit code {}", exit)
+            } else {
+                stderr.to_string()
+            }));
         }
 
         let (output_directory, output_files) =
             builder.resolve_output_files(&config, environment.as_ref())?;
 
-        if output_files.is_empty() {
+        // Directory-style outputs (linux/windows/web) report no files, as in
+        // Dart; for those only the output directory has to exist.
+        if !builder.outputs_directory() && output_files.is_empty() {
             return Err(BuildError::ArtifactNotFound(format!(
                 "No build artifacts found in {}",
+                output_directory.display()
+            )));
+        }
+        if builder.outputs_directory() && !output_directory.is_dir() {
+            return Err(BuildError::ArtifactNotFound(format!(
+                "Build output directory not found: {}",
                 output_directory.display()
             )));
         }
@@ -128,6 +162,12 @@ fn encode_build_arguments(arguments: &Map<String, Value>) -> Vec<String> {
         match value {
             Value::Null | Value::Bool(_) => {
                 output.push(format!("--{}", key));
+            }
+            Value::Array(items) => {
+                for item in items {
+                    output.push(format!("--{}", key));
+                    output.push(value_to_cli_string(item));
+                }
             }
             Value::Object(map) => {
                 for (sub_key, sub_value) in map {

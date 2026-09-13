@@ -1,37 +1,36 @@
-use anyhow::{Result, anyhow};
+use anyhow::{Context, Result, anyhow};
 use clap::Args;
 use serde_json::{Map, Value};
 use std::collections::HashMap;
+use std::time::Instant;
 
 use crate::config::DistributeOptions;
 use crate::config::release::ReleaseJob;
+use crate::utils::global_variables;
 
-use super::package::{
-    is_flutter_project, package_flutter_artifact, package_native_android_artifact,
-    package_native_ios_artifact, package_native_macos_artifact,
-};
-use super::publish::publish_artifact;
+use super::package::{PackageRequest, package};
+use super::publish::publish_artifact_with_env;
 
 #[derive(Args)]
 pub struct ReleaseArgs {
-    /// Name of the release to run (matches a `name:` key in
-    /// `distribute_options.yaml`). Required.
+    /// The name of the release to run. When omitted, every release in
+    /// `distribute_options.yaml` runs (like the Dart CLI).
     #[arg(long = "name", value_name = "NAME")]
     pub name: Option<String>,
 
-    /// Comma-separated list of job names to run.
-    /// When specified, only these jobs are executed.
+    /// Comma-separated list of jobs to run for the specified release.
     #[arg(long = "jobs", value_name = "JOB,...")]
     pub jobs: Option<String>,
 
-    /// Comma-separated list of job names to skip.
-    /// Ignored when `--jobs` is also provided.
+    /// Comma-separated list of jobs to skip for the specified release.
     #[arg(long = "skip-jobs", value_name = "JOB,...")]
     pub skip_jobs: Option<String>,
 
-    /// Skip `flutter clean` before packaging.
-    #[arg(long = "skip-clean", default_value_t = false)]
+    /// Whether or not to skip 'flutter clean' before packaging.
+    #[arg(long = "skip-clean", overrides_with = "no_skip_clean")]
     pub skip_clean: bool,
+    #[arg(long = "no-skip-clean", overrides_with = "skip_clean", hide = true)]
+    pub no_skip_clean: bool,
 
     /// Perform a dry run: print which jobs would execute without actually
     /// running them.
@@ -39,82 +38,86 @@ pub struct ReleaseArgs {
     pub dry_run: bool,
 }
 
+fn split_list(value: Option<&str>) -> Vec<String> {
+    value
+        .unwrap_or("")
+        .split(',')
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .map(String::from)
+        .collect()
+}
+
 pub async fn execute(args: &ReleaseArgs) -> Result<()> {
-    let release_name = args
-        .name
-        .as_deref()
-        .ok_or_else(|| anyhow!("The 'name' option is mandatory!"))?;
+    let started = Instant::now();
+    let result = run(args);
+    let seconds = started.elapsed().as_secs();
+    if args.dry_run {
+        return result;
+    }
+    println!();
+    match &result {
+        Ok(()) => println!("\x1b[1;32mRELEASE SUCCESSFUL in {}s\x1b[0m", seconds),
+        Err(error) => eprintln!(
+            "\x1b[1;31mRELEASE FAILED in {}s\x1b[0m\n\x1b[31m{:#}\x1b[0m",
+            seconds, error
+        ),
+    }
+    result
+}
 
-    let job_names: Vec<String> = args
-        .jobs
-        .as_deref()
-        .unwrap_or("")
-        .split(',')
-        .map(str::trim)
-        .filter(|s| !s.is_empty())
-        .map(String::from)
-        .collect();
-
-    let skip_job_names: Vec<String> = args
-        .skip_jobs
-        .as_deref()
-        .unwrap_or("")
-        .split(',')
-        .map(str::trim)
-        .filter(|s| !s.is_empty())
-        .map(String::from)
-        .collect();
+/// Dart's `UnifiedDistributor.release`.
+fn run(args: &ReleaseArgs) -> Result<()> {
+    let release_name = args.name.clone().unwrap_or_default();
+    let job_names = split_list(args.jobs.as_deref());
+    let skip_job_names = split_list(args.skip_jobs.as_deref());
 
     let opts = DistributeOptions::load()?;
+    std::fs::create_dir_all(&opts.output)
+        .with_context(|| format!("Failed to create {}", opts.output))?;
 
-    // Resolve global variables: env vars < distribute_options.variables
-    let mut global_vars: std::collections::HashMap<String, String> = std::env::vars().collect();
-    global_vars.extend(opts.resolved_variables());
+    let global_vars = global_variables(&opts);
 
-    // Select matching releases
-    let matching: Vec<_> = opts
+    let releases: Vec<_> = opts
         .releases
         .iter()
-        .filter(|r| r.name == release_name)
+        .filter(|r| release_name.is_empty() || r.name == release_name)
         .collect();
-
-    if matching.is_empty() {
+    if releases.is_empty() {
         return Err(anyhow!(
-            "No release named '{}' found in distribute_options.yaml.",
-            release_name
+            "Missing/incomplete `distribute_options.yaml` file.{}",
+            if release_name.is_empty() {
+                String::new()
+            } else {
+                format!(" (no release named '{}')", release_name)
+            }
         ));
     }
 
-    // Clean at most once across all jobs (mirrors Dart's release flow).
-    let mut clean_before_build = !args.skip_clean;
-
-    for release in &matching {
+    for release in releases {
         let filtered_jobs = release.filter_jobs(&job_names, &skip_job_names);
-
         if filtered_jobs.is_empty() {
-            return Err(anyhow!(
-                "No available jobs found in release '{}'.",
-                release.name
-            ));
+            return Err(anyhow!("No available jobs found in {}.", release.name));
         }
 
-        for job in &filtered_jobs {
-            // Merge variables: global < release-level < job-level
-            let mut _vars = global_vars.clone();
+        // Clean at most once per release (mirrors Dart).
+        let mut clean_before_build = !args.skip_clean;
+
+        for job in filtered_jobs {
+            println!();
+            println!(
+                "\x1b[34m===>\x1b[0m \x1b[1;37mReleasing\x1b[0m {}:\x1b[1;32m{}\x1b[0m",
+                release.name, job.name
+            );
+
+            // global < release-level < job-level
+            let mut variables = global_vars.clone();
             if let Some(rv) = &release.variables {
-                _vars.extend(rv.clone());
+                variables.extend(rv.clone());
             }
             if let Some(jv) = &job.variables {
-                _vars.extend(jv.clone());
+                variables.extend(jv.clone());
             }
-
-            log::info!(
-                "===> Releasing {}:{} (platform={}, target={})",
-                release.name,
-                job.name,
-                job.package.platform,
-                job.package.target,
-            );
 
             if args.dry_run {
                 println!(
@@ -130,81 +133,39 @@ pub async fn execute(args: &ReleaseArgs) -> Result<()> {
                 continue;
             }
 
-            let is_native = !is_flutter_project();
-
-            let artifacts = if is_native && job.package.platform == "macos" {
-                log::info!(
-                    "Detected native macOS Xcode project (no pubspec.yaml), using Xcode builder"
-                );
-                package_native_macos_artifact(
-                    &job.package.target,
-                    yaml_map_to_json_map(job.package.build_args.as_ref())?,
-                    _vars.clone(),
-                    &opts.output,
-                    opts.artifact_name.clone(),
-                    job.package.hooks.as_ref(),
-                )?
-            } else if is_native && job.package.platform == "ios" {
-                log::info!(
-                    "Detected native iOS Xcode project (no pubspec.yaml), using Xcode builder"
-                );
-                package_native_ios_artifact(
-                    &job.package.target,
-                    yaml_map_to_json_map(job.package.build_args.as_ref())?,
-                    _vars.clone(),
-                    &opts.output,
-                    opts.artifact_name.clone(),
-                    job.package.hooks.as_ref(),
-                )?
-            } else if is_native && job.package.platform == "android" {
-                log::info!(
-                    "Detected native Android project (no pubspec.yaml), using Gradle builder"
-                );
-                package_native_android_artifact(
-                    &job.package.target,
-                    yaml_map_to_json_map(job.package.build_args.as_ref())?,
-                    _vars.clone(),
-                    &opts.output,
-                    opts.artifact_name.clone(),
-                    job.package.hooks.as_ref(),
-                )?
-            } else {
-                package_flutter_artifact(
-                    &job.package.platform,
-                    &job.package.target,
-                    yaml_map_to_json_map(job.package.build_args.as_ref())?,
-                    _vars.clone(),
-                    &opts.output,
-                    opts.artifact_name.clone(),
-                    job.package.channel.clone(),
-                    clean_before_build,
-                    job.package.hooks.as_ref(),
-                )?
-            };
+            let targets = [job.package.target.clone()];
+            let packaged = package(PackageRequest {
+                platform: &job.package.platform,
+                targets: &targets,
+                channel: job.package.channel.clone(),
+                artifact_name: opts.artifact_name.clone(),
+                clean_before_build,
+                build_arguments: yaml_map_to_json_map(job.package.build_args.as_ref())?,
+                variables: variables.clone(),
+                hooks: job.package.hooks.as_ref(),
+                output: &opts.output,
+            })?;
             clean_before_build = false;
 
-            for artifact in &artifacts {
-                println!(
-                    "Release job '{}:{}': packaged {}",
-                    release.name,
-                    job.name,
-                    artifact.display(),
-                );
-            }
-
             if let Some(target) = job.publish_target() {
-                let publish_args = publish_args(job, &_vars)?;
-                for artifact in &artifacts {
-                    let message = publish_artifact(
-                        &artifact.to_string_lossy(),
-                        target,
-                        publish_args.clone(),
-                    )?;
-                    println!(
-                        "Release job '{}:{}': published to {} ({})",
-                        release.name, job.name, target, message,
-                    );
-                }
+                // Like Dart, only the first artifact of the first result is
+                // published.
+                let artifact = packaged
+                    .first()
+                    .and_then(|result| result.artifacts.first())
+                    .ok_or_else(|| {
+                        anyhow!(
+                            "Job '{}' produced no artifact to publish to {}.",
+                            job.name,
+                            target
+                        )
+                    })?;
+                publish_artifact_with_env(
+                    &artifact.to_string_lossy(),
+                    target,
+                    publish_args(job, &variables)?,
+                    variables.clone(),
+                )?;
             }
         }
     }
@@ -212,11 +173,13 @@ pub async fn execute(args: &ReleaseArgs) -> Result<()> {
     Ok(())
 }
 
-fn yaml_map_to_json_map(
-    map: Option<&HashMap<String, serde_yaml::Value>>,
-) -> Result<Map<String, Value>> {
+fn yaml_map_to_json_map(map: Option<&serde_yaml::Mapping>) -> Result<Map<String, Value>> {
     let mut output = Map::new();
     for (key, value) in map.into_iter().flat_map(|m| m.iter()) {
+        let key = match key {
+            serde_yaml::Value::String(key) => key.clone(),
+            other => serde_yaml::to_string(other)?.trim().to_string(),
+        };
         output.insert(
             key.clone(),
             serde_json::to_value(value).map_err(|e| anyhow!("Invalid build arg {key}: {e}"))?,
@@ -273,12 +236,33 @@ fn copy_variable_arg(
     }
 }
 
+/// Publish arguments are strings; a list of `key=value` items (which Dart
+/// turns into a map) is joined with commas.
 fn yaml_value_to_string(key: &str, value: &serde_yaml::Value) -> Result<String> {
     match value {
         serde_yaml::Value::String(value) => Ok(value.clone()),
         serde_yaml::Value::Number(value) => Ok(value.to_string()),
         serde_yaml::Value::Bool(value) => Ok(value.to_string()),
         serde_yaml::Value::Null => Ok(String::new()),
+        serde_yaml::Value::Sequence(items) => items
+            .iter()
+            .map(|item| yaml_value_to_string(key, item))
+            .collect::<Result<Vec<_>>>()
+            .map(|items| items.join(",")),
         _ => Err(anyhow!("Publish arg '{key}' must be a scalar value")),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn build_args_keep_yaml_order() {
+        let mapping: serde_yaml::Mapping =
+            serde_yaml::from_str("zeta: 1\nalpha: true\nmid: x\n").unwrap();
+        let map = yaml_map_to_json_map(Some(&mapping)).unwrap();
+        let keys: Vec<_> = map.keys().cloned().collect();
+        assert_eq!(keys, ["zeta", "alpha", "mid"]);
     }
 }

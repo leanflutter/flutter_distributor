@@ -4,6 +4,8 @@ use std::process::Command;
 use fastforge_core::{AppPackager, PackageConfig, PackageError, PackageResult, Platform};
 use serde::Deserialize;
 
+use crate::fs_util::copy_dir_contents;
+
 use super::common::{
     Person, deb_architecture, desktop_list, install_hicolor_icons, install_metainfo,
     load_make_config, load_pubspec_meta, render_desktop_entry,
@@ -65,12 +67,15 @@ impl DebMakeConfig {
     /// Renders the `DEBIAN/control` file, mirroring Dart's `toJson()['CONTROL']`.
     fn control_file(&self, config: &PackageConfig) -> String {
         let meta = load_pubspec_meta();
-        let join = |v: &Option<Vec<String>>| -> Option<String> {
-            v.as_ref().filter(|v| !v.is_empty()).map(|v| v.join(", "))
-        };
+        // Dart emits a configured-but-empty list as an empty field
+        // (`Depends: `); only an absent key is omitted.
+        let join = |v: &Option<Vec<String>>| -> Option<String> { v.as_ref().map(|v| v.join(", ")) };
 
         let entries: Vec<(&str, Option<String>)> = vec![
-            ("Maintainer", self.maintainer.as_ref().map(Person::formatted)),
+            (
+                "Maintainer",
+                self.maintainer.as_ref().map(Person::formatted),
+            ),
             (
                 "Package",
                 Some(
@@ -99,10 +104,8 @@ impl DebMakeConfig {
                     .map(|e| (if e { "yes" } else { "no" }).to_string()),
             ),
             ("Installed-Size", self.installed_size.map(|s| s.to_string())),
-            (
-                "Description",
-                Some(meta.description.unwrap_or_else(|| config.app_name.clone())),
-            ),
+            // Omitted when pubspec.yaml has no `description` (like Dart).
+            ("Description", meta.description),
             ("Homepage", meta.homepage),
             ("Depends", join(&self.dependencies)),
             ("Build-Depends-Indep", join(&self.build_dependencies_indep)),
@@ -117,7 +120,7 @@ impl DebMakeConfig {
             ("Replaces", join(&self.replaces)),
             (
                 "Uploaders",
-                self.co_authors.as_ref().filter(|v| !v.is_empty()).map(|v| {
+                self.co_authors.as_ref().map(|v| {
                     v.iter()
                         .map(Person::formatted)
                         .collect::<Vec<_>>()
@@ -155,10 +158,8 @@ impl DebMakeConfig {
             ("MimeType", desktop_list(&self.supported_mime_type)),
             ("Categories", desktop_list(&self.categories)),
             ("Keywords", desktop_list(&self.keywords)),
-            (
-                "StartupNotify",
-                Some(self.startup_notify.unwrap_or(true).to_string()),
-            ),
+            // Only written when `startup_notify` is configured (like Dart).
+            ("StartupNotify", self.startup_notify.map(|b| b.to_string())),
             ("StartupWMClass", self.startup_wm_class.clone()),
         ])
     }
@@ -198,15 +199,6 @@ fn run(cmd: &mut Command) -> Result<(), PackageError> {
             stderr: String::from_utf8_lossy(&out.stderr).into(),
         });
     }
-    Ok(())
-}
-
-fn copy_dir_contents(src: &Path, dst: &Path) -> Result<(), PackageError> {
-    run(Command::new("cp").args([
-        "-fr",
-        &format!("{}/.", src.display()),
-        &dst.display().to_string(),
-    ]))?;
     Ok(())
 }
 
@@ -253,10 +245,7 @@ impl AppPackager for LinuxDebPackager {
         copy_dir_contents(&config.build_output_dir, &share_app_dir)?;
 
         // DEBIAN/control
-        std::fs::write(
-            debian_dir.join("control"),
-            make_config.control_file(config),
-        )?;
+        std::fs::write(debian_dir.join("control"), make_config.control_file(config))?;
 
         // DEBIAN/postinst + DEBIAN/postrm
         let postinst_path = debian_dir.join("postinst");
@@ -282,9 +271,7 @@ impl AppPackager for LinuxDebPackager {
         ]))?;
 
         std::fs::remove_dir_all(&pkg_dir).ok();
-        Ok(PackageResult {
-            artifacts: vec![output_file],
-        })
+        config.resolve_result(output_file)
     }
 }
 
@@ -308,6 +295,7 @@ mod tests {
             build_output_dir: PathBuf::new(),
             build_output_files: vec![],
             output_dir: PathBuf::new(),
+            environment: Default::default(),
         }
     }
 
@@ -397,6 +385,20 @@ startup_notify: true
         assert!(control.contains("Priority: optional"));
         let desktop = mc.desktop_file(&test_config());
         assert!(desktop.contains("Name=hola_amigos"));
-        assert!(desktop.contains("StartupNotify=true"));
+        // Dart omits StartupNotify when `startup_notify` is not configured.
+        assert!(!desktop.contains("StartupNotify"));
+    }
+
+    #[test]
+    fn empty_lists_are_written_as_empty_fields() {
+        let mc: DebMakeConfig =
+            serde_yaml::from_str("dependencies: []\nco_authors: []\nstartup_notify: false\n")
+                .unwrap();
+        let control = mc.control_file(&test_config());
+        assert!(control.contains("Depends: \n"));
+        assert!(control.contains("Uploaders: \n"));
+        assert!(!control.contains("Recommends"));
+        let desktop = mc.desktop_file(&test_config());
+        assert!(desktop.contains("StartupNotify=false"));
     }
 }

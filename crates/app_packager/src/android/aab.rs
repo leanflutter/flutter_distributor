@@ -23,9 +23,7 @@ impl AppPackager for AndroidAabPackager {
             .ok_or_else(|| PackageError::General("no build output files".into()))?;
         let dst = config.output_file();
         std::fs::copy(src, &dst)?;
-        Ok(PackageResult {
-            artifacts: vec![dst],
-        })
+        config.resolve_result(dst)
     }
 }
 
@@ -50,6 +48,7 @@ mod tests {
             build_output_dir: tmp.path().to_path_buf(),
             build_output_files: vec![src_file.to_path_buf()],
             output_dir: tmp.path().to_path_buf(),
+            environment: Default::default(),
         }
     }
 

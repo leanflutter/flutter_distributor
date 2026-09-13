@@ -58,8 +58,8 @@ The legacy documentation remains in [`apps/docs`](../../apps/docs/). This direct
 | App Store Connect             | Implemented                  | [App Store](stores/appstore.md)                         |
 | Google Play Console           | Implemented                  | [Google Play](stores/googleplay.md)                     |
 | Multi-store catalog sync      | Implemented                  | [Catalog](stores/catalog.md)                            |
-| Automatic upgrades            | Not implemented              | `fastforge upgrade` is currently a no-op                |
-| Online version checks         | Not implemented              | `version-check` currently prints only the local version |
+| Self-upgrade                  | Implemented                  | `fastforge upgrade`                                     |
+| Online version checks         | Implemented                  | Before every command, or `fastforge version-check`      |
 
 ## Get Current Version Information
 

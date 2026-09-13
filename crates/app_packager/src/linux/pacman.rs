@@ -4,6 +4,8 @@ use std::process::Command;
 use fastforge_core::{AppPackager, PackageConfig, PackageError, PackageResult, Platform};
 use serde::Deserialize;
 
+use crate::fs_util::copy_dir_contents;
+
 use super::common::{
     Person, desktop_list, install_hicolor_icons, install_metainfo, load_make_config,
     load_pubspec_meta, render_desktop_entry, uname_machine,
@@ -67,10 +69,10 @@ impl PacmanMakeConfig {
     /// Renders `.PKGINFO`, mirroring Dart's `toFilesString()['PKGINFO']`.
     fn pkginfo_file(&self, config: &PackageConfig) -> String {
         let meta = load_pubspec_meta();
+        // Dart writes a configured-but-empty list as `()`; only an absent
+        // key is omitted.
         let paren = |v: &Option<Vec<String>>| -> Option<String> {
-            v.as_ref()
-                .filter(|v| !v.is_empty())
-                .map(|v| format!("({})", v.join(", ")))
+            v.as_ref().map(|v| format!("({})", v.join(", ")))
         };
         let licenses = self
             .licenses
@@ -91,10 +93,8 @@ impl PacmanMakeConfig {
                 ),
             ),
             ("pkgver", Some(config.app_version.clone())),
-            (
-                "pkgdesc",
-                Some(meta.description.unwrap_or_else(|| config.app_name.clone())),
-            ),
+            // Omitted when pubspec.yaml has no `description` (like Dart).
+            ("pkgdesc", meta.description),
             ("packager", self.maintainer.as_ref().map(Person::formatted)),
             ("size", self.installed_size.map(|s| s.to_string())),
             ("license", Some(format!("({})", licenses.join(", ")))),
@@ -133,11 +133,7 @@ impl PacmanMakeConfig {
             "post_install() {{\n\t{}\n}}",
             post_install.join("\n\t")
         )];
-        if let Some(upgrade) = self
-            .postupgrade_scripts
-            .as_ref()
-            .filter(|v| !v.is_empty())
-        {
+        if let Some(upgrade) = self.postupgrade_scripts.as_ref().filter(|v| !v.is_empty()) {
             sections.push(format!("post_upgrade() {{\n\t{}\n}}", upgrade.join("\n")));
         }
         sections.push(format!(
@@ -226,17 +222,10 @@ impl AppPackager for LinuxPacmanPackager {
         }
 
         // Copy the flutter build output into /opt/{binary_name}/
-        run(Command::new("cp").args([
-            "-fr",
-            &format!("{}/.", config.build_output_dir.display()),
-            &share_app_dir.display().to_string(),
-        ]))?;
+        copy_dir_contents(&config.build_output_dir, &share_app_dir)?;
 
         // Write .PKGINFO, .INSTALL, .desktop
-        std::fs::write(
-            pkg_dir.join(".PKGINFO"),
-            make_config.pkginfo_file(config),
-        )?;
+        std::fs::write(pkg_dir.join(".PKGINFO"), make_config.pkginfo_file(config))?;
         std::fs::write(
             pkg_dir.join(".INSTALL"),
             make_config.install_file(binary_name),
@@ -279,9 +268,7 @@ impl AppPackager for LinuxPacmanPackager {
         std::fs::rename(pkg_dir.join("temptar.xz"), &output_file)?;
 
         std::fs::remove_dir_all(&pkg_dir).ok();
-        Ok(PackageResult {
-            artifacts: vec![output_file],
-        })
+        config.resolve_result(output_file)
     }
 }
 
@@ -305,6 +292,7 @@ mod tests {
             build_output_dir: PathBuf::new(),
             build_output_files: vec![],
             output_dir: PathBuf::new(),
+            environment: Default::default(),
         }
     }
 
@@ -379,6 +367,17 @@ startup_notify: true
     fn install_file_omits_empty_upgrade_section() {
         let install = PacmanMakeConfig::default().install_file("demo");
         assert!(!install.contains("post_upgrade"));
+    }
+
+    #[test]
+    fn pkginfo_empty_lists_and_missing_description() {
+        let mc: PacmanMakeConfig = serde_yaml::from_str("options: []\ndependencies: []\n").unwrap();
+        let pkginfo = mc.pkginfo_file(&test_config());
+        assert!(pkginfo.contains("options=()\n"));
+        assert!(pkginfo.contains("depends=()\n"));
+        assert!(!pkginfo.contains("optdepends"));
+        // No pubspec.yaml description here: pkgdesc is omitted.
+        assert!(!pkginfo.contains("pkgdesc"));
     }
 
     #[test]

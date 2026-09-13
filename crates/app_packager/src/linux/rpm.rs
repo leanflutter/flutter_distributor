@@ -4,6 +4,8 @@ use std::process::Command;
 use fastforge_core::{AppPackager, PackageConfig, PackageError, PackageResult, Platform};
 use serde::Deserialize;
 
+use crate::fs_util::copy_dir_contents;
+
 use super::common::{
     desktop_list, load_make_config, load_pubspec_meta, render_desktop_entry, uname_machine,
 };
@@ -62,6 +64,24 @@ fn rpm_architecture() -> String {
     }
 }
 
+/// RPM `Release` from the app version, mirroring Dart's
+/// `appVersion.build.first`: the first dot-separated part of the build
+/// number (`1.2.3+4.5` → `4`), numeric parts normalized like pub_semver
+/// (`+04` → `4`), `1` when there is no build number.
+fn rpm_release(app_version: &str) -> String {
+    let Some((_, build)) = app_version.split_once('+') else {
+        return "1".to_string();
+    };
+    let first = build.split('.').next().unwrap_or_default();
+    if first.is_empty() {
+        return "1".to_string();
+    }
+    match first.parse::<u64>() {
+        Ok(n) => n.to_string(),
+        Err(_) => first.to_string(),
+    }
+}
+
 /// Sanitizes an ELF RPATH, replacing absolute entries with `$ORIGIN` and
 /// de-duplicating, mirroring Dart's `sanitizeRpmRpath`.
 /// This prevents rpmbuild QA failures for build-directory RPATHs
@@ -102,12 +122,12 @@ impl RpmMakeConfig {
     /// Renders the `.spec` file, mirroring Dart's `toFilesString()['SPEC']`.
     fn spec_file(&self, config: &PackageConfig) -> String {
         let meta = load_pubspec_meta();
-        let build_number = config.app_version.split('+').nth(1);
+        // `description ?? pubspec.description`; the section is omitted when
+        // both are missing (like Dart).
         let description = self
             .description
             .clone()
-            .or_else(|| meta.description.clone())
-            .unwrap_or_else(|| config.app_name.clone());
+            .or_else(|| meta.description.clone());
 
         // Preamble
         let mut preamble: Vec<(&str, Option<String>)> = vec![
@@ -115,14 +135,12 @@ impl RpmMakeConfig {
             ("Version", Some(config.app_version.clone())),
             (
                 "Release",
-                Some(format!("{}%{{?dist}}", build_number.unwrap_or("1"))),
+                Some(format!("{}%{{?dist}}", rpm_release(&config.app_version))),
             ),
+            // `summary ?? pubspec.description`, omitted when both are missing.
             (
                 "Summary",
-                self.summary
-                    .clone()
-                    .or_else(|| meta.description.clone())
-                    .or_else(|| Some(config.app_name.clone())),
+                self.summary.clone().or_else(|| meta.description.clone()),
             ),
             ("Group", self.group.clone()),
             ("Vendor", self.vendor.clone()),
@@ -137,12 +155,13 @@ impl RpmMakeConfig {
             ("License", self.license.clone()),
             ("URL", self.url.clone()),
         ];
-        if let Some(requires) = self.requires.as_ref().filter(|v| !v.is_empty()) {
-            preamble.push(("Requires", Some(requires.join(", "))));
-        }
-        if let Some(build_requires) = self.build_requires.as_ref().filter(|v| !v.is_empty()) {
-            preamble.push(("BuildRequires", Some(build_requires.join(", "))));
-        }
+        // A configured-but-empty list is still written (`Requires: `), like
+        // Dart's `requires?.join(', ')`.
+        preamble.push(("Requires", self.requires.as_ref().map(|v| v.join(", "))));
+        preamble.push((
+            "BuildRequires",
+            self.build_requires.as_ref().map(|v| v.join(", ")),
+        ));
         preamble.push(("BuildArch", Some(self.build_arch())));
 
         let preamble_str = preamble
@@ -202,12 +221,15 @@ impl RpmMakeConfig {
         .join("\n");
 
         let body = [
-            format!("%description\n{}\n", description),
-            format!("%install\n{}\n", install_script),
-            format!("%post\n{}\n", post_scripts.join("\n")),
-            format!("%postun\n{}\n", postun_scripts.join("\n")),
-            format!("%files\n{}\n", files_section),
+            description.map(|d| format!("%description\n{}\n", d)),
+            Some(format!("%install\n{}\n", install_script)),
+            Some(format!("%post\n{}\n", post_scripts.join("\n"))),
+            Some(format!("%postun\n{}\n", postun_scripts.join("\n"))),
+            Some(format!("%files\n{}\n", files_section)),
         ]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>()
         .join("\n");
 
         let inline_body = [
@@ -246,10 +268,8 @@ impl RpmMakeConfig {
             ("MimeType", desktop_list(&self.supported_mime_type)),
             ("Categories", desktop_list(&self.categories)),
             ("Keywords", desktop_list(&self.keywords)),
-            (
-                "StartupNotify",
-                Some(self.startup_notify.unwrap_or(true).to_string()),
-            ),
+            // Only written when `startup_notify` is configured (like Dart).
+            ("StartupNotify", self.startup_notify.map(|b| b.to_string())),
         ])
     }
 }
@@ -324,8 +344,10 @@ impl AppPackager for LinuxRpmPackager {
         let binary_name = &config.app_binary_name;
         let app_name = &config.app_name;
 
-        // Create rpmbuild tree: BUILD BUILDROOT RPMS SOURCES SPECS SRPMS
-        let rpmbuild_dir = pkg_dir.join("rpmbuild");
+        // Create rpmbuild tree: BUILD BUILDROOT RPMS SOURCES SPECS SRPMS.
+        // rpmbuild needs an absolute `_topdir` (Dart uses
+        // `packagingDirectory.absolute.path`).
+        let rpmbuild_dir = std::path::absolute(&pkg_dir)?.join("rpmbuild");
         for sub in &["BUILD", "BUILDROOT", "RPMS", "SOURCES", "SPECS", "SRPMS"] {
             std::fs::create_dir_all(rpmbuild_dir.join(sub))?;
         }
@@ -334,11 +356,7 @@ impl AppPackager for LinuxRpmPackager {
         let build_dir = rpmbuild_dir.join("BUILD");
         let build_root = build_dir.join(app_name);
         std::fs::create_dir_all(&build_root)?;
-        run(Command::new("cp").args([
-            "-fr",
-            &format!("{}/.", config.build_output_dir.display()),
-            &build_root.display().to_string(),
-        ]))?;
+        copy_dir_contents(&config.build_output_dir, &build_root)?;
 
         // Fix lib_*_plugin.so RPATHs pointing at the build directory
         sanitize_bundle_rpaths(&build_root)?;
@@ -420,9 +438,7 @@ impl AppPackager for LinuxRpmPackager {
         std::fs::copy(first_rpm.path(), &output_file)?;
 
         std::fs::remove_dir_all(&pkg_dir).ok();
-        Ok(PackageResult {
-            artifacts: vec![output_file],
-        })
+        config.resolve_result(output_file)
     }
 }
 
@@ -446,6 +462,7 @@ mod tests {
             build_output_dir: PathBuf::new(),
             build_output_files: vec![],
             output_dir: PathBuf::new(),
+            environment: Default::default(),
         }
     }
 
@@ -494,7 +511,9 @@ spec_macros:
         assert!(spec.contains("Packager: Gamer Boy 69 <rickastley@gmail.lol>"));
         assert!(spec.contains("License: MIT"));
         assert!(spec.contains("Requires: libkeybinder"));
-        assert!(spec.contains("%post\nupdate-mime-database %{_datadir}/mime &> /dev/null || :\necho Installed"));
+        assert!(spec.contains(
+            "%post\nupdate-mime-database %{_datadir}/mime &> /dev/null || :\necho Installed"
+        ));
         assert!(spec.contains("echo Uninstalling"));
         assert!(spec.contains("%attr(4755, root, root)"));
     }
@@ -505,8 +524,41 @@ spec_macros:
         let spec = mc.spec_file(&test_config());
         assert!(spec.contains("Name: hola_amigos"));
         assert!(spec.contains("Release: 4%{?dist}"));
-        assert!(spec.contains("%description"));
+        // No summary/description anywhere (no pubspec.yaml here): omitted.
+        assert!(!spec.contains("Summary:"));
+        assert!(!spec.contains("%description"));
+        assert!(!spec.contains("Requires"));
+        assert!(spec.contains("%install"));
         assert!(spec.contains("%files"));
+    }
+
+    #[test]
+    fn spec_writes_empty_requires() {
+        let mc: RpmMakeConfig =
+            serde_yaml::from_str("requires: []\nbuild_requires: []\ndescription: Hi\n").unwrap();
+        let spec = mc.spec_file(&test_config());
+        assert!(spec.contains("Requires: \n"));
+        assert!(spec.contains("BuildRequires: \n"));
+        assert!(spec.contains("%description\nHi\n"));
+    }
+
+    #[test]
+    fn release_uses_first_build_number_part() {
+        assert_eq!(rpm_release("1.2.3+4.5"), "4");
+        assert_eq!(rpm_release("1.2.3+04"), "4");
+        assert_eq!(rpm_release("1.2.3+beta.2"), "beta");
+        assert_eq!(rpm_release("1.2.3"), "1");
+    }
+
+    #[test]
+    fn desktop_startup_notify_only_when_configured() {
+        let desktop = RpmMakeConfig::default().desktop_file(&test_config());
+        assert!(!desktop.contains("StartupNotify"));
+        let mc: RpmMakeConfig = serde_yaml::from_str("startup_notify: true\n").unwrap();
+        assert!(
+            mc.desktop_file(&test_config())
+                .contains("StartupNotify=true")
+        );
     }
 
     #[test]

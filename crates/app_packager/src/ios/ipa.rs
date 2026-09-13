@@ -17,20 +17,13 @@ impl AppPackager for IOSIpaPackager {
         "ipa"
     }
 
-    #[cfg(not(target_os = "macos"))]
-    fn is_supported_on_current_platform(&self) -> bool {
-        false
-    }
-
     fn package(&self, config: &PackageConfig) -> Result<PackageResult, PackageError> {
         let src = config
             .first_build_output_file()
             .ok_or_else(|| PackageError::General("no build output files".into()))?;
         let dst = config.output_file();
         std::fs::copy(src, &dst)?;
-        Ok(PackageResult {
-            artifacts: vec![dst],
-        })
+        config.resolve_result(dst)
     }
 }
 
@@ -59,6 +52,7 @@ mod tests {
             build_output_dir: tmp.path().to_path_buf(),
             build_output_files: vec![src],
             output_dir: tmp.path().to_path_buf(),
+            environment: Default::default(),
         };
         let result = IOSIpaPackager.package(&cfg).unwrap();
         assert!(result.artifacts[0].exists());

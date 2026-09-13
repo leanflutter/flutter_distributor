@@ -8,10 +8,14 @@ fastforge <COMMAND>
 
 全局参数：
 
-| 参数            | 说明     |
-| --------------- | -------- |
-| `-h, --help`    | 显示帮助 |
-| `-V, --version` | 显示版本 |
+| 参数                 | 说明                                                     |
+| -------------------- | -------------------------------------------------------- |
+| `-h, --help`         | 显示帮助                                                 |
+| `-V, --version`      | 显示版本                                                 |
+| `--no-version-check` | 跳过每次运行命令前的更新检查（默认开启）                 |
+| `--version-check`    | 重新开启更新检查（覆盖前面的 `--no-version-check`）      |
+
+运行命令前，fastforge 会查询 GitHub Releases 是否有新版本，并在 stderr 打印升级提示（或"已是最新版本"）。检查 5 秒超时，失败不会影响命令执行。设置 `GITHUB_TOKEN` 可避免 GitHub API 限流。
 
 顶层命令：
 
@@ -27,8 +31,8 @@ fastforge <COMMAND>
 | `appstore`      | 操作 App Store Connect        |
 | `appgallery`    | 操作华为 AppGallery Connect   |
 | `googleplay`    | 操作 Google Play Console      |
-| `upgrade`       | 预留的升级命令                |
-| `version-check` | 输出当前版本                  |
+| `upgrade`       | 升级到最新版本                |
+| `version-check` | 检查是否有新版本              |
 
 ## `analyze`
 
@@ -81,14 +85,23 @@ fastforge build [OPTIONS]
 fastforge package [OPTIONS]
 ```
 
-| 参数                        | 说明                        |
-| --------------------------- | --------------------------- |
-| `-p, --platform <PLATFORM>` | 目标平台；执行时必填        |
-| `-t, --target <TARGET>`     | 单个打包 target；执行时必填 |
-| `--skip-clean`              | 跳过构建前清理              |
-| `--build-target <PATH>`     | Flutter Builder 的入口文件  |
-| `--hook-pre <COMMAND>`      | 打包前 shell 命令           |
-| `--hook-post <COMMAND>`     | 打包后 shell 命令           |
+| 参数                                  | 说明                                                             |
+| ------------------------------------- | ---------------------------------------------------------------- |
+| `-p, --platform <PLATFORM>`           | 目标平台；省略时根据 target 和项目结构推断                       |
+| `-t, --targets <TARGET,...>`          | 逗号分隔的打包 target（别名 `--target`）；必填                   |
+| `--channel <CHANNEL>`                 | 产物名中使用的渠道名                                             |
+| `--artifact-name <TEMPLATE>`          | mustache 产物名模板                                              |
+| `--skip-clean`                        | 构建前跳过 `flutter clean`                                       |
+| `--flutter-build-args <ARG,...>`      | 传给 `flutter build` 的参数（`verbose,obfuscate`、`key=value`）  |
+| `--build-target <PATH>`               | 传给 `flutter build` 的 `--target`                               |
+| `--build-flavor <FLAVOR>`             | 传给 `flutter build` 的 `--flavor`                               |
+| `--build-target-platform <PLATFORM>`  | 传给 `flutter build` 的 `--target-platform`                      |
+| `--build-export-options-plist <PATH>` | 传给 `flutter build` 的 `--export-options-plist`                 |
+| `--build-dart-define <KEY=VALUE>`     | 传给 `flutter build` 的 `--dart-define`；可重复                  |
+| `--hook-pre <COMMAND>`                | 打包前 shell 命令                                                |
+| `--hook-post <COMMAND>`               | 打包后 shell 命令                                                |
+
+与 Dart 版一致，存在 `distribute_options.yaml` 时 `package` 会读取它：产物输出到其 `output` 目录（默认 `dist/`），其 `variables` 叠加在环境变量之上，传给构建、打包器（例如 `INNO_SETUP_PATH`）和 hook。`flutter clean` 最多执行一次；非 Android 平台只构建一次并复用给所有 target。构建器无法在当前系统运行的 target 会打印警告并跳过。
 
 当前支持范围见[打包](packaging.md)。
 
@@ -100,17 +113,24 @@ fastforge package [OPTIONS]
 fastforge publish [OPTIONS]
 ```
 
-| 参数                        | 说明                        |
-| --------------------------- | --------------------------- |
-| `--path <PATH>`             | 文件或目录路径；执行时必填  |
-| `-t, --target <TARGET>`     | 单个发布 target；执行时必填 |
-| `--publish-arg <KEY=VALUE>` | 发布器参数；可重复          |
+| 参数                         | 说明                                        |
+| ---------------------------- | ------------------------------------------- |
+| `--path <PATH>`              | 文件或目录路径；必填                        |
+| `-t, --targets <TARGET,...>` | 逗号分隔的发布 target（别名 `--target`）    |
+| `--app-version <VERSION>`    | 传给发布器的应用版本                        |
+| `--publish-arg <KEY=VALUE>`  | 发布器参数；可重复                          |
+
+同时支持 Dart 版的各 provider 参数，会去掉前缀后传给对应发布器（例如 `github` 的 `--github-repo` 即 `repo`）：`--appgallery-app-id`、`--firebase-app`、`--firebase-release-notes[-file]`、`--firebase-testers[-file]`、`--firebase-groups[-file]`、`--firebase-hosting-project-id`、`--github-repo`、`--github-repo-owner`、`--github-repo-name`、`--github-release-title`、`--github-release-draft`、`--github-release-prerelease`、`--minio-endpoint`、`--minio-access-key`、`--minio-secret-key`、`--minio-region`、`--minio-bucket`、`--minio-savekey-prefix`、`--pgyer-*`、`--playstore-package-name`、`--playstore-track`、`--qiniu-bucket`、`--qiniu-bucket-domain`、`--qiniu-savekey-prefix`、`--vercel-org-id`、`--vercel-project-id`。发布到 `firebase` 时必须提供 `--firebase-app`。发布器从环境变量以及 `distribute_options.yaml` 的 `variables` 中读取凭证。
 
 各 target 的凭证和参数见[发布器总览](publishers/README.md)。
 
 ## `release`
 
-该命令保留用于兼容旧版发布流程。新自动化流程使用 `fastforge workflow`。
+```text
+fastforge release [--name <NAME>] [--jobs <JOB,...>] [--skip-jobs <JOB,...>] [--skip-clean] [--dry-run]
+```
+
+执行 `distribute_options.yaml` 中定义的 release：省略 `--name` 时执行全部 release，否则只执行指定的那个。`--jobs` 选择要执行的 job，优先于 `--skip-jobs`。每个 job 打包其 target，配置了 `publish`/`publish_to` 时发布第一个产物。变量合并顺序为：环境变量 < 全局 `variables` < release `variables` < job `variables`。每个 release 最多执行一次 `flutter clean`。结束时输出 `RELEASE SUCCESSFUL in Ns` 或 `RELEASE FAILED in Ns`。新的自动化流程建议使用 `fastforge workflow`。
 
 ## `store`
 
@@ -234,12 +254,12 @@ fastforge googleplay track update --help
 fastforge version-check [--current-only]
 ```
 
-当前实现只打印编译时版本，无论是否传入 `--current-only` 都不会联网检查新版本。
+查询 GitHub Releases 中已发布、且包含当前平台预编译二进制的最新版本，并提示是否可以升级。传入 `--current-only` 时只打印本地版本，不联网。
 
 ## `upgrade`
 
 ```text
-fastforge upgrade
+fastforge upgrade [--force]
 ```
 
-当前命令为空操作，不会下载或替换二进制。升级请重新运行安装脚本或安装指定版本。
+下载当前平台的最新发布包（与安装脚本使用的 `fastforge-<version>-<target>` 压缩包相同），并原地替换正在运行的二进制。当前已是最新版本时不做任何操作；`--force` 强制重新安装。若二进制所在目录没有写权限（例如 `/usr/local/bin`），请以提升的权限重新运行，或改用安装脚本。

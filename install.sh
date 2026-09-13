@@ -91,17 +91,21 @@ resolve_release() {
   info "Fetching latest release version..."
   fetch_releases
 
-  # Extract the first release's tag_name
-  VERSION="$(printf '%s' "$RELEASE_JSON" | grep '"tag_name"' | head -1 | sed 's/[^"]*"tag_name"[^"]*"v\{0,1\}\([^"]*\)".*/\1/')"
+  # Pick the newest release that ships a binary for this target (releases are
+  # listed newest first; releases from the Dart era carry no binaries).
+  ARCHIVE_NAME="$(printf '%s' "$RELEASE_JSON" \
+    | grep -o "\"name\": *\"${BINARY_NAME}-[^\"]*-${TARGET}\.tar\.gz\"" \
+    | head -1 \
+    | sed 's/.*"\([^"]*\)"$/\1/')"
 
-  if [ -z "$VERSION" ]; then
-    error "Failed to resolve the latest version. Set FASTFORGE_VERSION to specify one manually."
+  if [ -z "$ARCHIVE_NAME" ]; then
+    error "No release provides a prebuilt binary for ${TARGET}. Set FASTFORGE_VERSION to specify one manually."
   fi
 
-  info "Latest version: $VERSION"
+  VERSION="${ARCHIVE_NAME#"${BINARY_NAME}-"}"
+  VERSION="${VERSION%"-${TARGET}.tar.gz"}"
 
-  # Extract download URL for the matching target from the first release's assets
-  ARCHIVE_NAME="${BINARY_NAME}-${VERSION}-${TARGET}.tar.gz"
+  info "Latest version: $VERSION"
 
   # asset "url" field = API download endpoint (works for draft assets with token)
   # Strategy: find the line with "url": ".../releases/assets/..." that appears just

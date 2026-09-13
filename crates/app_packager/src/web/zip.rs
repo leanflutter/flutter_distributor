@@ -1,23 +1,13 @@
-use std::process::Command;
-
 use fastforge_core::{AppPackager, PackageConfig, PackageError, PackageResult, Platform};
 
-/// Zips a flutter web build output directory, mirroring the web branch of
-/// Dart's `AppPackageMakerZip`.
-pub struct WebZipPackager;
+use crate::fs_util::zip_dir_contents;
 
-fn run(cmd: &mut Command) -> Result<(), PackageError> {
-    let out = cmd.output().map_err(|e| {
-        PackageError::MissingTool(format!("{}: {}", cmd.get_program().to_string_lossy(), e))
-    })?;
-    if !out.status.success() {
-        return Err(PackageError::CommandFailed {
-            command: cmd.get_program().to_string_lossy().into(),
-            stderr: String::from_utf8_lossy(&out.stderr).into(),
-        });
-    }
-    Ok(())
-}
+/// Zips a web flutter build output directory in-process, mirroring the
+/// non-macOS branch of Dart's `AppPackageMakerZip` (`ZipFileEncoder
+/// .zipDirectory`): the directory *contents* are archived without a
+/// top-level folder, symlinks are followed, Unix permissions are kept and an
+/// existing archive is overwritten.
+pub struct WebZipPackager;
 
 impl AppPackager for WebZipPackager {
     fn name(&self) -> &str {
@@ -34,11 +24,7 @@ impl AppPackager for WebZipPackager {
 
     fn package(&self, config: &PackageConfig) -> Result<PackageResult, PackageError> {
         let output_file = config.output_file();
-        run(Command::new("zip")
-            .args(["-r", &output_file.display().to_string(), "."])
-            .current_dir(&config.build_output_dir))?;
-        Ok(PackageResult {
-            artifacts: vec![output_file],
-        })
+        zip_dir_contents(&config.build_output_dir, &output_file)?;
+        config.resolve_result(output_file)
     }
 }
