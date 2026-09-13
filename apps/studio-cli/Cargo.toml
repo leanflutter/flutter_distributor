@@ -1,0 +1,38 @@
+[package]
+name = "studio-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Fastforge Studio on your machine"
+license.workspace = true
+
+[[bin]]
+name = "fastforge-studio"
+path = "src/main.rs"
+
+[dependencies]
+studio-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml.workspace = true
+anyhow = "1.0"
+axum = "0.8"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+clap = { version = "4.5", features = ["derive"] }
+dirs = "6.0"
+open = "5.3"
+sha2 = "0.10"
+tokio = { version = "1", features = [
+  "rt-multi-thread",
+  "macros",
+  "net",
+  "signal",
+  "sync",
+] }
+tower-http = { version = "0.6", features = ["fs", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+tempfile = "3"

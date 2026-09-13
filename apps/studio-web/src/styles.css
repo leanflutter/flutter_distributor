@@ -1,0 +1,19 @@
+@import 'studio-ui/globals.css';
+@import 'studio-ui/themes/maple.css';
+/* Geist faces the Maple theme references (tokens live in themes/maple.css). */
+@import '@fontsource-variable/geist-mono';
+@import '@fontsource-variable/geist';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+}

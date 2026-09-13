@@ -1,0 +1,21 @@
+{
+  "name": "studio-api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "codegen": "openapi-typescript ../../apps/studio-api/openapi.yaml -o ./src/schema.d.ts",
+    "codegen:check": "openapi-typescript ../../apps/studio-api/openapi.yaml -o /tmp/studio-schema.d.ts && diff -u ./src/schema.d.ts /tmp/studio-schema.d.ts",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@tanstack/eslint-config": "latest",
+    "eslint": "^9.20.0",
+    "openapi-typescript": "^7.9.1",
+    "typescript": "^6.0.2"
+  }
+}

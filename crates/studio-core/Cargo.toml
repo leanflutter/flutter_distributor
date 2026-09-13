@@ -1,0 +1,13 @@
+[package]
+name = "studio-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Domain model, wire contract and pure logic shared by Fastforge Studio hosts"
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml.workspace = true
+thiserror.workspace = true

@@ -261,3 +261,7 @@ Please make sure to update tests as appropriate and follow the existing code sty
 ## License
 
 [MIT](./LICENSE)
+
+## Fastforge Studio
+
+The Studio web client, local server, and shared packages live in this repository under the `studio-` package prefix. See the [Studio development guide](apps/studio-cli/README.md) for setup and checks.

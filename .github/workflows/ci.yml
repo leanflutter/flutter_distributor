@@ -7,6 +7,7 @@ on:
       - "Cargo.toml"
       - "Cargo.lock"
       - "crates/**"
+      - "apps/studio-*/**"
       - ".github/workflows/ci.yml"
   pull_request:
     branches: [main, dev]
@@ -14,6 +15,7 @@ on:
       - "Cargo.toml"
       - "Cargo.lock"
       - "crates/**"
+      - "apps/studio-*/**"
       - ".github/workflows/ci.yml"
 
 jobs:
@@ -28,9 +30,9 @@ jobs:
       - name: Check formatting
         run: cargo fmt --all --check
       - name: Run clippy
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo clippy --workspace --exclude studio-api --all-targets -- -D warnings
       - name: Run cargo check
-        run: cargo check --workspace --all-targets
+        run: cargo check --workspace --exclude studio-api --all-targets
 
   build:
     needs: check
@@ -40,4 +42,15 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Build workspace
-        run: cargo build --workspace --all-targets
+        run: cargo build --workspace --exclude studio-api --all-targets
+
+  studio-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - name: Check Studio Worker
+        run: cargo check -p studio-api --target wasm32-unknown-unknown

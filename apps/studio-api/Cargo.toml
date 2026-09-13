@@ -1,0 +1,17 @@
+[package]
+name = "studio-api"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Fastforge Studio, hosted"
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+studio-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+console_error_panic_hook = "0.1"
+worker = { version = "0.8", features = ["d1"] }

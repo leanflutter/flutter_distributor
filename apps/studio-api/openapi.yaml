@@ -1,0 +1,1094 @@
+openapi: 3.1.0
+info:
+  title: Fastforge Studio API
+  version: 0.1.0
+  description: |
+    One contract, two hosts. `fastforge-studio serve` implements it against a
+    local checkout; the hosted service implements it against D1 and R2. The web
+    client is identical in both cases, and only `GET /v1/capabilities` tells the
+    two apart.
+
+    Every response is enveloped: successes as `{ "data": … }`, failures as
+    `{ "error": { "code", "message" } }`. Surfaces a deployment does not serve
+    answer `404 CAPABILITY_UNAVAILABLE` rather than 501 — in local mode the
+    hosted features do not exist at all, and navigation never links to them.
+  license:
+    name: MIT
+
+servers:
+  - url: http://127.0.0.1:7391
+    description: Local — fastforge-studio serve
+  - url: https://api.fastforge.dev
+    description: Hosted
+
+tags:
+  - name: Meta
+  - name: Projects
+  - name: Stores
+  - name: Catalog
+  - name: Runs
+  - name: Local
+
+paths:
+  /v1/capabilities:
+    get:
+      tags: [Meta]
+      summary: What this deployment can do
+      operationId: getCapabilities
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Capabilities" }
+
+  /v1/projects:
+    get:
+      tags: [Projects]
+      summary: List projects
+      operationId: listProjects
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ProjectSummary" }
+    post:
+      tags: [Projects]
+      summary: Register (local) or create (hosted) a project
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateProjectRequest" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The directory is already registered
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  /v1/projects/{projectId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      tags: [Projects]
+      summary: Read one project
+      operationId: getProject
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Project" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      tags: [Projects]
+      summary: Rename a project
+      operationId: updateProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateProjectRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: [Projects]
+      summary: Remove a project
+      description: |
+        In local mode this only unregisters the directory. Nothing on disk is
+        deleted — the checkout is the user's, not Studio's.
+      operationId: deleteProject
+      responses:
+        "204": { description: Removed }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/projects/{projectId}/stores:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      tags: [Stores]
+      summary: List store connections
+      description: |
+        Returns every supported store, configured or not, so the page can offer
+        what the project could connect to as well as what it already has.
+      operationId: listStores
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/StoreConnection" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/projects/{projectId}/stores/{store}/apps:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - $ref: "#/components/parameters/Store"
+    get:
+      tags: [Stores]
+      summary: List the apps registered under one store
+      operationId: listStoreApps
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/StoreApp" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      tags: [Stores]
+      summary: Register an app under a store
+      description: Appends an entry to the store's `apps:` list in `.fastforge/config.yaml`.
+      operationId: createStoreApp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateStoreAppRequest" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/StoreApp" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: That identifier is already registered under this store
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "501": { $ref: "#/components/responses/NotImplemented" }
+
+  /v1/projects/{projectId}/store-apps:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+    get:
+      tags: [Stores]
+      summary: List every app across all stores
+      description: |
+        In configuration order. The project shell reads this once to build its
+        sidebar, which is why it exists alongside the per-store list.
+      operationId: listAllStoreApps
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/StoreApp" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/projects/{projectId}/store-apps/{storeAppId}:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - $ref: "#/components/parameters/StoreAppId"
+    get:
+      tags: [Stores]
+      summary: Read one store app
+      operationId: getStoreApp
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/StoreApp" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      tags: [Stores]
+      summary: Edit a store app's metadata
+      description: |
+        The identifier is not editable: it is the app's identity on the store
+        and the name of the directory its catalog lives in.
+      operationId: updateStoreApp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateStoreAppRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/StoreApp" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "501": { $ref: "#/components/responses/NotImplemented" }
+    delete:
+      tags: [Stores]
+      summary: Unregister a store app
+      description: Removes the config entry. The pulled catalog on disk is left alone.
+      operationId: deleteStoreApp
+      responses:
+        "204": { description: Removed }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "501": { $ref: "#/components/responses/NotImplemented" }
+
+  /v1/projects/{projectId}/store-apps/{storeAppId}/listing:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - $ref: "#/components/parameters/StoreAppId"
+      - name: locale
+        in: query
+        required: false
+        description: >-
+          Defaults to `en-US` when the catalog has it, otherwise the first
+          locale — so the page does not change every time the filesystem
+          reorders.
+        schema: { type: string }
+        example: en-US
+      - name: version
+        in: query
+        required: false
+        description: >-
+          An App Store version (`IOS/1.2.0`) or a Google Play track. Defaults to
+          the newest version, or the production track.
+        schema: { type: string }
+    get:
+      tags: [Catalog]
+      summary: The listing a store would show
+      description: |
+        Assembled from the pulled catalog: the product page's shape rather than
+        the files'. Text is merged across versions nearest-first, because `pull`
+        writes only the fields a version changed — reading one version's file
+        alone would blank out an listing that is perfectly complete.
+
+        An app whose catalog has never been pulled is not an error: the listing
+        comes back with `empty: true`.
+      operationId: getStoreListing
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/StoreListing" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/projects/{projectId}/store-apps/{storeAppId}/catalog:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - $ref: "#/components/parameters/StoreAppId"
+    get:
+      tags: [Catalog]
+      summary: Read the local catalog tree
+      description: |
+        The whole tree in one response, children inline. A catalog is a few
+        hundred files at most, and the UI wants its shape up front rather than
+        a request per expanded folder.
+      operationId: getCatalogTree
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/CatalogTree" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/projects/{projectId}/store-apps/{storeAppId}/catalog/file:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - $ref: "#/components/parameters/StoreAppId"
+      - $ref: "#/components/parameters/CatalogPath"
+    get:
+      tags: [Catalog]
+      summary: Read one text file from the catalog
+      operationId: getCatalogFile
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/CatalogFile" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      tags: [Catalog]
+      summary: Write one text file back to the catalog
+      operationId: putCatalogFile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PutCatalogFileRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/CatalogFile" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: |
+            The `etag` is stale — the file changed since it was read, most
+            likely because `pull` ran. Re-read before writing.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  /v1/projects/{projectId}/store-apps/{storeAppId}/catalog/raw:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - $ref: "#/components/parameters/StoreAppId"
+      - $ref: "#/components/parameters/CatalogPath"
+    get:
+      tags: [Catalog]
+      summary: Fetch a screenshot or preview as bytes
+      operationId: getCatalogRaw
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/projects/{projectId}/store-apps/{storeAppId}/catalog/pull:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - $ref: "#/components/parameters/StoreAppId"
+    post:
+      tags: [Catalog]
+      summary: Pull catalog data from the store
+      description: |
+        Starts a run and returns immediately. Follow
+        `GET /v1/runs/{runId}/events` for progress.
+      operationId: pullCatalog
+      responses:
+        "202":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Run" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: |
+            The store's credentials are incomplete, or a run is already in
+            flight for this app.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "501": { $ref: "#/components/responses/NotImplemented" }
+
+  /v1/projects/{projectId}/store-apps/{storeAppId}/catalog/push:
+    parameters:
+      - $ref: "#/components/parameters/ProjectId"
+      - $ref: "#/components/parameters/StoreAppId"
+    post:
+      tags: [Catalog]
+      summary: Push the local catalog to the store
+      operationId: pushCatalog
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CatalogPushRequest" }
+      responses:
+        "202":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Run" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: Credentials are incomplete, or a run is already in flight
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "501": { $ref: "#/components/responses/NotImplemented" }
+
+  /v1/runs/{runId}:
+    parameters:
+      - $ref: "#/components/parameters/RunId"
+    get:
+      tags: [Runs]
+      summary: Read a run
+      operationId: getRun
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Run" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/runs/{runId}/events:
+    parameters:
+      - $ref: "#/components/parameters/RunId"
+    get:
+      tags: [Runs]
+      summary: Stream a run's progress
+      description: |
+        Server-sent events. Each frame's `id` is the event's `seq`, so a
+        reconnecting client resumes with `Last-Event-ID` instead of replaying
+        the whole run. The stream closes once the run reaches a terminal state;
+        the final frame carries `status`.
+      operationId: streamRunEvents
+      parameters:
+        - name: Last-Event-ID
+          in: header
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: An event stream of RunEvent frames
+          content:
+            text/event-stream:
+              schema: { $ref: "#/components/schemas/RunEvent" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/runs/{runId}/cancel:
+    parameters:
+      - $ref: "#/components/parameters/RunId"
+    post:
+      tags: [Runs]
+      summary: Cancel a run
+      operationId: cancelRun
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Run" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: The run has already finished
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  /v1/fs/browse:
+    get:
+      tags: [Local]
+      summary: List directories, for the "add project" picker
+      description: |
+        Local mode only — a browser cannot hand back a real path. Restricted to
+        the user's home directory, and never returns file contents. Answers
+        `404 CAPABILITY_UNAVAILABLE` when `capabilities.localFs` is false.
+      operationId: browseFilesystem
+      parameters:
+        - name: path
+          in: query
+          required: false
+          description: Absolute path. Defaults to the user's home directory.
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/DirectoryListing" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+components:
+  parameters:
+    ProjectId:
+      name: projectId
+      in: path
+      required: true
+      schema: { type: string }
+    Store:
+      name: store
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/StoreKind" }
+    StoreAppId:
+      name: storeAppId
+      in: path
+      required: true
+      description: "`<store>:<identifier>`, URL-encoded — e.g. `appstore%3Acom.example.myapp`."
+      schema: { type: string }
+      example: "appstore:com.example.myapp"
+    CatalogPath:
+      name: path
+      in: query
+      required: true
+      description: Path relative to the catalog directory. Must not escape it.
+      schema: { type: string }
+      example: versions/IOS/1.0.0/en-US/localization.yaml
+    RunId:
+      name: runId
+      in: path
+      required: true
+      schema: { type: string }
+
+  responses:
+    BadRequest:
+      description: The request is malformed
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    NotFound:
+      description: No such resource, or the capability is not served here
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    NotImplemented:
+      description: |
+        Contracted, but not served by this build yet. Distinct from
+        `404 CAPABILITY_UNAVAILABLE`, which means this deployment will never
+        serve it: a client should report a 501 rather than hide the feature.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: Stable and machine-readable; clients branch on this.
+              example: PROJECT_NOT_FOUND
+            message:
+              type: string
+              description: For a human reading a toast or a log line.
+
+    StudioMode:
+      type: string
+      enum: [local, cloud]
+
+    Capabilities:
+      type: object
+      required:
+        [
+          mode,
+          workspaces,
+          runQueue,
+          members,
+          accessTokens,
+          webhooks,
+          billing,
+          localFs,
+          catalogSync,
+        ]
+      properties:
+        mode: { $ref: "#/components/schemas/StudioMode" }
+        workspaces:
+          type: boolean
+          description: More than one workspace exists, so the header needs a switcher.
+        runQueue:
+          type: boolean
+          description: Runs are queued before they execute, so a pending count is meaningful.
+        members: { type: boolean }
+        accessTokens: { type: boolean }
+        webhooks: { type: boolean }
+        billing: { type: boolean }
+        localFs:
+          type: boolean
+          description: >-
+            The host can browse the local filesystem, so "add project" can offer
+            a directory picker instead of asking for a pasted path.
+        catalogSync:
+          type: boolean
+          description: Catalog pull and push can execute here.
+
+    Platform:
+      type: string
+      enum: [android, ios, macos, windows, linux, web]
+
+    Project:
+      type: object
+      required: [id, name, platforms, hasFastforgeConfig, createdAt, updatedAt]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        path:
+          type: string
+          description: Local checkout. Local mode only.
+        repo:
+          type: string
+          description: Git remote. Hosted mode only.
+        platforms:
+          type: array
+          items: { $ref: "#/components/schemas/Platform" }
+        hasFastforgeConfig:
+          type: boolean
+          description: >-
+            Whether `.fastforge/config.yaml` exists. Without it there are no
+            stores to read, which is what the stores page's empty state says.
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    ProjectSummary:
+      type: object
+      required: [id, name, platforms, hasFastforgeConfig, missing]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        path: { type: string }
+        platforms:
+          type: array
+          items: { $ref: "#/components/schemas/Platform" }
+        hasFastforgeConfig: { type: boolean }
+        missing:
+          type: boolean
+          description: The registry points at a directory that no longer exists.
+
+    CreateProjectRequest:
+      type: object
+      properties:
+        path:
+          type: string
+          description: Absolute path to an existing checkout. Local mode.
+        name:
+          type: string
+          description: Defaults to the directory name in local mode.
+        repo: { type: string }
+
+    UpdateProjectRequest:
+      type: object
+      properties:
+        name: { type: string }
+
+    StoreKind:
+      type: string
+      enum: [appstore, googleplay]
+
+    AuthType:
+      type: string
+      enum: [api_key, username_password, service_account, unknown]
+
+    AuthFieldSource:
+      type: object
+      required: [field, source]
+      properties:
+        field:
+          type: string
+          description: Config field name, e.g. `key_id`.
+          example: key_id
+        source:
+          type: string
+          description: "`config`, `env:NAME`, or `unset` — never a credential value."
+          example: env:APP_STORE_CONNECT_KEY_ID
+        candidates:
+          type: array
+          description: Environment variables that would satisfy a missing field.
+          items: { type: string }
+
+    AuthStatus:
+      description: >-
+        Whether the credentials a store needs resolve. Studio never reads their
+        values — only whether each field resolves, and from where.
+      oneOf:
+        - type: object
+          required: [state]
+          properties:
+            state: { type: string, enum: [ready] }
+            sources:
+              type: array
+              items: { $ref: "#/components/schemas/AuthFieldSource" }
+        - type: object
+          required: [state, missing]
+          properties:
+            state: { type: string, enum: [incomplete] }
+            missing:
+              type: array
+              items: { $ref: "#/components/schemas/AuthFieldSource" }
+        - type: object
+          required: [state]
+          properties:
+            state: { type: string, enum: [notConfigured] }
+      discriminator:
+        propertyName: state
+
+    StoreConnection:
+      type: object
+      required:
+        [store, name, description, configured, authType, authStatus, appCount]
+      properties:
+        store: { $ref: "#/components/schemas/StoreKind" }
+        name: { type: string, example: App Store Connect }
+        description: { type: string }
+        configured:
+          type: boolean
+          description: Whether `.fastforge/config.yaml` has a section for this store.
+        authType: { $ref: "#/components/schemas/AuthType" }
+        authStatus: { $ref: "#/components/schemas/AuthStatus" }
+        appCount: { type: integer, minimum: 0 }
+
+    StoreApp:
+      type: object
+      required: [id, store, identifier, platform, catalog]
+      properties:
+        id:
+          type: string
+          description: "`<store>:<identifier>`."
+          example: "appstore:com.example.myapp"
+        store: { $ref: "#/components/schemas/StoreKind" }
+        identifier:
+          type: string
+          description: "`bundle_id` for App Store, `package_name` for Google Play."
+        name: { type: string }
+        appId: { type: string }
+        sku: { type: string }
+        track: { type: string, description: Google Play release track. }
+        platform: { $ref: "#/components/schemas/Platform" }
+        catalog: { $ref: "#/components/schemas/CatalogState" }
+
+    CreateStoreAppRequest:
+      type: object
+      required: [identifier]
+      properties:
+        identifier: { type: string, example: com.example.myapp }
+        name: { type: string }
+        appId: { type: string }
+        sku: { type: string }
+        track: { type: string }
+
+    UpdateStoreAppRequest:
+      type: object
+      properties:
+        name: { type: string }
+        appId: { type: string }
+        sku: { type: string }
+        track: { type: string }
+
+    CatalogState:
+      type: object
+      required: [path, exists, fileCount]
+      properties:
+        path:
+          type: string
+          description: Project-relative directory.
+          example: .fastforge/stores/appstore/com.example.myapp
+        exists: { type: boolean }
+        lastPulledAt:
+          type: string
+          format: date-time
+          description: Modification time of `.manifest.yaml` — when pull last ran.
+        fileCount: { type: integer, minimum: 0 }
+
+    StoreListing:
+      type: object
+      required: [storeAppId, store, identifier, locales, versions, empty]
+      properties:
+        storeAppId: { type: string }
+        store: { $ref: "#/components/schemas/StoreKind" }
+        identifier: { type: string }
+        locales:
+          type: array
+          description: Every locale the catalog holds.
+          items: { type: string }
+        locale: { type: string }
+        versions:
+          type: array
+          description: App Store versions (`IOS/1.2.0`), or Google Play tracks.
+          items: { type: string }
+        version: { type: string }
+        name: { type: string }
+        subtitle:
+          type: string
+          description: App Store subtitle, or Google Play's short description.
+        promotionalText: { type: string }
+        description: { type: string }
+        whatsNew:
+          type: string
+          description: Release notes — from the version, or the track's release.
+        keywords: { type: string }
+        copyright: { type: string }
+        marketingUrl: { type: string }
+        supportUrl: { type: string }
+        privacyPolicyUrl: { type: string }
+        categories:
+          type: array
+          description: Category identifiers, primary first.
+          items: { type: string }
+        media:
+          type: array
+          items: { $ref: "#/components/schemas/ListingMediaGroup" }
+        tracks:
+          type: array
+          description: Google Play only.
+          items: { $ref: "#/components/schemas/ListingTrack" }
+        empty:
+          type: boolean
+          description: The catalog has nothing for this locale and version.
+
+    ListingMediaGroup:
+      type: object
+      required: [id, label, items]
+      properties:
+        id:
+          type: string
+          description: The directory name the store uses.
+          example: APP_IPHONE_67
+        label: { type: string, example: 'iPhone 6.7"' }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ListingMediaItem" }
+
+    ListingMediaItem:
+      type: object
+      required: [path, name, kind]
+      properties:
+        path:
+          type: string
+          description: Relative to the catalog directory — fetch through `catalog/raw`.
+        name: { type: string }
+        kind: { $ref: "#/components/schemas/CatalogEntryKind" }
+
+    ListingTrack:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, example: production }
+        releases:
+          type: array
+          items: { $ref: "#/components/schemas/ListingTrackRelease" }
+
+    ListingTrackRelease:
+      type: object
+      properties:
+        name: { type: string }
+        status: { type: string, example: completed }
+        versionCodes:
+          type: array
+          items: { type: string }
+        userFraction: { type: number }
+        releaseNotes: { type: string }
+
+    CatalogEntryKind:
+      type: string
+      enum: [dir, yaml, image, video, other]
+
+    CatalogEntry:
+      type: object
+      required: [path, name, kind]
+      properties:
+        path:
+          type: string
+          description: Path relative to the catalog directory.
+        name: { type: string }
+        kind: { $ref: "#/components/schemas/CatalogEntryKind" }
+        size: { type: integer, minimum: 0 }
+        modifiedAt: { type: string, format: date-time }
+        children:
+          type: array
+          items: { $ref: "#/components/schemas/CatalogEntry" }
+
+    CatalogTree:
+      type: object
+      required: [root, exists, entries]
+      properties:
+        root: { type: string }
+        exists: { type: boolean }
+        entries:
+          type: array
+          items: { $ref: "#/components/schemas/CatalogEntry" }
+
+    CatalogFile:
+      type: object
+      required: [path, kind, content, etag]
+      properties:
+        path: { type: string }
+        kind: { $ref: "#/components/schemas/CatalogEntryKind" }
+        content: { type: string }
+        etag:
+          type: string
+          description: >-
+            Content hash. Echo it back on write so a stale editor tab cannot
+            clobber a catalog that `pull` has refreshed since.
+
+    PutCatalogFileRequest:
+      type: object
+      required: [content]
+      properties:
+        content: { type: string }
+        etag:
+          type: string
+          description: The `etag` from the read. Omit to write unconditionally.
+
+    CatalogPushRequest:
+      type: object
+      properties:
+        dryRun:
+          type: boolean
+          default: false
+          description: Report what would change without writing to the store.
+
+    RunKind:
+      type: string
+      enum: [store.catalog.pull, store.catalog.push]
+
+    RunStatus:
+      type: string
+      enum: [queued, running, succeeded, failed, cancelled]
+
+    Run:
+      type: object
+      required: [id, kind, projectId, targetId, status, dryRun, createdAt]
+      properties:
+        id: { type: string }
+        kind: { $ref: "#/components/schemas/RunKind" }
+        projectId: { type: string }
+        targetId:
+          type: string
+          description: What the run acts on — a store app id for catalog runs.
+        status: { $ref: "#/components/schemas/RunStatus" }
+        dryRun: { type: boolean }
+        createdAt: { type: string, format: date-time }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: string, format: date-time }
+        error: { type: string }
+
+    LogLevel:
+      type: string
+      enum: [debug, info, warn, error]
+
+    Progress:
+      type: object
+      required: [current]
+      properties:
+        current: { type: integer, minimum: 0 }
+        total: { type: integer, minimum: 0 }
+        label: { type: string }
+
+    RunEvent:
+      type: object
+      required: [seq, at, level, message]
+      properties:
+        seq:
+          type: integer
+          minimum: 0
+          description: Monotonic per run; sent as the SSE event id.
+        at: { type: string, format: date-time }
+        level: { $ref: "#/components/schemas/LogLevel" }
+        message: { type: string }
+        progress: { $ref: "#/components/schemas/Progress" }
+        status:
+          allOf: [{ $ref: "#/components/schemas/RunStatus" }]
+          description: Present on the final frame, so a stream-only client learns the outcome.
+
+    DirectoryEntry:
+      type: object
+      required: [name, path, isProject]
+      properties:
+        name: { type: string }
+        path: { type: string }
+        isProject:
+          type: boolean
+          description: The directory looks like a project Studio can register.
+
+    DirectoryListing:
+      type: object
+      required: [path, entries]
+      properties:
+        path: { type: string }
+        parent:
+          type: string
+          description: Absent at the root of the browsable area.
+        entries:
+          type: array
+          items: { $ref: "#/components/schemas/DirectoryEntry" }

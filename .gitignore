@@ -44,3 +44,12 @@ __pycache__/
 
 # Node.js / pnpm
 node_modules/
+
+# Studio workspace artifacts and local configuration
+.pnpm-store/
+.turbo/
+apps/studio-*/dist/
+apps/studio-*/.wrangler/
+apps/studio-*/.env*
+packages/studio-*/dist/
+*.tsbuildinfo

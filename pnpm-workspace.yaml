@@ -1,11 +1,14 @@
 packages:
   - "apps/website"
   - "apps/docs"
+  - "apps/studio-*"
+  - "packages/studio-*"
 
 allowBuilds:
   esbuild: true
   sharp: true
   workerd: true
+  unrs-resolver: true
 
 overrides:
   serialize-javascript: ">=7.0.3"

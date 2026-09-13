@@ -1,0 +1,24 @@
+name = "fastforge-studio-api"
+main = "build/worker/shim.mjs"
+compatibility_date = "2026-07-01"
+
+[build]
+command = "cargo install -q worker-build --version 0.1.6 && worker-build --release"
+
+[vars]
+# One token, one owner, until sign-in exists. See `authorize` in src/router.rs.
+STUDIO_OWNER_ID = "default"
+
+# Secrets, set with `wrangler secret put <NAME>` — never in this file:
+#   STUDIO_API_TOKEN                  the bearer token clients must send
+#   APP_STORE_CONNECT_KEY_ID          store credentials, same variable names
+#   APP_STORE_CONNECT_ISSUER_ID       fastforge itself reads
+#   APP_STORE_CONNECT_KEY_PATH
+#   GOOGLE_PLAY_SERVICE_ACCOUNT_KEY
+#   GOOGLE_PLAY_SERVICE_ACCOUNT_JSON
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fastforge-studio"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"

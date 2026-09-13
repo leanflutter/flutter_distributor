@@ -5,5 +5,20 @@
   "engines": {
     "node": ">=22.16.0",
     "pnpm": ">=10.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.3",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "turbo": "^2.9.18",
+    "typescript": "~6.0.0"
+  },
+  "scripts": {
+    "studio:dev": "pnpm --filter studio-web dev",
+    "studio:build": "pnpm --filter studio-web build",
+    "studio:lint": "turbo lint --filter=studio-*",
+    "studio:typecheck": "turbo typecheck --filter=studio-*",
+    "studio:test": "pnpm --filter studio-web test && cargo test -p studio-core -p studio-cli",
+    "studio:storybook": "pnpm --filter studio-storybook dev",
+    "studio:storybook:build": "pnpm --filter studio-storybook build"
   }
 }
