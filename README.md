@@ -265,3 +265,7 @@ Please make sure to update tests as appropriate and follow the existing code sty
 ## Fastforge Studio
 
 The Studio web client, local server, and shared packages live in this repository under the `studio-` package prefix. See the [Studio development guide](apps/studio-cli/README.md) for setup and checks.
+
+## Agent Skills
+
+Agent skills that teach Claude and other Agent-Skills-compatible harnesses how to use `fastforge` live in [`skills/`](skills/). Install them with `npx skills add fastforgedev/fastforge`; see the [skills guide](skills/README.md) for details.

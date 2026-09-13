@@ -1,6 +1,6 @@
 # Fastforge Skills
 
-Agent skills for the [Fastforge CLI](https://github.com/fastforgedev/fastforge) — they teach Claude (Claude Code, Cowork, or any Agent-Skills-compatible harness) how to build, package, publish, and operate app stores with `fastforge`, including the sharp edges that are easy to get wrong without reading the docs.
+Agent skills for the [Fastforge CLI](../README.md) — they teach Claude (Claude Code, Cowork, or any Agent-Skills-compatible harness) how to build, package, publish, and operate app stores with `fastforge`, including the sharp edges that are easy to get wrong without reading the docs.
 
 ## Skills
 
@@ -26,7 +26,7 @@ skills/
 │   └── references/{config,workflow,analyze}.md
 ├── fastforge-package/
 │   ├── SKILL.md
-│   └── references/{android,ios,macos}.md
+│   └── references/{android,ios,macos,other-platforms}.md
 ├── fastforge-publish/
 │   ├── SKILL.md
 │   └── references/publishers.md
@@ -40,13 +40,13 @@ skills/
 Install with the [`skills`](https://skills.sh) CLI. Install all four together — they reference each other by relative path and must stay siblings:
 
 ```bash
-npx skills add fastforgedev/skills
+npx skills add fastforgedev/fastforge
 ```
 
 Add `-g` to install globally (for every project) instead of into the current project:
 
 ```bash
-npx skills add fastforgedev/skills -g
+npx skills add fastforgedev/fastforge -g
 ```
 
 To remove:
@@ -59,4 +59,4 @@ After installing, start a new session and ask something a skill should catch —
 
 ## Scope and source of truth
 
-Content is distilled from the Fastforge CLI documentation ([`fastforge/docs/en`](../fastforge/docs/en/)) and the CLI implementation as of 0.7.x (August 2026), including the full platform/format packaging matrix, optional `--platform` inference, and the `playstore`/`pgyer` publish targets. When the CLI and these skills disagree, trust `fastforge <command> --help` and update the skill.
+Content is distilled from the Fastforge CLI documentation ([`docs/en`](../docs/en/)) and the CLI implementation as of 0.7.x (August 2026), including the full platform/format packaging matrix, optional `--platform` inference, and the `playstore`/`pgyer` publish targets. When the CLI and these skills disagree, trust `fastforge <command> --help` and update the skill.

@@ -258,3 +258,7 @@ jobs:
 ## Fastforge Studio
 
 Studio 的 Web 界面、本地服务与共享包已整合到本仓库，包名统一使用 `studio-` 前缀。开发和检查命令见 [Studio 文档](apps/studio-cli/README.md)。
+
+## Agent Skills
+
+用于指导 Claude 等兼容 Agent Skills 的工具使用 `fastforge` 的技能位于 [`skills/`](skills/) 目录。可通过 `npx skills add fastforgedev/fastforge` 安装，详见 [Skills 说明](skills/README.md)。
