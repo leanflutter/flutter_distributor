@@ -18,10 +18,18 @@ use fastforge_google_play_console::cli::GooglePlayConsoleArgs;
 #[command(version = env!("FASTFORGE_BUILD_VERSION"))]
 struct Cli {
     /// Check for updates when this command runs (default: on).
-    #[arg(long = "version-check", global = true, overrides_with = "no_version_check")]
+    #[arg(
+        long = "version-check",
+        global = true,
+        overrides_with = "no_version_check"
+    )]
     version_check: bool,
     /// Do not check for updates when this command runs.
-    #[arg(long = "no-version-check", global = true, overrides_with = "version_check")]
+    #[arg(
+        long = "no-version-check",
+        global = true,
+        overrides_with = "version_check"
+    )]
     no_version_check: bool,
     #[command(subcommand)]
     command: Commands,
@@ -51,6 +59,8 @@ enum Commands {
     Release(ReleaseArgs),
     #[command(about = "Manage distribution store configuration")]
     Store(StoreArgs),
+    #[command(about = "Open Studio to manage local projects")]
+    Studio(studio_cli::StudioArgs),
     #[command(about = "Update Fastforge to the latest version.")]
     Upgrade(UpgradeArgs),
     #[command(
@@ -103,10 +113,11 @@ fn print_local_build_notice_if_needed() {
 }
 
 /// Routes `log`/`tracing` records to stderr. Quiet by default (warnings and
-/// errors only); set `RUST_LOG=info` (or `debug`) for more detail.
+/// errors and Studio's server address); set `RUST_LOG=info` (or `debug`) for
+/// more detail.
 fn init_logging() {
     let filter = tracing_subscriber::EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn"));
+        .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn,studio_cli=info"));
     let _ = tracing_subscriber::fmt()
         .with_env_filter(filter)
         .with_writer(std::io::stderr)
@@ -149,6 +160,9 @@ async fn main() -> anyhow::Result<()> {
         }
         Commands::Store(args) => {
             cli::store::execute(args).await?;
+        }
+        Commands::Studio(args) => {
+            studio_cli::execute(args).await?;
         }
         Commands::Upgrade(args) => {
             cli::upgrade::execute(args).await?;

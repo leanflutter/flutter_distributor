@@ -27,12 +27,26 @@ Top-level commands:
 | `publish`       | Publish an existing artifact                       |
 | `release`       | Preserve compatibility with legacy releases        |
 | `store`         | Manage aggregated store configuration and catalogs |
+| `studio`        | Open Studio to manage local projects               |
 | `workflow`      | Run local workflows                                |
 | `appstore`      | Operate App Store Connect                          |
 | `appgallery`    | Operate Huawei AppGallery Connect                  |
 | `googleplay`    | Operate Google Play Console                        |
 | `upgrade`       | Upgrade fastforge to the latest release            |
 | `version-check` | Check for a newer version                          |
+
+## `studio`
+
+```bash
+fastforge studio
+fastforge studio --no-open --port 7391
+fastforge studio serve --web-root /path/to/dist/client
+fastforge studio doctor --dir /path/to/project
+```
+
+Without a subcommand, Studio starts its local server and opens the browser. `serve` explicitly starts the same server. Both accept `--port` (default `7391`), `--no-open`, and `--web-root`. `doctor` checks the project’s store credentials and accepts `--dir` (defaults to the current directory).
+
+In a source checkout, run `pnpm studio:build` first to build the web client, or run `pnpm studio:dev` separately during development. See the [Studio development guide](../../apps/studio-cli/README.md).
 
 ## `analyze`
 

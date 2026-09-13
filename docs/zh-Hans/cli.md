@@ -27,12 +27,26 @@ fastforge <COMMAND>
 | `publish`       | 发布现有产物                  |
 | `release`       | 兼容旧版发布流程              |
 | `store`         | 管理聚合商店配置与 catalog    |
+| `studio`        | 打开 Studio 管理本地项目      |
 | `workflow`      | 运行本地工作流                |
 | `appstore`      | 操作 App Store Connect        |
 | `appgallery`    | 操作华为 AppGallery Connect   |
 | `googleplay`    | 操作 Google Play Console      |
 | `upgrade`       | 升级到最新版本                |
 | `version-check` | 检查是否有新版本              |
+
+## `studio`
+
+```bash
+fastforge studio
+fastforge studio --no-open --port 7391
+fastforge studio serve --web-root /path/to/dist/client
+fastforge studio doctor --dir /path/to/project
+```
+
+不带子命令时，Studio 会启动本地服务并打开浏览器；`serve` 显式启动同一服务。两种方式均支持 `--port`（默认 `7391`）、`--no-open` 和 `--web-root`。`doctor` 检查项目的商店凭据，支持 `--dir`（默认为当前目录）。
+
+从源码运行时，先执行 `pnpm studio:build` 构建 Web 界面，或在开发时另行运行 `pnpm studio:dev`。详见 [Studio 开发文档](../../apps/studio-cli/README.md)。
 
 ## `analyze`
 

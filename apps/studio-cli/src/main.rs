@@ -1,26 +1,13 @@
-use clap::{Parser, Subcommand};
-
-mod cli;
-mod local;
-mod server;
-
-use cli::{DoctorArgs, ServeArgs};
+use clap::Parser;
+use studio_cli::StudioArgs;
 
 #[derive(Parser)]
 #[command(name = "fastforge-studio")]
 #[command(about = "Fastforge Studio on your machine")]
 #[command(version = env!("CARGO_PKG_VERSION"))]
 struct Cli {
-    #[command(subcommand)]
-    command: Option<Commands>,
-}
-
-#[derive(Subcommand)]
-enum Commands {
-    #[command(about = "Serve Studio against local projects")]
-    Serve(ServeArgs),
-    #[command(about = "Check that store credentials resolve")]
-    Doctor(DoctorArgs),
+    #[command(flatten)]
+    studio: StudioArgs,
 }
 
 #[tokio::main]
@@ -33,11 +20,5 @@ async fn main() -> anyhow::Result<()> {
         .with_target(false)
         .init();
 
-    // `fastforge-studio` with no arguments is `fastforge-studio serve`: opening
-    // Studio is the thing people came for.
-    match Cli::parse().command {
-        Some(Commands::Serve(args)) => cli::serve::execute(&args).await,
-        Some(Commands::Doctor(args)) => cli::doctor::execute(&args),
-        None => cli::serve::execute(&ServeArgs::default()).await,
-    }
+    studio_cli::execute(&Cli::parse().studio).await
 }

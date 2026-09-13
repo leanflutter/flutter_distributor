@@ -39,7 +39,7 @@ async fn placeholder() -> Html<&'static str> {
 <p>The API is up, but the web client has not been built.</p>
 <ul>
   <li>Developing? Run <code>pnpm studio:dev</code> and open <a href="http://localhost:3000">localhost:3000</a>.</li>
-  <li>Otherwise run <code>pnpm studio:build</code> and restart <code>fastforge-studio serve</code>.</li>
+  <li>Otherwise run <code>pnpm studio:build</code> and restart <code>fastforge studio</code>.</li>
 </ul>
 <p>The contract is browsable at <a href="/reference">/reference</a>.</p>
 "#,

@@ -12,6 +12,7 @@ name = "fastforge"
 path = "src/main.rs"
 
 [dependencies]
+studio-cli = { path = "../studio-cli" }
 fastforge_core = { path = "../../crates/core" }
 fastforge_app_analyzer = { path = "../../crates/app_analyzer" }
 fastforge_app_builder = { path = "../../crates/app_builder" }

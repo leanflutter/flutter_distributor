@@ -878,6 +878,7 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "serial_test",
+ "studio-cli",
  "tempfile",
  "tokio",
  "tracing",
